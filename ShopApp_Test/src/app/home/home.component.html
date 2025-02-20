@@ -1,0 +1,227 @@
+<style>
+    .intro-section {
+        text-align: center;
+        color: white;
+        padding: 20px;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .product-category {
+        width: 200px;
+    }
+
+    .search-input {
+        width: 300px;
+        background-color: rgb(10, 23, 42);
+        margin-right: 10px;
+        color: white;
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control {
+        background-color: transparent;
+        color: white;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+        opacity: 1;
+    }
+
+    .product-item {
+        background-color: rgb(19, 23, 42);
+        border: 1px solid rgb(35, 39, 61);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .product-name {
+        color: white;
+    }
+
+    .product-description {
+        color: rgb(173, 178, 203);
+    }
+
+    .product-warranty {
+        color: rgb(242, 126, 212);
+    }
+
+    .product-price {
+        color: white;
+    }
+
+    .product-rating {
+        color: yellow;
+        margin-top: 10px;
+    }
+
+    .product-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .space-x {
+        margin: 0 5px;
+    }
+</style>
+<app-header></app-header>
+<div class="container">
+    <div class="intro-section">
+        <h1>Day la trang home</h1>
+        <p>Trang nay hien thi danh sach cac san pham</p>
+        <p>Chon va xem san pham tai day</p>
+    </div>
+    <div class="search-box">
+        <input type="text" class="form-control search-input" placeholder="Tim san pham" />
+        <select class="form-control product-category">
+            <option selected disabled>Danh muc san pham</option>
+            <option>Xe hoi</option>
+            <option>Do gia dinh</option>
+            <option>Do da dung</option>
+        </select>
+    </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="product-item">
+                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
+                    alt="Hinh anh" class="product-image">
+                <h3 class="product-name">San pham 1</h3>
+                <p class="product-description">Macbook thuong hieu, sang trong doanh nhan</p>
+                <p class="product-warranty">Bao hanh: 12 thang</p>
+                <p class="product-price">Gia: $100</p>
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Them vao gio</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="product-item">
+                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
+                    alt="Hinh anh" class="product-image">
+                <h3 class="product-name">San pham 1</h3>
+                <p class="product-description">Macbook thuong hieu, sang trong doanh nhan</p>
+                <p class="product-warranty">Bao hanh: 12 thang</p>
+                <p class="product-price">Gia: $100</p>
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Them vao gio</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="product-item">
+                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
+                    alt="Hinh anh" class="product-image">
+                <h3 class="product-name">San pham 1</h3>
+                <p class="product-description">Macbook thuong hieu, sang trong doanh nhan</p>
+                <p class="product-warranty">Bao hanh: 12 thang</p>
+                <p class="product-price">Gia: $100</p>
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Them vao gio</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="product-item">
+                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
+                    alt="Hinh anh" class="product-image">
+                <h3 class="product-name">San pham 1</h3>
+                <p class="product-description">Macbook thuong hieu, sang trong doanh nhan</p>
+                <p class="product-warranty">Bao hanh: 12 thang</p>
+                <p class="product-price">Gia: $100</p>
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Them vao gio</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="product-item">
+                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
+                    alt="Hinh anh" class="product-image">
+                <h3 class="product-name">San pham 1</h3>
+                <p class="product-description">Macbook thuong hieu, sang trong doanh nhan</p>
+                <p class="product-warranty">Bao hanh: 12 thang</p>
+                <p class="product-price">Gia: $100</p>
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Them vao gio</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="product-item">
+                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
+                    alt="Hinh anh" class="product-image">
+                <h3 class="product-name">San pham 1</h3>
+                <p class="product-description">Macbook thuong hieu, sang trong doanh nhan</p>
+                <p class="product-warranty">Bao hanh: 12 thang</p>
+                <p class="product-price">Gia: $100</p>
+                <div class="product-rating">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Them vao gio</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>
