@@ -6,9 +6,11 @@ import com.project.Shopapp.Exceptions.DataNotFoundException;
 import com.project.Shopapp.Models.HinhAnh;
 import com.project.Shopapp.Models.LoaiSanPham;
 import com.project.Shopapp.Models.SanPham;
+import com.project.Shopapp.Models.ThuongHieu;
 import com.project.Shopapp.Repositories.HinhAnhRepository;
 import com.project.Shopapp.Repositories.LoaiSanPhamRepository;
 import com.project.Shopapp.Repositories.SanPhamRepository;
+import com.project.Shopapp.Repositories.ThuongHieuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ public class SanPhamService implements ISanPhamService {
     private final SanPhamRepository sanPhamRepository;
     private final LoaiSanPhamRepository loaiSanPhamRepository;
     private final HinhAnhRepository hinhAnhRepository;
+    private final ThuongHieuRepository thuongHieuRepository;
 
     @Override
     public SanPham createSanPham(SanPhamDTO sanPhamDTO) {
@@ -27,10 +30,15 @@ public class SanPhamService implements ISanPhamService {
                 .findById(sanPhamDTO.getMALOAISANPHAM())
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MALOAISANPHAM"));
 
+        ThuongHieu existingThuongHieu = thuongHieuRepository
+                .findById(sanPhamDTO.getMATHUONGHIEU())
+                .orElseThrow(()-> new RuntimeException("Khong tim thay MATHUONGHIEU"));
+
         SanPham newSanPham = SanPham.builder()
                 .TENSANPHAM(sanPhamDTO.getTENSANPHAM())
                 .GIA(sanPhamDTO.getGIA())
                 .MALOAISANPHAM(existingLoaiSanPham)
+                .MATHUONGHIEU(existingThuongHieu)
                 .build();
         return sanPhamRepository.save(newSanPham);
     }

@@ -4,6 +4,7 @@ import java.nio.file.*;
 
 import com.project.Shopapp.DTOs.HinhAnhDTO;
 import com.project.Shopapp.DTOs.SanPhamDTO;
+import com.project.Shopapp.Models.HinhAnh;
 import com.project.Shopapp.Models.SanPham;
 import com.project.Shopapp.Services.SanPhamService;
 import jakarta.validation.Valid;
@@ -30,22 +31,10 @@ import java.util.UUID;
 public class SanPhamController {
     private final SanPhamService sanPhamService;
 
-    @GetMapping("")
-    public ResponseEntity<String> getAll_SanPham(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit
-    ) {
-        return ResponseEntity.ok(String.format("Day la danh sach san pham, page: %d, limit: %d", page, limit));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<String> getOne_SanPham(@PathVariable("id") String sanpham) {
-        return ResponseEntity.ok("Day la chi tiet san pham" + sanpham);
-    }
-
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("")
     public ResponseEntity<?> createSanPham(
-            @Valid @ModelAttribute SanPhamDTO sanphamDTO, BindingResult result) {
+            @Valid @RequestBody SanPhamDTO sanphamDTO,
+            BindingResult result) {
         try {
             if (result.hasErrors()) {
                 List<String> errorMessage = result.getFieldErrors()
@@ -56,11 +45,24 @@ public class SanPhamController {
             }
 
             SanPham newSanpham = sanPhamService.createSanPham(sanphamDTO);
+            return ResponseEntity.ok("Them 1 san pham thanh cong");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
-            List<MultipartFile> files = sanphamDTO.getFiles();
+    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(
+            @PathVariable int id,
+            @RequestParam("files") List<MultipartFile> files
+    ) {
+        try {
+            SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
+
             if (files == null) {
                 files = new ArrayList<MultipartFile>();
             }
+            List<HinhAnhDTO> hinhAnhDTOS = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) continue;
 
@@ -78,14 +80,14 @@ public class SanPhamController {
 
                 // Lưu vào hình ảnh vào bảng HINHANH trong DataBase
                 HinhAnhDTO newHinhAnhDTO = HinhAnhDTO.builder()
-                        .MALOAISANPHAM(sanphamDTO.getMALOAISANPHAM())
-                        .MASANPHAM(newSanpham.getMASANPHAM())
+                        .MALOAISANPHAM(existingSanPham.getMALOAISANPHAM().getMALOAISANPHAM())
+                        .MASANPHAM(existingSanPham.getMASANPHAM())
                         .TENHINHANH(filename)
                         .build();
                 sanPhamService.createHinhAnh(newHinhAnhDTO);
+                hinhAnhDTOS.add(newHinhAnhDTO);
             }
-
-            return ResponseEntity.ok("Them 1 san pham thanh cong");
+            return ResponseEntity.ok().body(hinhAnhDTOS);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -102,6 +104,19 @@ public class SanPhamController {
         Path destination = Paths.get(uploadDir.toString(), uniqueFilename);
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFilename;
+    }
+
+    @GetMapping("")
+    public ResponseEntity<String> getAll_SanPham(
+            @RequestParam("page") int page,
+            @RequestParam("limit") int limit
+    ) {
+        return ResponseEntity.ok(String.format("Day la danh sach san pham, page: %d, limit: %d", page, limit));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getOne_SanPham(@PathVariable("id") String sanpham) {
+        return ResponseEntity.ok("Day la chi tiet san pham" + sanpham);
     }
 
     @PutMapping("/{id}")

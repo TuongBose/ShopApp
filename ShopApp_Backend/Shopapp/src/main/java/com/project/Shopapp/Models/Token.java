@@ -30,5 +30,6 @@ public class Token {
     private boolean EXPIRED;
 
     @ManyToOne
+    @JoinColumn(name = "USERID")
     private Account USERID;
 }

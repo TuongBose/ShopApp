@@ -21,12 +21,14 @@ public class SanPham extends BaseEntity {
     @Column(name = "GIA", nullable = false)
     private int GIA;
 
-    @Column(name = "MATHUONGHIEU", nullable = false)
-    private int MATHUONGHIEU;
+    @ManyToOne
+    @JoinColumn(name = "MATHUONGHIEU")
+    private ThuongHieu MATHUONGHIEU;
 
     private String MOTA;
     private int SOLUONGTONKHO;
 
     @ManyToOne
+    @JoinColumn(name = "MALOAISANPHAM")
     private LoaiSanPham MALOAISANPHAM;
 }

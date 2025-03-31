@@ -19,6 +19,7 @@ public class DonHang {
     private int MADONHANG;
 
     @ManyToOne
+    @JoinColumn(name = "USERID")
     private Account USERID;
 
     @Column(name = "FULLNAME", nullable = false)

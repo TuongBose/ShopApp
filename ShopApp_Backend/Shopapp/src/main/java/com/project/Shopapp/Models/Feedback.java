@@ -17,6 +17,7 @@ public class Feedback {
     private int FEEDBACKID;
 
     @ManyToOne
+    @JoinColumn(name = "USERID")
     private Account USERID;
 
     @Column(name = "NOIDUNG", nullable = false)
@@ -26,5 +27,6 @@ public class Feedback {
     private int SOSAO;
 
     @ManyToOne
+    @JoinColumn(name = "MASANPHAM")
     private SanPham MASANPHAM;
 }

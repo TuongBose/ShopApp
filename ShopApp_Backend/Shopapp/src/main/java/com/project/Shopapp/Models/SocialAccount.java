@@ -29,5 +29,6 @@ public class SocialAccount {
     private String NAME;
 
     @ManyToOne
+    @JoinColumn(name = "USERID")
     private Account USERID;
 }

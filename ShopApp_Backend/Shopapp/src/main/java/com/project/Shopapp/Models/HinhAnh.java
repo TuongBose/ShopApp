@@ -17,9 +17,11 @@ public class HinhAnh {
     private int ID;
 
     @ManyToOne
+    @JoinColumn(name = "MASANPHAM")
     private SanPham MASANPHAM;
 
     @ManyToOne
+    @JoinColumn(name = "MALOAISANPHAM")
     private LoaiSanPham MALOAISANPHAM;
 
     private String TENHINHANH;

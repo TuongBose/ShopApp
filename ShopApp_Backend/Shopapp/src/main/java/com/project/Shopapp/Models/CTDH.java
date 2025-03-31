@@ -17,9 +17,11 @@ public class CTDH {
     private int ID;
 
     @ManyToOne
+    @JoinColumn(name = "MADONHANG")
     private DonHang MADONHANG;
 
     @ManyToOne
+    @JoinColumn(name = "MASANPHAM")
     private SanPham MASANPHAM;
 
     @Column(name = "SOLUONG", nullable = false)
