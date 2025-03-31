@@ -2,8 +2,12 @@ package com.project.Shopapp.Controllers;
 
 import java.nio.file.*;
 
+import com.project.Shopapp.DTOs.HinhAnhDTO;
 import com.project.Shopapp.DTOs.SanPhamDTO;
+import com.project.Shopapp.Models.SanPham;
+import com.project.Shopapp.Services.SanPhamService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +26,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/sanphams")
+@RequiredArgsConstructor
 public class SanPhamController {
+    private final SanPhamService sanPhamService;
+
     @GetMapping("")
     public ResponseEntity<String> getAll_SanPham(
             @RequestParam("page") int page,
@@ -37,7 +44,7 @@ public class SanPhamController {
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> insert_SanPham(
+    public ResponseEntity<?> createSanPham(
             @Valid @ModelAttribute SanPhamDTO sanphamDTO, BindingResult result) {
         try {
             if (result.hasErrors()) {
@@ -47,6 +54,9 @@ public class SanPhamController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessage);
             }
+
+            SanPham newSanpham = sanPhamService.createSanPham(sanphamDTO);
+
             List<MultipartFile> files = sanphamDTO.getFiles();
             if (files == null) {
                 files = new ArrayList<MultipartFile>();
@@ -63,10 +73,19 @@ public class SanPhamController {
                     return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("File khong dung dinh dang");
                 }
 
+                // Lưu file
                 String filename = storeFile(file);
 
+                // Lưu vào hình ảnh vào bảng HINHANH trong DataBase
+                HinhAnhDTO newHinhAnhDTO = HinhAnhDTO.builder()
+                        .MALOAISANPHAM(sanphamDTO.getMALOAISANPHAM())
+                        .MASANPHAM(newSanpham.getMASANPHAM())
+                        .TENHINHANH(filename)
+                        .build();
+                sanPhamService.createHinhAnh(newHinhAnhDTO);
             }
-            return ResponseEntity.ok("Day la them san pham");
+
+            return ResponseEntity.ok("Them 1 san pham thanh cong");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
