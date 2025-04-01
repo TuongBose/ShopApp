@@ -12,6 +12,8 @@ import lombok.*;
 @Table(name = "HINHANH")
 @Builder
 public class HinhAnh {
+    public static final int MAXIMUM_IMAGES_PER_PRODUCT = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ID;

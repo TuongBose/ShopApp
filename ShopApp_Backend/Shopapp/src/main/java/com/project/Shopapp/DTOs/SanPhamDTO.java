@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class SanPhamDTO {
     @NotBlank(message = "Ten san pham khong duoc bo trong")
     @Size(min = 5, max = 200, message = "Ten san pham phai tu 5 den 200 ky tu")
@@ -25,6 +26,4 @@ public class SanPhamDTO {
     private String MOTA;
     private int SOLUONGTONKHO;
     private int MALOAISANPHAM;
-
-    private List<MultipartFile> files;
 }

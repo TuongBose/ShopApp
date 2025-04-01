@@ -2,7 +2,6 @@ package com.project.Shopapp.Services;
 
 import com.project.Shopapp.DTOs.HinhAnhDTO;
 import com.project.Shopapp.DTOs.SanPhamDTO;
-import com.project.Shopapp.Exceptions.DataNotFoundException;
 import com.project.Shopapp.Models.HinhAnh;
 import com.project.Shopapp.Models.LoaiSanPham;
 import com.project.Shopapp.Models.SanPham;
@@ -11,6 +10,7 @@ import com.project.Shopapp.Repositories.HinhAnhRepository;
 import com.project.Shopapp.Repositories.LoaiSanPhamRepository;
 import com.project.Shopapp.Repositories.SanPhamRepository;
 import com.project.Shopapp.Repositories.ThuongHieuRepository;
+import com.project.Shopapp.Responses.SanPhamResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +32,7 @@ public class SanPhamService implements ISanPhamService {
 
         ThuongHieu existingThuongHieu = thuongHieuRepository
                 .findById(sanPhamDTO.getMATHUONGHIEU())
-                .orElseThrow(()-> new RuntimeException("Khong tim thay MATHUONGHIEU"));
+                .orElseThrow(() -> new RuntimeException("Khong tim thay MATHUONGHIEU"));
 
         SanPham newSanPham = SanPham.builder()
                 .TENSANPHAM(sanPhamDTO.getTENSANPHAM())
@@ -49,9 +49,25 @@ public class SanPhamService implements ISanPhamService {
     }
 
     @Override
-    public Page<SanPham> getAllSanPham(PageRequest pageRequest) {
+    public Page<SanPhamResponse> getAllSanPham(PageRequest pageRequest) {
         // Lấy danh sách sản phẩm theo trang(page) và giới hạn(limit)
-        return sanPhamRepository.findAll(pageRequest);
+        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageRequest);
+
+        // Chuyển SanPhamModel sang SanPhamResponse
+        return sanPhamPage.map(sanPham -> {
+            SanPhamResponse newSanPhamResponse = SanPhamResponse
+                    .builder()
+                    .TENSANPHAM(sanPham.getTENSANPHAM())
+                    .GIA(sanPham.getGIA())
+                    .MATHUONGHIEU(sanPham.getMATHUONGHIEU().getMATHUONGHIEU())
+                    .MOTA(sanPham.getMOTA())
+                    .SOLUONGTONKHO(sanPham.getSOLUONGTONKHO())
+                    .MALOAISANPHAM(sanPham.getMALOAISANPHAM().getMALOAISANPHAM())
+                    .build();
+            newSanPhamResponse.setNGAYTAO(sanPham.getNGAYTAO());
+            newSanPhamResponse.setCHINHSUA(sanPham.getCHINHSUA());
+            return newSanPhamResponse;
+        });
     }
 
     @Override
@@ -94,7 +110,8 @@ public class SanPhamService implements ISanPhamService {
 
         // Không cho thêm quá 5 ảnh cho 1 sản phẩm
         int size = hinhAnhRepository.findByMASANPHAMAndMALOAISANPHAM(existingSanPham, existingLoaiSanPham).size();
-        if (size >= 5) throw new RuntimeException("So luong hinh anh cua san pham <= 5");
+        if (size >= HinhAnh.MAXIMUM_IMAGES_PER_PRODUCT)
+            throw new RuntimeException("So luong hinh anh cua san pham <= 5");
 
         return hinhAnhRepository.save(newHinhAnh);
     }
