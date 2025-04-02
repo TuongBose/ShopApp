@@ -28,5 +28,4 @@ public class AccountDTO {
     private int FACEBOOKACCOUNTID;
     @JsonProperty("GOOGLE_ACCOUNT_ID")
     private int GOOGLEACCOUNTID;
-    private boolean ROLENAME;
 }

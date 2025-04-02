@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ILoaiSanPhamService {
     LoaiSanPham createLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO);
-    LoaiSanPham getLoaiSanPhamById(int id);
+    LoaiSanPham getLoaiSanPhamByMASANPHAM(int id);
     List<LoaiSanPham> getAllLoaiSanPham();
     LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO);
     void deleteLoaiSanPham(int id);

@@ -21,7 +21,7 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
     }
 
     @Override
-    public LoaiSanPham getLoaiSanPhamById(int id) {
+    public LoaiSanPham getLoaiSanPhamByMASANPHAM(int id) {
         return loaiSanPhamRepository.findById(id).orElseThrow(() -> new RuntimeException("Khong tim thay loai san pham"));
     }
 
@@ -32,7 +32,7 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
 
     @Override
     public LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO) {
-        LoaiSanPham existingLoaiSanPham = getLoaiSanPhamById(id);
+        LoaiSanPham existingLoaiSanPham = getLoaiSanPhamByMASANPHAM(id);
         existingLoaiSanPham.setTENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM());
         loaiSanPhamRepository.save(existingLoaiSanPham);
         return existingLoaiSanPham;

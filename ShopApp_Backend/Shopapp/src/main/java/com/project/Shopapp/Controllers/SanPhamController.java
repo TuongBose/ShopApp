@@ -126,10 +126,10 @@ public class SanPhamController {
     }
 
     // Fake sản phẩm
-    @PostMapping("/generateFakeSanPhams")
+    //@PostMapping("/generateFakeSanPhams")
     public ResponseEntity<String> generateFakeSanPhams() {
         Faker faker = new Faker();
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 5700; i++) {
             String tenSanPham = faker.commerce().productName();
             if (sanPhamService.existsByTENSANPHAM(tenSanPham)) continue;
 
@@ -137,10 +137,10 @@ public class SanPhamController {
                     .builder()
                     .TENSANPHAM(tenSanPham)
                     .GIA(faker.number().numberBetween(10, 90000000))
-                    .MATHUONGHIEU(faker.number().numberBetween(1, 2))
+                    .MATHUONGHIEU(faker.number().numberBetween(1, 5))
                     .MOTA(faker.lorem().sentence())
                     .SOLUONGTONKHO(faker.number().numberBetween(1, 10000))
-                    .MALOAISANPHAM(faker.number().numberBetween(2, 4))
+                    .MALOAISANPHAM(faker.number().numberBetween(1, 5))
                     .build();
 
             try {
@@ -176,19 +176,32 @@ public class SanPhamController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getSanPham(@PathVariable("id") String sanpham) {
-
-        return ResponseEntity.ok("Day la chi tiet san pham" + sanpham);
+    public ResponseEntity<?> getSanPham(@PathVariable int id) {
+        try {
+            SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
+            return ResponseEntity.ok(SanPhamResponse.fromSanPham(existingSanPham));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update_SanPham(@PathVariable Long id) {
-        return ResponseEntity.ok("Day la cap nhat san pham");
+    public ResponseEntity<String> updateSanPham(
+            @PathVariable int id,
+            @Valid @RequestBody SanPhamDTO sanPhamDTO
+    ) {
+        try {
+            sanPhamService.updateSanPham(id, sanPhamDTO);
+            return ResponseEntity.ok("Cap nhat san pham " + id + " thanh cong");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete_SanPham(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body("Day la xoa");
+    public ResponseEntity<String> deleteSanPham(@PathVariable int id) {
+        sanPhamService.deleteSanPham(id);
+        return ResponseEntity.ok("Xoa san pham " + id + " thanh cong");
     }
 
 }

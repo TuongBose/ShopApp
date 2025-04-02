@@ -23,6 +23,7 @@ public class AccountService implements IAccountService {
                 .FULLNAME(accountDTO.getFULLNAME())
                 .SODIENTHOAI(accountDTO.getSODIENTHOAI())
                 .PASSWORD(accountDTO.getPASSWORD())
+                .EMAIL(accountDTO.getEMAIL())
                 .DIACHI(accountDTO.getDIACHI())
                 .NGAYSINH(accountDTO.getNGAYSINH())
                 .FACEBOOK_ACCOUNT_ID(accountDTO.getFACEBOOKACCOUNTID())

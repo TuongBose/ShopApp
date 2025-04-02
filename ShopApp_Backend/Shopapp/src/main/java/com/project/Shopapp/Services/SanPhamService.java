@@ -39,6 +39,8 @@ public class SanPhamService implements ISanPhamService {
                 .GIA(sanPhamDTO.getGIA())
                 .MALOAISANPHAM(existingLoaiSanPham)
                 .MATHUONGHIEU(existingThuongHieu)
+                .MOTA(sanPhamDTO.getMOTA())
+                .SOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO())
                 .build();
         return sanPhamRepository.save(newSanPham);
     }
@@ -54,31 +56,25 @@ public class SanPhamService implements ISanPhamService {
         Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageRequest);
 
         // Chuyển SanPhamModel sang SanPhamResponse
-        return sanPhamPage.map(sanPham -> {
-            SanPhamResponse newSanPhamResponse = SanPhamResponse
-                    .builder()
-                    .TENSANPHAM(sanPham.getTENSANPHAM())
-                    .GIA(sanPham.getGIA())
-                    .MATHUONGHIEU(sanPham.getMATHUONGHIEU().getMATHUONGHIEU())
-                    .MOTA(sanPham.getMOTA())
-                    .SOLUONGTONKHO(sanPham.getSOLUONGTONKHO())
-                    .MALOAISANPHAM(sanPham.getMALOAISANPHAM().getMALOAISANPHAM())
-                    .build();
-            newSanPhamResponse.setNGAYTAO(sanPham.getNGAYTAO());
-            newSanPhamResponse.setCHINHSUA(sanPham.getCHINHSUA());
-            return newSanPhamResponse;
-        });
+        return sanPhamPage.map(SanPhamResponse::fromSanPham);
     }
 
     @Override
     public SanPham updateSanPham(int id, SanPhamDTO sanPhamDTO) {
         SanPham existingSanPham = getSanPhamByMASANPHAM(id);
+
         LoaiSanPham existingLoaiSanPham = loaiSanPhamRepository
                 .findById(sanPhamDTO.getMALOAISANPHAM())
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MALOAISANPHAM nay!!!"));
 
+        ThuongHieu existingThuongHieu = thuongHieuRepository
+                .findById(sanPhamDTO.getMATHUONGHIEU())
+                .orElseThrow(() -> new RuntimeException("Khong tim thay MATHUONGHIEU"));
+
         existingSanPham.setTENSANPHAM(sanPhamDTO.getTENSANPHAM());
         existingSanPham.setMALOAISANPHAM(existingLoaiSanPham);
+        existingSanPham.setMATHUONGHIEU(existingThuongHieu);
+        existingSanPham.setSOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO());
         existingSanPham.setGIA(sanPhamDTO.getGIA());
         existingSanPham.setMOTA(sanPhamDTO.getMOTA());
 

@@ -46,14 +46,17 @@ public class LoaiSanPhamController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateLoaiSanPham(
             @PathVariable int id,
-            @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO)
-    {
-        loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
-        return ResponseEntity.ok("Cap nhat loai san pham " + id + " thanh cong");
+            @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO) {
+        try {
+            loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
+            return ResponseEntity.ok("Cap nhat loai san pham " + id + " thanh cong");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete_LoaiSanPham(@PathVariable int id) {
+    public ResponseEntity<String> deleteLoaiSanPham(@PathVariable int id) {
         loaiSanPhamService.deleteLoaiSanPham(id);
         return ResponseEntity.ok("Xoa loai san pham " + id + "thanh cong");
     }
