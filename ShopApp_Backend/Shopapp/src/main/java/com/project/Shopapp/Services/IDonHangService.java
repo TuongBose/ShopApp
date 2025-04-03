@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface IDonHangService {
     DonHangResponse createDonHang(DonHangDTO donHangDTO) throws Exception;
-    DonHang getDonHangByMASANPHAM(int id);
-    List<DonHang> getAllDonHang();
-    DonHang updateDonHang(int id, DonHangDTO donHangDTO);
-    void deleteDonHang(int id);
+    List<DonHang> getDonHangByMASANPHAM(int id);
+    DonHangResponse getDonHangByMADONHANG(int id) throws Exception;
+    List<DonHang> getDonHangByUSERID(int id) throws Exception;
+    DonHang updateDonHang(int id, DonHangDTO donHangDTO) throws Exception;
+    void deleteDonHang(int id) throws Exception;
 }

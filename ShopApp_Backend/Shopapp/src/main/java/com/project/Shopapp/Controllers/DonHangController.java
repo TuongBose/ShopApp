@@ -1,6 +1,7 @@
 package com.project.Shopapp.Controllers;
 
 import com.project.Shopapp.DTOs.DonHangDTO;
+import com.project.Shopapp.Models.DonHang;
 import com.project.Shopapp.Responses.DonHangResponse;
 import com.project.Shopapp.Services.DonHangService;
 import jakarta.validation.Valid;
@@ -11,8 +12,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import javax.naming.Binding;
 
 @RestController
 @RequestMapping("${api.prefix}/donhangs")
@@ -34,10 +33,21 @@ public class DonHangController {
         }
     }
 
-    @GetMapping("/{USERID}")
-    public ResponseEntity<?> getDonHang(@Valid @PathVariable("USERID") int userid) {
+    @GetMapping("/account/{id}")
+    public ResponseEntity<?> getDonHang_USERID(@Valid @PathVariable int id) {
         try {
-            return ResponseEntity.ok("Lay don hang thanh cong");
+            List<DonHang> donHangList = donHangService.getDonHangByUSERID(id);
+            return ResponseEntity.ok(donHangList);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDonHang_MADONHANG(@Valid @PathVariable int id) {
+        try {
+            DonHangResponse existingDonHangResponse = donHangService.getDonHangByMADONHANG(id);
+            return ResponseEntity.ok(existingDonHangResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -46,19 +56,19 @@ public class DonHangController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDonHang(@Valid @PathVariable int id, @Valid @RequestBody DonHangDTO donHangDTO) {
         try {
-            return ResponseEntity.ok("Cap nhat thanh cong");
+            return ResponseEntity.ok(donHangService.updateDonHang(id,donHangDTO));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Cap nhat bi loi");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDonHang(@Valid @PathVariable int id) {
         try {
+            donHangService.deleteDonHang(id);
             return ResponseEntity.ok("Xoa don hang thanh cong");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Khong thanh cong!!!");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
