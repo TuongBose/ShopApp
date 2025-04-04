@@ -69,13 +69,16 @@ public class DonHangService implements IDonHangService {
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
         Account existingAccount = accountRepository.findById(donHangDTO.getUSERID())
                 .orElseThrow(() -> new RuntimeException("Khong tim thay USERID"));
-        // Ngăn chặn không cho thay đổi USERID
-        if(existingDonHang.getUSERID().getUSERID() != donHangDTO.getUSERID())
-            throw new RuntimeException("Khong duoc thay doi USERID");
 
-        modelMapper.typeMap(DonHangDTO.class, DonHang.class)
-                .addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
-        modelMapper.map(donHangDTO,existingDonHang);
+        existingDonHang.setUSERID(existingAccount);
+        existingDonHang.setFULLNAME(donHangDTO.getFULLNAME());
+        existingDonHang.setEMAIL(donHangDTO.getEMAIL());
+        existingDonHang.setSODIENTHOAI(donHangDTO.getSODIENTHOAI());
+        existingDonHang.setDIACHI(donHangDTO.getDIACHI());
+        existingDonHang.setGHICHU(donHangDTO.getGHICHU());
+        existingDonHang.setTONGTIEN(donHangDTO.getTONGTIEN());
+        existingDonHang.setPHUONGTHUCTHANHTOAN(donHangDTO.getPHUONGTHUCTHANHTOAN());
+
         donHangRepository.save(existingDonHang);
         return existingDonHang;
     }

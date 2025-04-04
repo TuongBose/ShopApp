@@ -33,20 +33,4 @@ public class SanPhamResponse extends BaseResponse {
         newSanPhamResponse.setCHINHSUA(sanPham.getCHINHSUA());
         return newSanPhamResponse;
     }
-
-//    public static SanPhamResponse fromSanPhamDTO(SanPhamDTO sanPhamDTO)
-//    {
-//        SanPhamResponse newSanPhamResponse = SanPhamResponse
-//                .builder()
-//                .TENSANPHAM(sanPhamDTO.getTENSANPHAM())
-//                .GIA(sanPhamDTO.getGIA())
-//                .MATHUONGHIEU(sanPhamDTO.getMATHUONGHIEU())
-//                .MOTA(sanPhamDTO.getMOTA())
-//                .SOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO())
-//                .MALOAISANPHAM(sanPhamDTO.getMALOAISANPHAM())
-//                .build();
-//        newSanPhamResponse.setNGAYTAO(sanPhamDTO.getNGAYTAO());
-//        newSanPhamResponse.setCHINHSUA(sanPhamDTO.getCHINHSUA());
-//        return newSanPhamResponse;
-//    }
 }

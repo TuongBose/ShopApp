@@ -1,7 +1,11 @@
 package com.project.Shopapp.Controllers;
 
 import com.project.Shopapp.DTOs.CTDH_DTO;
+import com.project.Shopapp.Models.CTDH;
+import com.project.Shopapp.Responses.CTDHResponse;
+import com.project.Shopapp.Services.CTDHService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -11,7 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/chitietdonhangs")
+@RequiredArgsConstructor
 public class CTDHController {
+    private final CTDHService ctdhService;
+
     @PostMapping("")
     public ResponseEntity<?> createCTDH(@Valid @RequestBody CTDH_DTO ctdh_dto, BindingResult result) {
         try {
@@ -19,7 +26,9 @@ public class CTDHController {
                 List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
                 return ResponseEntity.badRequest().body("Them khong thanh cong");
             }
-            return ResponseEntity.ok("Tao thanh cong");
+            CTDH newCTDH = ctdhService.createCTDH(ctdh_dto);
+            CTDHResponse newCTDHResponse= CTDHResponse.fromCTDH(newCTDH);
+            return ResponseEntity.ok(newCTDHResponse);
         } catch (
                 Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -27,18 +36,22 @@ public class CTDHController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCTDH(@Valid @PathVariable("id") int id) {
+    public ResponseEntity<?> getCTDH(@Valid @PathVariable int id) {
         try {
-            return ResponseEntity.ok("Lay CTDH thanh cong");
+            CTDH newCTDH = ctdhService.getCTDHByID(id);
+            CTDHResponse newCTDHResponse= CTDHResponse.fromCTDH(newCTDH);
+            return ResponseEntity.ok(newCTDHResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Loi lay CTDH khong thanh cong");
         }
     }
 
-    @GetMapping("/donhang/{donhangId}")
-    public ResponseEntity<?> getCTDHs(@Valid @PathVariable("donhangId") int donhangId) {
+    @GetMapping("/donhang/{id}")
+    public ResponseEntity<?> getCTDHs(@Valid @PathVariable int id) {
         try {
-            return ResponseEntity.ok("Lay CTDH trong don hang thanh cong");
+            List<CTDH> ctdhList = ctdhService.getCTDHByMADONHANG(id);
+            List<CTDHResponse> ctdhResponseList = ctdhList.stream().map(CTDHResponse::fromCTDH).toList();
+            return ResponseEntity.ok(ctdhResponseList);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Loi lay CTDH trong don hang khong thanh cong");
         }
@@ -47,7 +60,9 @@ public class CTDHController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCTDH(@Valid @PathVariable int id, @RequestBody CTDH_DTO ctdh_dto) {
         try {
-            return ResponseEntity.ok("Cap nhat CTDH thanh cong");
+            CTDH ctdh = ctdhService.updateCTDH(id,ctdh_dto);
+            CTDHResponse ctdhResponse = CTDHResponse.fromCTDH(ctdh);
+            return ResponseEntity.ok(ctdhResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Loi cap nhat CTDH khong thanh cong");
         }
@@ -56,6 +71,7 @@ public class CTDHController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCTDH(@Valid @PathVariable int id) {
         try {
+            ctdhService.deleteCTDH(id);
             return ResponseEntity.ok("Xoa CTDH thanh cong");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Xoa CTDH khong thanh cong");
