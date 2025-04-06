@@ -1,15 +1,14 @@
 package com.project.Shopapp.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class AccountLoginDTO {
     @NotBlank(message = "So dien thoai khong duoc bo trong")
     private String SODIENTHOAI;

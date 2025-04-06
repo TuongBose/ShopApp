@@ -22,3 +22,19 @@ spring:
 
 api:
   prefix: api/v1
+
+jwt:
+  expiration: 2592000 #30 days = 30 * 24 * 60 * 60
+  secretKey: k91v0UiqsELb5S9c14/gtKvcs/gxCnD8CBXJHj41WlE=
+
+########################################################################################################
+#  Tạo secretKey này:
+#    - Mở Git Bash nhập
+#                       "openssl rand -base64 32"
+#      enter, hệ thống sẽ tự random tạo cho mình một cái
+########################################################################################################
+#    - Chuyển 1 chuổi mã hóa theo Base64, ví dụ muốn chuyển chuỗi "ihaveadream" => Base64:
+#    - Mở Git Bash nhập
+#                       "echo -n "ihaveadream" | base64"
+#        (Không xử dụng cách này vì có thể chuỗi không đủ độ dài >= 32 bytes tức là 256-bit trở lên)
+########################################################################################################

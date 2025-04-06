@@ -21,6 +21,4 @@ public class WebSecurityConfig {
                 })
                 .build();
     }
-
-    // day la spring
 }

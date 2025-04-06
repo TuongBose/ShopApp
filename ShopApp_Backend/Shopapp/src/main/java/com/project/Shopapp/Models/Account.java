@@ -43,9 +43,8 @@ public class Account extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String name = "User";
-        if(ROLENAME == true)
+        if(ROLENAME)
             name = "Admin";
-
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(new SimpleGrantedAuthority("ROLE_"+ name));
@@ -54,7 +53,7 @@ public class Account extends BaseEntity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "";
+        return this.PASSWORD;
     }
 
     @Override

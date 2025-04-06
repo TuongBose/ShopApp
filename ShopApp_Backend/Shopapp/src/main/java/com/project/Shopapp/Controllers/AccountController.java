@@ -2,6 +2,7 @@ package com.project.Shopapp.Controllers;
 
 import com.project.Shopapp.DTOs.AccountDTO;
 import com.project.Shopapp.DTOs.AccountLoginDTO;
+import com.project.Shopapp.Models.Account;
 import com.project.Shopapp.Services.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,8 @@ public class AccountController {
             if (!accountDTO.getPASSWORD().equals(accountDTO.getRETYPEPASSWORD()))
                 return ResponseEntity.badRequest().body("Password khong trung");
 
-            accountService.createAccount(accountDTO);
-            return ResponseEntity.ok("Dang ky thanh cong");
+            Account newAccount = accountService.createAccount(accountDTO);
+            return ResponseEntity.ok(newAccount);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -41,7 +42,11 @@ public class AccountController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody AccountLoginDTO accountLoginDTO) {
         // Kiểm tra thông tin đăng nhập và sinh token
-        String token = accountService.login(accountLoginDTO.getSODIENTHOAI(), accountLoginDTO.getPASSWORD());
-        return ResponseEntity.ok("some token");
+        try {
+            String token = accountService.login(accountLoginDTO.getSODIENTHOAI(), accountLoginDTO.getPASSWORD());
+            return ResponseEntity.ok().body(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
