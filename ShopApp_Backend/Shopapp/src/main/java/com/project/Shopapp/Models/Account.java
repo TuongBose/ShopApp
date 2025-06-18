@@ -42,12 +42,13 @@ public class Account extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String name = "User";
+        String name = "USER";
         if(ROLENAME)
-            name = "Admin";
+            name = "ADMIN";
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(new SimpleGrantedAuthority("ROLE_"+ name));
+        //authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorityList;
     }
 
