@@ -27,7 +27,7 @@ public class AccountService implements IAccountService {
         // Register Account
         String SODIENTHOAI = accountDTO.getSODIENTHOAI();
         if (accountRepository.existsBySODIENTHOAI(SODIENTHOAI))
-            throw new DataIntegrityViolationException("So dien thoai nay da ton tai");
+            throw new RuntimeException("So dien thoai nay da ton tai");
 
         // Convert AccountDTO sang Account
         Account newAccount = Account.builder()
