@@ -192,13 +192,9 @@ VALUES
 (N'MacBook Air 13 inch M1', 1000000, 1, N'Laptop mỏng nhẹ, đồ họa, lập trình', 'MacBook_Air_13_inch_M1.jpg', 609,6);
 
 -- Nhập dữ liệu bảng ACCOUNTSSSSSSS
-INSERT INTO ACCOUNTS (USERNAME, PASS, EMAIL, FULLNAME, DIACHI, SODIENTHOAI, ROLENAME)
+INSERT INTO ACCOUNTS (PASSWORD,EMAIL,FULLNAME,DIACHI,SODIENTHOAI,ROLENAME)
 VALUES
-('hongthanh', 'thanh123', 'hongthanh@gmail.com', N'Trần Hồng Thanh', N'123 Phú Thọ, Tân Phú, TPHCM', '012345678', 1),
-('vananh', 'va123', 'vananh204@gmail.com', N'Trần Thị Vân Anh', N'555 Tây Thạnh, Tân Phú, TPHCM', '055566777', 0),
-('phuonglinh', 'linhka333', 'phuonglinh.09204@gmail.com', N'Vũ Phương Linh', N'140 Lê Trọng Tấn, Tân Phú, TPHCM', '0980837584', 0),
-('tuongvy123', 'dobiet', 'tuongvy2002@gmail.com', N'Nguyễn Tường Vy', N'1A QL1A, Hà Nam, Tây Bắc', '0908765111', 1),
-('thanhnhan555', 'thanhnhanxinhdep', 'thanhnhanle8904@gmail.com', N'Thanh Nhàn', N'98 Hàm Nghi, Q1, TPHCM', '0989098989', 1);
+('123','admin@gmail.com','admin','admin123','123',1);
 
 -- Nhập dữ liệu vào bảng DonHang
 INSERT INTO DonHang (USERID, NgayDatHang, TongTien) 

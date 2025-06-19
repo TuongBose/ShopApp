@@ -13,6 +13,6 @@ import { DetailProductComponent } from './detail-product/detail-product.componen
 @NgModule({
   imports: [AppModule, ServerModule],
   providers: [provideServerRouting(serverRoutes)],
-  bootstrap: [DetailProductComponent],
+  bootstrap: [RegisterComponent],
 })
 export class AppServerModule {}
