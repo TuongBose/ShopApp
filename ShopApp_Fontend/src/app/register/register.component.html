@@ -6,11 +6,11 @@
                 <div class="register-form mx-auto">
                     <h2 class="register-header">Dang Ky</h2>
                     <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="text" class="form-control" [(ngModel)]="phone" name="phone" (input)="onPhoneChange()" id="phone"
+                        <label for="phoneNumber">Phone</label>
+                        <input type="text" class="form-control" [(ngModel)]="phoneNumber" name="phoneNumber" (input)="onPhoneNumberChange()" id="phoneNumber"
                             required (focus)="registerForm.form.markAsTouched()">
                         <div class="divider-nospace"></div>
-                        <p class="text-danger" *ngIf="phone.length < 6 && registerForm.form.touched">So dien thoai phai
+                        <p class="text-danger" *ngIf="phoneNumber.length < 6 && registerForm.form.touched">So dien thoai phai
                             co it
                             nhat 6 ky tu</p>
                     </div>

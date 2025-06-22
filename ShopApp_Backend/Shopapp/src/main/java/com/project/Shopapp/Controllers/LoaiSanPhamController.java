@@ -2,15 +2,20 @@ package com.project.Shopapp.Controllers;
 
 import com.project.Shopapp.DTOs.LoaiSanPhamDTO;
 import com.project.Shopapp.Models.LoaiSanPham;
+import com.project.Shopapp.Responses.UpdateLoaiSanPhamResponse;
 import com.project.Shopapp.Services.LoaiSanPhamService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("api/v1/loaisanphams")
@@ -18,6 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoaiSanPhamController {
     private final LoaiSanPhamService loaiSanPhamService;
+    private final MessageSource messageSource;
+    private final LocaleResolver localeResolver;
 
     @PostMapping("")
     public ResponseEntity<?> createLoaiSanPham(
@@ -44,12 +51,16 @@ public class LoaiSanPhamController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateLoaiSanPham(
+    public ResponseEntity<UpdateLoaiSanPhamResponse> updateLoaiSanPham(
             @PathVariable int id,
-            @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO) {
+            @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO,
+            HttpServletRequest request) {
         try {
             loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
-            return ResponseEntity.ok("Cap nhat loai san pham " + id + " thanh cong");
+            Locale locale = localeResolver.resolveLocale(request);
+            return ResponseEntity.ok(UpdateLoaiSanPhamResponse.builder()
+                            .message(messageSource.getMessage("loaisanpham.update_loaisanpham.update_successfully",null,locale))
+                    .build());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

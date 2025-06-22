@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AccountService } from '../services/account.service';
+import { RegisterDTO } from '../dtos/account/register.dto';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent {
   @ViewChild('registerForm') registerForm!: NgForm;
-  phone: string;
+  phoneNumber: string;
   password: string;
   retypePassword: string;
   fullName: string;
@@ -20,27 +21,26 @@ export class RegisterComponent {
   isAccepted: boolean;
   dateOfBirth: Date;
 
-  constructor(private http: HttpClient, private router: Router) {
-    this.phone = '123';
-    this.password = '123456';
-    this.retypePassword = '123456';
-    this.fullName = 'tuong';
-    this.email = 'tuong@123gmail.com';
-    this.address = '123 ltt';
+  constructor(private router: Router, private accountService: AccountService) {
+    this.phoneNumber = '';
+    this.password = '';
+    this.retypePassword = '';
+    this.fullName = '';
+    this.email = '';
+    this.address = '';
     this.isAccepted = true;
     this.dateOfBirth = new Date();
     this.dateOfBirth.setFullYear(this.dateOfBirth.getFullYear() - 18);
 
     //inject
-
   }
 
-  onPhoneChange() {
-    console.log(`Phone typed: ${this.phone}`)
+  onPhoneNumberChange() {
+    console.log(`Phone typed: ${this.phoneNumber}`)
   }
 
   register() {
-    const message = `Phone: ${this.phone}\n` +
+    const message = `Phone: ${this.phoneNumber}\n` +
       `Password: ${this.password}\n` +
       `Retype Password: ${this.retypePassword}\n` +
       `Full Name: ${this.fullName}\n` +
@@ -48,22 +48,21 @@ export class RegisterComponent {
       `Address: ${this.address}\n` +
       `Is Accepted: ${this.isAccepted}\n` +
       `Date of Birth: ${this.dateOfBirth}`
-    //alert(message)
+    alert(message)
 
-    const apiUrl = "http://localhost:8080/api/v1/accounts/register";
-    const registerData = {
+    
+    const registerDTO:RegisterDTO = {
       "password": this.password,
       "retypepassword": this.retypePassword,
       "email": this.email,
       "fullname": this.fullName,
       "diachi": this.address,
-      "sodienthoai": this.phone,
+      "sodienthoai": this.phoneNumber,
       "ngaysinh": this.dateOfBirth,
-      "FACEBOOK_ACCOUNT_ID": 0,
-      "GOOGLE_ACCOUNT_ID": 0
+      "FACEBOOK_ACCOUNT_ID": 1,
+      "GOOGLE_ACCOUNT_ID": 1
     }
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    this.http.post(apiUrl, registerData, { headers }).subscribe({
+    this.accountService.register(registerDTO).subscribe({
       next: (response: any) => {
         debugger
         this.router.navigate(['/login']);
@@ -72,7 +71,7 @@ export class RegisterComponent {
       error: (error: any) => {
         alert(`Khong the dang ky, loi: ${error.error}`);
       }
-    })
+    });
   }
 
   checkPasswordsMatch() {

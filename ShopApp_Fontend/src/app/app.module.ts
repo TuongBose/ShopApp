@@ -31,6 +31,6 @@ import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch())
   ],
-  bootstrap: [RegisterComponent]
+  bootstrap: [LoginComponent]
 })
 export class AppModule { }
