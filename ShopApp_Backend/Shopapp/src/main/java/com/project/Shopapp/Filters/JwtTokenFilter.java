@@ -1,6 +1,6 @@
 package com.project.Shopapp.Filters;
 
-import com.project.Shopapp.Components.JwtTokenUtil;
+import com.project.Shopapp.Components.JwtTokenUtils;
 import com.project.Shopapp.Models.Account;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @Override
     protected void doFilterInternal(@Nonnull HttpServletRequest request,
@@ -46,11 +45,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             final String token = authHeader.substring(7);
-            final String phoneNumber = jwtTokenUtil.extractPhoneNumber(token);
+            final String phoneNumber = jwtTokenUtils.extractPhoneNumber(token);
 
             if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Account userDetails = (Account) userDetailsService.loadUserByUsername(phoneNumber);
-                if (jwtTokenUtil.validateToken(token, userDetails)) {
+                if (jwtTokenUtils.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

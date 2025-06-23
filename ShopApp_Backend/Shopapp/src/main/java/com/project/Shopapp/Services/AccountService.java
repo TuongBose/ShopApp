@@ -1,11 +1,10 @@
 package com.project.Shopapp.Services;
 
-import com.project.Shopapp.Components.JwtTokenUtil;
+import com.project.Shopapp.Components.JwtTokenUtils;
 import com.project.Shopapp.DTOs.AccountDTO;
 import com.project.Shopapp.Models.Account;
 import com.project.Shopapp.Repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +18,7 @@ import java.util.Optional;
 public class AccountService implements IAccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -73,6 +72,6 @@ public class AccountService implements IAccountService {
         );
         // Authenticate with Java Spring Security
         authenticationManager.authenticate(authenticationToken);
-        return jwtTokenUtil.generateToken(existingAccount); // Return token
+        return jwtTokenUtils.generateToken(existingAccount); // Return token
     }
 }

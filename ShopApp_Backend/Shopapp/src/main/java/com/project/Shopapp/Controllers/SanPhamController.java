@@ -3,6 +3,7 @@ package com.project.Shopapp.Controllers;
 import java.nio.file.*;
 
 import com.github.javafaker.Faker;
+import com.project.Shopapp.Components.LocalizationUtils;
 import com.project.Shopapp.DTOs.HinhAnhDTO;
 import com.project.Shopapp.DTOs.SanPhamDTO;
 import com.project.Shopapp.Models.HinhAnh;
@@ -10,6 +11,7 @@ import com.project.Shopapp.Models.SanPham;
 import com.project.Shopapp.Responses.SanPhamListResponse;
 import com.project.Shopapp.Responses.SanPhamResponse;
 import com.project.Shopapp.Services.SanPhamService;
+import com.project.Shopapp.Utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +39,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SanPhamController {
     private final SanPhamService sanPhamService;
+    private final LocalizationUtils localizationUtils;
 
     // Create thông tin sản phẩm
     @PostMapping("")
@@ -72,18 +75,18 @@ public class SanPhamController {
                 files = new ArrayList<MultipartFile>();
             }
             if (files.size() > HinhAnh.MAXIMUM_IMAGES_PER_PRODUCT)
-                return ResponseEntity.badRequest().body("Them toi da 5 hinh anh");
+                return ResponseEntity.badRequest().body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_MAX_5));
             List<HinhAnhDTO> hinhAnhDTOS = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) continue;
 
                 if (file.getSize() > 10 * 1024 * 1024) {
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File qua lon");
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_LARGE));
                 }
 
                 String contentType = file.getContentType();
                 if (contentType == null || !contentType.startsWith("image/")) {
-                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("File khong dung dinh dang");
+                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_MUST_BE_IMAGE));
                 }
 
                 // Lưu file

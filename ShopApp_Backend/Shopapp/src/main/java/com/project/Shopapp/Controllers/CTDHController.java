@@ -1,9 +1,11 @@
 package com.project.Shopapp.Controllers;
 
+import com.project.Shopapp.Components.LocalizationUtils;
 import com.project.Shopapp.DTOs.CTDH_DTO;
 import com.project.Shopapp.Models.CTDH;
 import com.project.Shopapp.Responses.CTDHResponse;
 import com.project.Shopapp.Services.CTDHService;
+import com.project.Shopapp.Utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CTDHController {
     private final CTDHService ctdhService;
+    private final LocalizationUtils localizationUtils;
 
     @PostMapping("")
     public ResponseEntity<?> createCTDH(@Valid @RequestBody CTDH_DTO ctdh_dto, BindingResult result) {
@@ -72,7 +75,7 @@ public class CTDHController {
     public ResponseEntity<?> deleteCTDH(@Valid @PathVariable int id) {
         try {
             ctdhService.deleteCTDH(id);
-            return ResponseEntity.ok("Xoa CTDH thanh cong");
+            return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_CHITIETDONHANG_SUCCESSFULLY,id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Xoa CTDH khong thanh cong");
         }

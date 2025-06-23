@@ -8,6 +8,7 @@ import { environment } from '../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AccountService {
   private apiRegister = `${environment.apiBaseUrl}/accounts/register`;
   private apiLogin = `${environment.apiBaseUrl}/accounts/login`;

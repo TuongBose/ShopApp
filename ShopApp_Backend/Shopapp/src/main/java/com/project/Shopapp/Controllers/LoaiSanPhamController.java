@@ -1,9 +1,11 @@
 package com.project.Shopapp.Controllers;
 
+import com.project.Shopapp.Components.LocalizationUtils;
 import com.project.Shopapp.DTOs.LoaiSanPhamDTO;
 import com.project.Shopapp.Models.LoaiSanPham;
 import com.project.Shopapp.Responses.UpdateLoaiSanPhamResponse;
 import com.project.Shopapp.Services.LoaiSanPhamService;
+import com.project.Shopapp.Utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ public class LoaiSanPhamController {
     private final LoaiSanPhamService loaiSanPhamService;
     private final MessageSource messageSource;
     private final LocaleResolver localeResolver;
+    private final LocalizationUtils localizationUtils;
+
 
     @PostMapping("")
     public ResponseEntity<?> createLoaiSanPham(
@@ -38,7 +42,7 @@ public class LoaiSanPhamController {
             return ResponseEntity.badRequest().body(errorMessage);
         }
         loaiSanPhamService.createLoaiSanPham(loaisanphamDTO);
-        return ResponseEntity.ok("Day la them LOAI san pham");
+        return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.INSERT_LOAISANPHAM_SUCCESSFULLY));
     }
 
     @GetMapping("")
@@ -59,17 +63,21 @@ public class LoaiSanPhamController {
             loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
             Locale locale = localeResolver.resolveLocale(request);
             return ResponseEntity.ok(UpdateLoaiSanPhamResponse.builder()
-                            .message(messageSource.getMessage("loaisanpham.update_loaisanpham.update_successfully",null,locale))
+                            .message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_LOAISANPHAM_SUCCESSFULLY))
                     .build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    UpdateLoaiSanPhamResponse.builder()
+                            .message(e.getMessage())
+                            .build()
+            );
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteLoaiSanPham(@PathVariable int id) {
         loaiSanPhamService.deleteLoaiSanPham(id);
-        return ResponseEntity.ok("Xoa loai san pham " + id + "thanh cong");
+        return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_LOAISANPHAM_SUCCESSFULLY,id));
     }
 
 }

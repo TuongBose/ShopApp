@@ -1,9 +1,11 @@
 package com.project.Shopapp.Controllers;
 
+import com.project.Shopapp.Components.LocalizationUtils;
 import com.project.Shopapp.DTOs.DonHangDTO;
 import com.project.Shopapp.Models.DonHang;
 import com.project.Shopapp.Responses.DonHangResponse;
 import com.project.Shopapp.Services.DonHangService;
+import com.project.Shopapp.Utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DonHangController {
     private final DonHangService donHangService;
+    private final LocalizationUtils localizationUtils;
 
     @PostMapping("")
     public ResponseEntity<?> createDonHang(@RequestBody @Valid DonHangDTO donHangDTO, BindingResult result) {
@@ -66,7 +69,7 @@ public class DonHangController {
     public ResponseEntity<?> deleteDonHang(@Valid @PathVariable int id) {
         try {
             donHangService.deleteDonHang(id);
-            return ResponseEntity.ok("Xoa don hang thanh cong");
+            return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_DONHANG_SUCCESSFULLY,id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
