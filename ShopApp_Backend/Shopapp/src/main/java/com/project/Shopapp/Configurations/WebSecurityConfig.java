@@ -35,13 +35,14 @@ public class WebSecurityConfig {
                                     "/api/v1/accounts/register",
                                     "/api/v1/accounts/login"
                             ).permitAll()
-
+                            .requestMatchers("**").permitAll()
                             .requestMatchers(GET, "api/v1/loaisanphams**").hasAnyRole("USER", "ADMIN")
                             .requestMatchers(POST, "api/v1/loaisanphams/**").hasRole("ADMIN")
                             .requestMatchers(PUT, "api/v1/loaisanphams/**").hasRole("ADMIN")
                             .requestMatchers(DELETE, "api/v1/loaisanphams/**").hasRole("ADMIN")
 
-                            .requestMatchers(GET, "api/v1/sanphams**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(GET, "api/v1/sanphams**").permitAll()
+                            .requestMatchers(GET, "api/v1/sanphams/images/**").permitAll()
                             .requestMatchers(POST, "api/v1/sanphams/**").hasRole("ADMIN")
                             .requestMatchers(PUT, "api/v1/sanphams/**").hasRole("ADMIN")
                             .requestMatchers(DELETE, "api/v1/sanphams/**").hasRole("ADMIN")

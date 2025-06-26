@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +61,7 @@ public class SanPhamService implements ISanPhamService {
     }
 
     @Override
+    @Transactional
     public SanPham updateSanPham(int id, SanPhamDTO sanPhamDTO) {
         SanPham existingSanPham = getSanPhamByMASANPHAM(id);
 

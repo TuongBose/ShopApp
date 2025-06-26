@@ -14,6 +14,7 @@ import com.project.Shopapp.Services.SanPhamService;
 import com.project.Shopapp.Utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -107,6 +108,24 @@ public class SanPhamController {
         }
     }
 
+    @GetMapping("/images/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/" + imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     private String storeFile(MultipartFile file) throws IOException {
         if (!isImageFile(file) && file.getOriginalFilename() != null) throw new RuntimeException("Khong phai file anh");
 
@@ -129,7 +148,7 @@ public class SanPhamController {
     }
 
     // Fake sản phẩm
-    //@PostMapping("/generateFakeSanPhams")
+    @PostMapping("/generateFakeSanPhams")
     public ResponseEntity<String> generateFakeSanPhams() {
         Faker faker = new Faker();
         for (int i = 0; i < 5700; i++) {
@@ -161,8 +180,11 @@ public class SanPhamController {
             @RequestParam("limit") int limit
     ) {
         // Tạo Pageable từ thông tin trang và giới hạn
-        PageRequest pageRequest = PageRequest
-                .of(page, limit, Sort.by("NGAYTAO").descending());
+        PageRequest pageRequest = PageRequest.of(
+                page, limit,
+                //Sort.by("NGAYTAO").descending()
+                Sort.by("ID").ascending()
+        );
         Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(pageRequest);
 
         // Lấy tổng số trang

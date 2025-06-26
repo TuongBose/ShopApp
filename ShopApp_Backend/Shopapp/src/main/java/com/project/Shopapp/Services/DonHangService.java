@@ -7,6 +7,7 @@ import com.project.Shopapp.Models.TrangThaiDonHang;
 import com.project.Shopapp.Repositories.AccountRepository;
 import com.project.Shopapp.Repositories.DonHangRepository;
 import com.project.Shopapp.Responses.DonHangResponse;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,7 @@ public class DonHangService implements IDonHangService {
     }
 
     @Override
+    @Transactional
     public DonHang updateDonHang(int id, DonHangDTO donHangDTO) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));

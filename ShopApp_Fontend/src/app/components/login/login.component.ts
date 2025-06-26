@@ -17,6 +17,7 @@ export class LoginComponent {
 
   phoneNumber: string;
   password: string;
+  rememberMe: boolean = false;
 
   constructor(
     private router: Router,
@@ -45,12 +46,14 @@ export class LoginComponent {
       next: (response: LoginResponse) => {
         debugger
         const { token } = response;
+        if(this.rememberMe){
         this.tokenService.setToken(token);
+        }
         //this.router.navigate(['/login']);
       },
       complete: () => { debugger },
       error: (error: any) => {
-        alert(`Khong the dang nhap, loi: ${error.error}`);
+        alert(`Khong the dang nhap, loi: ${error?.error?.message}`);
       }
     });
   }

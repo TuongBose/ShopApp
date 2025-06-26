@@ -7,8 +7,7 @@ import com.project.Shopapp.Models.SanPham;
 import com.project.Shopapp.Repositories.CTDHRepository;
 import com.project.Shopapp.Repositories.DonHangRepository;
 import com.project.Shopapp.Repositories.SanPhamRepository;
-import com.project.Shopapp.Responses.CTDHResponse;
-import com.project.Shopapp.Responses.DonHangResponse;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +69,7 @@ public class CTDHService implements ICTDHService {
     }
 
     @Override
+    @Transactional
     public void deleteCTDH(int id) {
         ctdhRepository.deleteById(id);
     }
