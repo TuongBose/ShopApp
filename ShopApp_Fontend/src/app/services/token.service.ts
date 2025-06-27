@@ -11,7 +11,7 @@ export class TokenService {
 
     // getter and setter
     getToken(): string | null {
-        return localStorage.getItem(this.TOKEN_KEY);
+        return typeof window !== 'undefined' ? localStorage.getItem(this.TOKEN_KEY) : null;
     }
 
     setToken(token: string): void {

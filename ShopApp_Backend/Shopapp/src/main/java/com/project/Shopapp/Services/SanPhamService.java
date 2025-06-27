@@ -52,9 +52,13 @@ public class SanPhamService implements ISanPhamService {
     }
 
     @Override
-    public Page<SanPhamResponse> getAllSanPham(PageRequest pageRequest) {
+    public Page<SanPhamResponse> getAllSanPham(
+            String keyword,
+            int MALOAISANPHAM,
+            PageRequest pageRequest
+    ) {
         // Lấy danh sách sản phẩm theo trang(page) và giới hạn(limit)
-        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageRequest);
+        Page<SanPham> sanPhamPage = sanPhamRepository.searchSanPhams(MALOAISANPHAM,keyword,pageRequest);
 
         // Chuyển SanPhamModel sang SanPhamResponse
         return sanPhamPage.map(SanPhamResponse::fromSanPham);

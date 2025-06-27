@@ -48,50 +48,30 @@
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="prev">
+                    data-bs-slide="prev" (click)="previousImage()">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
                 <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="next">
+                    data-bs-slide="next" (click)="nextImage()">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>
             <div class="row">
                 <div class="thumbnail-container">
-                    <div class="thumbnail-item active">
-                        <img src="https://images.pexels.com/photos/30500837/pexels-photo-30500837/free-photo-of-charming-half-timbered-houses-in-quedlinburg.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
-                            class="thumbnail-image" alt="Hinh anh">
-                    </div>
-                    <div class="thumbnail-item">
-                        <img src="https://images.pexels.com/photos/30500837/pexels-photo-30500837/free-photo-of-charming-half-timbered-houses-in-quedlinburg.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
-                            class="thumbnail-image" alt="Hinh anh">
-                    </div>
-                    <div class="thumbnail-item">
-                        <img src="https://images.pexels.com/photos/30500837/pexels-photo-30500837/free-photo-of-charming-half-timbered-houses-in-quedlinburg.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
-                            class="thumbnail-image" alt="Hinh anh">
-                    </div>
-                    <div class="thumbnail-item">
-                        <img src="https://images.pexels.com/photos/30500837/pexels-photo-30500837/free-photo-of-charming-half-timbered-houses-in-quedlinburg.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
-                            class="thumbnail-image" alt="Hinh anh">
-                    </div>
-                    <div class="thumbnail-item">
-                        <img src="https://images.pexels.com/photos/30500837/pexels-photo-30500837/free-photo-of-charming-half-timbered-houses-in-quedlinburg.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
-                            class="thumbnail-image" alt="Hinh anh">
-                    </div>
-                    <div class="thumbnail-item">
-                        <img src="https://images.pexels.com/photos/30500837/pexels-photo-30500837/free-photo-of-charming-half-timbered-houses-in-quedlinburg.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
-                            class="thumbnail-image" alt="Hinh anh">
+                    <div *ngFor="let image of sanPham?.hinhanh; let i = index" class="thumbnail-item"
+                        [ngClass]="{'active':i===currentImageIndex}" (click)="thumbnailClick(i)">
+                        <img [src]="image.tenhinhanh" class="thumbnail-image" alt="Hinh anh">
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="product-details">
-                <h2>Thong tin chi tiet san pham</h2>
-                <p>Mo ta san pham</p>
-                <p>Gia: $99</p>
+                <h2>{{sanPham?.tensanpham}}</h2>
+                <p>{{sanPham?.mota}}</p>
+                <p>Gia: ${{sanPham?.gia}}</p>
                 <div class="product-actions">
                     <button class="btn btn-primary">Them vao gio hang</button>
                     <button class="btn btn-success">Mua ngay</button>

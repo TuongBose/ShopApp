@@ -46,8 +46,8 @@ export class LoginComponent {
       next: (response: LoginResponse) => {
         debugger
         const { token } = response;
-        if(this.rememberMe){
-        this.tokenService.setToken(token);
+        if (this.rememberMe) {
+          this.tokenService.setToken(token);
         }
         //this.router.navigate(['/login']);
       },

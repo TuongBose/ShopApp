@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { SanPham } from '../../models/sanpham.model';
+import { SanPham } from '../../models/sanpham';
 import { SanPhamService } from '../../services/sanpham.service';
+import { LoaiSanPham } from '../../models/loaisanpham';
+import { LoaiSanPhamService } from '../../services/loaisanpham.service';
 
 @Component({
   selector: 'app-home',
@@ -12,22 +14,40 @@ import { SanPhamService } from '../../services/sanpham.service';
 export class HomeComponent implements OnInit {
   sanphams: SanPham[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 12;
   pages: number[] = [];
   totalPages: number = 0;
   visiblePages: number[] = [];
+  keyword: string = "";
+  selectedMALOAISANPHAM: number = 0;
+  loaiSanPhams: LoaiSanPham[] = [];
 
-  constructor(private sanPhamService: SanPhamService) { }
+  constructor(private sanPhamService: SanPhamService, private loaiSanPhamService: LoaiSanPhamService) { }
   ngOnInit(): void {
-    this.getAllSanPham(this.currentPage, this.itemsPerPage);
+    this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
+    this.getAllLoaiSanPham(1, 100);
   }
 
-  getAllSanPham(page: number, limit: number) {
-    this.sanPhamService.getAllSanPham(page, limit).subscribe({
+  getAllLoaiSanPham(page: number, limit: number) {
+    this.loaiSanPhamService.getAllLoaiSanPham(page, limit).subscribe({
+      next: (loaiSanPhams: LoaiSanPham[]) => {
+        debugger
+        this.loaiSanPhams = loaiSanPhams;
+      },
+      complete: () => { debugger },
+      error: (error: any) => {
+        debugger;
+        console.error('Error fetching loaisanpham: ', error)
+      }
+    })
+  }
+
+  getAllSanPham(keyword: string, selectedMALOAISANPHAM: number, page: number, limit: number) {
+    this.sanPhamService.getAllSanPham(keyword, selectedMALOAISANPHAM, page, limit).subscribe({
       next: (response: any) => {
         debugger
-        this.sanphams = response.sanphams;
-        this.totalPages = response.totalPages;
+        this.sanphams = response.sanPhamResponseList;
+        this.totalPages = response.tongSoTrang;
         this.visiblePages = this.generateVisiblePageArray(this.currentPage, this.totalPages);
       },
       complete: () => {
@@ -35,7 +55,7 @@ export class HomeComponent implements OnInit {
       },
       error: (error: any) => {
         debugger;
-        console.error('Error fetching products: ', error)
+        console.error('Error fetching sanpham: ', error)
       }
     });
   }
@@ -43,7 +63,7 @@ export class HomeComponent implements OnInit {
   onPageChange(page: number) {
     debugger;
     this.currentPage = page;
-    this.getAllSanPham(this.currentPage, this.itemsPerPage);
+    this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
   }
 
   generateVisiblePageArray(currentPage: number, totalPages: number): number[] {
@@ -58,5 +78,12 @@ export class HomeComponent implements OnInit {
     }
 
     return new Array(endPage - startPage + 1).fill(0).map((_, index) => startPage + index);
+  }
+
+  searchSanPham() {
+    this.currentPage = 1;
+    this.itemsPerPage = 12;
+    debugger
+    this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
   }
 }

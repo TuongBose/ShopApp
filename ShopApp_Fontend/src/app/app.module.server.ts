@@ -17,6 +17,6 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
     provideServerRouting(serverRoutes),
     provideHttpClient(withFetch())
   ],
-  bootstrap: [HomeComponent],
+  bootstrap: [DetailProductComponent],
 })
 export class AppServerModule {}

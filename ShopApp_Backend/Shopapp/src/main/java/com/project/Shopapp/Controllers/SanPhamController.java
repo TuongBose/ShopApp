@@ -119,7 +119,10 @@ public class SanPhamController {
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(resource);
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/notfound.jpg").toUri()));
+                //return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -176,16 +179,18 @@ public class SanPhamController {
 
     @GetMapping("")
     public ResponseEntity<SanPhamListResponse> getAllSanPham(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int limit
     ) {
         // Tạo Pageable từ thông tin trang và giới hạn
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
                 //Sort.by("NGAYTAO").descending()
-                Sort.by("ID").ascending()
+                Sort.by("MASANPHAM").ascending()
         );
-        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(pageRequest);
+        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword,MALOAISANPHAM,pageRequest);
 
         // Lấy tổng số trang
         int tongSoTrang = sanPhamResponses.getTotalPages();

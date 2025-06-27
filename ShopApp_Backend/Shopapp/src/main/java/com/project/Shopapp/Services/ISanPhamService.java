@@ -11,7 +11,9 @@ import org.springframework.data.domain.PageRequest;
 public interface ISanPhamService {
     public SanPham createSanPham(SanPhamDTO sanPhamDTO);
     SanPham getSanPhamByMASANPHAM(int id);
-    Page<SanPhamResponse> getAllSanPham(PageRequest pageRequest);
+    Page<SanPhamResponse> getAllSanPham(String keyword,
+                                        int MALOAISANPHAM,
+                                        PageRequest pageRequest);
     SanPham updateSanPham(int id, SanPhamDTO sanPhamDTO);
     void deleteSanPham(int id);
     boolean existsByTENSANPHAM(String TENSANPHAM);
