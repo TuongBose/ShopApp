@@ -8,8 +8,10 @@ import com.project.Shopapp.DTOs.HinhAnhDTO;
 import com.project.Shopapp.DTOs.SanPhamDTO;
 import com.project.Shopapp.Models.HinhAnh;
 import com.project.Shopapp.Models.SanPham;
+import com.project.Shopapp.Responses.HinhAnhResponse;
 import com.project.Shopapp.Responses.SanPhamListResponse;
 import com.project.Shopapp.Responses.SanPhamResponse;
+import com.project.Shopapp.Services.HinhAnhService;
 import com.project.Shopapp.Services.SanPhamService;
 import com.project.Shopapp.Utils.MessageKeys;
 import jakarta.validation.Valid;
@@ -40,6 +42,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SanPhamController {
     private final SanPhamService sanPhamService;
+    private final HinhAnhService hinhAnhService;
     private final LocalizationUtils localizationUtils;
 
     // Create thông tin sản phẩm
@@ -209,7 +212,8 @@ public class SanPhamController {
     public ResponseEntity<?> getSanPham(@PathVariable int id) {
         try {
             SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
-            return ResponseEntity.ok(SanPhamResponse.fromSanPham(existingSanPham));
+            List<HinhAnhResponse> hinhAnhList = hinhAnhService.getAllHinhAnhByMaSanPham(existingSanPham);
+            return ResponseEntity.ok(SanPhamResponse.fromSanPhamForDetail(existingSanPham, hinhAnhList));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

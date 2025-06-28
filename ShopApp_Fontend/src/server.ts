@@ -8,6 +8,18 @@ import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Mock localStorage on server
+if (typeof window === 'undefined') {
+  global['localStorage'] = {
+    getItem: (key: string) => null,
+    setItem: (key: string, value: string) => {},
+    removeItem: (key: string) => {},
+    clear: () => {},
+    length: 0,
+    key: (index: number) => null
+  } as Storage;
+}
+
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
