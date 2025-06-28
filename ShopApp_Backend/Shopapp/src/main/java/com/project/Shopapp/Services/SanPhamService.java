@@ -17,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SanPhamService implements ISanPhamService {
@@ -116,5 +118,10 @@ public class SanPhamService implements ISanPhamService {
             throw new RuntimeException("So luong hinh anh cua san pham <= 5");
 
         return hinhAnhRepository.save(newHinhAnh);
+    }
+
+    @Override
+    public List<SanPham> findSanPhamByMASANPHAMList(List<Integer> MASANPHAM) {
+        return sanPhamRepository.findSanPhamByMASANPHAMs(MASANPHAM);
     }
 }

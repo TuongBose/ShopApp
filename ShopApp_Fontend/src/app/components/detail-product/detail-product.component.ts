@@ -30,7 +30,7 @@ export class DetailProductComponent implements OnInit {
   ngOnInit(): void {
     // const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     debugger
-    const idParam = 1;
+    const idParam =3;
     if (idParam !== null) {
       this.maSanPham = +idParam;
     }

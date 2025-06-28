@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.swing.text.html.Option;
+import java.util.List;
+
 public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
     boolean existsByTENSANPHAM(String TENSANPHAM);
     Page<SanPham> findAll(Pageable pageable); // Phan trang
@@ -21,4 +24,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
                     @Param("keyword") String keyword,
                     Pageable pageable
     );
+
+    @Query("SELECT p FROM SanPham p WHERE p.MASANPHAM IN :MASANPHAM")
+    List<SanPham> findSanPhamByMASANPHAMs(@Param("MASANPHAM") List<Integer> MASANPHAM);
 }

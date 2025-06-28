@@ -1,36 +1,47 @@
 <app-header></app-header>
 <div class="container">
     <div class="intro-section">
-        <h1>Day la trang order-confirm</h1>
-        <p>Cam on ban da dat hang</p>
+        <h1>Xác nhận đơn hàng</h1>
+        <p>Cảm ơn bạn đã đặt hàng! Dưới đây là thông tin chi tiết về đơn hàng của bạn</p>
     </div>
     <div class="row">
         <table>
             <thead>
                 <tr>
-                    <th scope="col" class="text-start">San pham</th>
-                        <th>So luong</th>
-                        <th>Don Gia</th>
-                        <th>Tong gia</th>
+                    <th scope="col" class="text-start">Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Tổng tiền</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <div class="product-info">
-                            <img src="https://images.pexels.com/photos/30455411/pexels-photo-30455411/free-photo-of-minimalist-black-and-white-fashion-photography.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Hinh Anh" class="product-image">
-                            <span class="product-name">Ten san pham</span>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>100,000 VND</td>
-                    <td>200,000 VND</td>
-                </tr>
+                <ng-container *ngFor="let item of cartItems">
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <img src="https://images.pexels.com/photos/30455411/pexels-photo-30455411/free-photo-of-minimalist-black-and-white-fashion-photography.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                                    alt="Hinh Anh" class="product-image">
+                                <span class="product-name">{{item.sanPham.tensanpham}}</span>
+                            </div>
+                        </td>
+                        <td>{{item.quantity}}</td>
+                        <td>{{item.sanPham.gia | currency:'VND':'symbol':'1.0-0'}}</td>
+                        <td>{{item.sanPham.gia * item.quantity | currency:'VND':'symbol':'1.0-0'}}</td>
+                    </tr>
+                </ng-container>
             </tbody>
         </table>
-        <div class="text-center mt-3">
-            <button class="btn btn-success" type="button">Tiep tuc mua sam</button>
+    </div>
+    <div class="input-group mb-3 mt-3 col-6">
+        <input type="text" class="form-control" [(ngModel)]="couponCode" placeholder="Mã giảm giá">
+        <div class="input-group-append" style="margin-left: 10px;">
+            <button class="btn btn-outline-secondary" type="button" (click)="applyCoupon()">Áp dụng mã</button>
         </div>
+    </div>
+
+    <p class="mb-0">Tổng tiền: {{totalAmount | currency:'VND':'symbol':'1.0-0'}}</p>
+    <div class="text-center mt-3">
+        <button class="payment-button" type="button">Thanh toán</button>
     </div>
 </div>
 <app-footer></app-footer>

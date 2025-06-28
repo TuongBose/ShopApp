@@ -25,4 +25,11 @@ export class SanPhamService {
     getSanPham(masanpham: number) {
         return this.http.get(`${environment.apiBaseUrl}/sanphams/${masanpham}`);
     }
+
+    getSanPhamByMASANPHAMList(MASANPHAMList: number[]): Observable<SanPham[]> {
+        // Chuyển danh sách MASANPHAM thành một chuỗi và truyền vào params
+        debugger
+        const params = new HttpParams().set('ids', MASANPHAMList.join(','));
+        return this.http.get<SanPham[]>(`${this.apiGetAllSanPham}/by-ids`,{params});
+    }
 }

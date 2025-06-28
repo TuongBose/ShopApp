@@ -32,10 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/sanphams")
@@ -193,7 +191,7 @@ public class SanPhamController {
                 //Sort.by("NGAYTAO").descending()
                 Sort.by("MASANPHAM").ascending()
         );
-        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword,MALOAISANPHAM,pageRequest);
+        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
 
         // Lấy tổng số trang
         int tongSoTrang = sanPhamResponses.getTotalPages();
@@ -238,4 +236,18 @@ public class SanPhamController {
         return ResponseEntity.ok("Xoa san pham " + id + " thanh cong");
     }
 
+    @GetMapping("/by-ids")
+    public ResponseEntity<?> getSanPhamByMASANPHAM(@RequestParam("ids") String ids) {
+        // eg: 1,3,4,5,7,9
+        try {
+            // Tách chuỗi ids thành một mảng các số nguyên
+            List<Integer> maSanPhamList = Arrays.stream(ids.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            List<SanPham> sanPhamList = sanPhamService.findSanPhamByMASANPHAMList(maSanPhamList);
+            return ResponseEntity.ok(sanPhamList);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

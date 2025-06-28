@@ -8,6 +8,8 @@ import com.project.Shopapp.Responses.SanPhamResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 public interface ISanPhamService {
     public SanPham createSanPham(SanPhamDTO sanPhamDTO);
     SanPham getSanPhamByMASANPHAM(int id);
@@ -18,4 +20,5 @@ public interface ISanPhamService {
     void deleteSanPham(int id);
     boolean existsByTENSANPHAM(String TENSANPHAM);
     HinhAnh createHinhAnh(HinhAnhDTO hinhAnhDTO);
+    List<SanPham> findSanPhamByMASANPHAMList(List<Integer> MASANPHAM);
 }

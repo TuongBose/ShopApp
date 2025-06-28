@@ -36,3 +36,13 @@ th,td{
     padding: 10px;
     text-align: center;
 }
+
+.payment-button{
+    background: linear-gradient(to right, rgb(180, 58, 156), rgb(75, 39, 126));
+    color: white;
+    border-radius:30px ;
+    width:20%;
+    padding: 10px 0;
+    margin-top: 20px;
+    border:none;
+}
