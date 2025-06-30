@@ -47,7 +47,11 @@ public class AccountController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody AccountLoginDTO accountLoginDTO) {
         // Kiểm tra thông tin đăng nhập và sinh token
         try {
-            String token = accountService.login(accountLoginDTO.getSODIENTHOAI(), accountLoginDTO.getPASSWORD());
+            String token = accountService.login(
+                    accountLoginDTO.getSODIENTHOAI(),
+                    accountLoginDTO.getPASSWORD(),
+                    accountLoginDTO.getRoleid() == null ? Account.USER : accountLoginDTO.getRoleid()
+            );
             return ResponseEntity.ok(
                     LoginResponse.builder()
                             .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
@@ -57,7 +61,7 @@ public class AccountController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     LoginResponse.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED,e.getMessage()))
+                            .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()))
                             .build()
             );
         }

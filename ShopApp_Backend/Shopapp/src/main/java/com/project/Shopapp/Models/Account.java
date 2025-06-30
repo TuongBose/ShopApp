@@ -19,6 +19,9 @@ import java.util.List;
 @Table(name = "ACCOUNTS")
 @Builder
 public class Account extends BaseEntity implements UserDetails {
+    public static final int USER = 0;
+    public static final int ADMIN = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int USERID;

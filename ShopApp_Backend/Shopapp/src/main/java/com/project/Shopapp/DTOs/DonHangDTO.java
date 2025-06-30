@@ -3,6 +3,8 @@ package com.project.Shopapp.DTOs;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +21,5 @@ public class DonHangDTO {
     private String GHICHU;
     private int TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
+    private List<CartItemDTO> cartitems;
 }

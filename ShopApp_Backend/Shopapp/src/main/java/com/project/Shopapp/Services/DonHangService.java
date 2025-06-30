@@ -1,11 +1,13 @@
 package com.project.Shopapp.Services;
 
+import com.project.Shopapp.DTOs.CartItemDTO;
 import com.project.Shopapp.DTOs.DonHangDTO;
-import com.project.Shopapp.Models.Account;
-import com.project.Shopapp.Models.DonHang;
-import com.project.Shopapp.Models.TrangThaiDonHang;
+import com.project.Shopapp.Models.*;
 import com.project.Shopapp.Repositories.AccountRepository;
+import com.project.Shopapp.Repositories.CTDHRepository;
 import com.project.Shopapp.Repositories.DonHangRepository;
+import com.project.Shopapp.Repositories.SanPhamRepository;
+import com.project.Shopapp.Responses.CTDHResponse;
 import com.project.Shopapp.Responses.DonHangResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,6 +23,8 @@ import java.util.List;
 public class DonHangService implements IDonHangService {
     private final DonHangRepository donHangRepository;
     private final AccountRepository accountRepository;
+    private final SanPhamRepository sanPhamRepository;
+    private final CTDHRepository ctdhRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -37,9 +42,29 @@ public class DonHangService implements IDonHangService {
         donHang.setUSERID(existingAccount);
         donHang.setNGAYDATHANG(LocalDate.now());
         donHang.setTRANGTHAI(TrangThaiDonHang.CHUAXULY);
-        donHang.setIS_ACTIVE(true);
-
+        donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
+        donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
         donHangRepository.save(donHang);
+
+        List<CTDH> ctdhList = new ArrayList<>();
+        for(CartItemDTO cartItemDTO : donHangDTO.getCartitems())
+        {
+            CTDH ctdh =  new CTDH();
+            ctdh.setMADONHANG(donHang);
+            int maSanPham = cartItemDTO.getMasanpham();
+            int quantity =  cartItemDTO.getQuantity();
+
+            SanPham sanPham = sanPhamRepository.findById(maSanPham)
+                    .orElseThrow(()-> new RuntimeException("Product ID does not exists"));
+
+            ctdh.setMASANPHAM(sanPham);
+            ctdh.setSOLUONG(quantity);
+            ctdh.setGIABAN(sanPham.getGIA());
+            ctdh.setTONGTIEN(sanPham.getGIA()*quantity);
+
+            ctdhList.add(ctdh);
+        }
+        ctdhRepository.saveAll(ctdhList);
         return modelMapper.map(donHang, DonHangResponse.class);
     }
 
@@ -54,7 +79,22 @@ public class DonHangService implements IDonHangService {
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
 
         modelMapper.typeMap(DonHang.class, DonHangResponse.class);
-        return modelMapper.map(existingDonHang, DonHangResponse.class);
+        DonHangResponse donHangResponse = modelMapper.map(existingDonHang, DonHangResponse.class);
+
+        List<CTDH> ctdhList = ctdhRepository.findByMADONHANG(existingDonHang);
+        List<CTDHResponse> ctdhResponseList = new ArrayList<>();
+
+        if(ctdhList.isEmpty())
+            donHangResponse.setCtdhList(null);
+        else{
+            for(CTDH ctdh : ctdhList)
+            {
+                ctdhResponseList.add(CTDHResponse.fromCTDH(ctdh));
+            }
+            donHangResponse.setCtdhList(ctdhResponseList);
+        }
+
+        return donHangResponse;
     }
 
     @Override

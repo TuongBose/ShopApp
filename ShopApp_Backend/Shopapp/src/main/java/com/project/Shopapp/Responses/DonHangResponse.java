@@ -1,9 +1,9 @@
 package com.project.Shopapp.Responses;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,4 +22,5 @@ public class DonHangResponse {
     private int TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
     private boolean IS_ACTIVE;
+    private List<CTDHResponse> ctdhList;
 }

@@ -27,7 +27,7 @@ public class DonHangController {
         try {
             if (result.hasErrors()) {
                 List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body("Them khong thanh cong");
+                return ResponseEntity.badRequest().body(errorMessage);
             }
             DonHangResponse donHangResponse = donHangService.createDonHang(donHangDTO);
             return ResponseEntity.ok(donHangResponse);

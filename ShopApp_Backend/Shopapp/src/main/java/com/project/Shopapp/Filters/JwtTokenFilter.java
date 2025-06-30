@@ -71,7 +71,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of("api/v1/sanphams", "GET"),
                 Pair.of("api/v1/loaisanphams", "GET"),
                 Pair.of("api/v1/accounts/register", "POST"),
-                Pair.of("api/v1/accounts/login", "POST")
+                Pair.of("api/v1/accounts/login", "POST"),
+                Pair.of("api/v1/donhangs", "GET")
         );
         for (Pair<String, String> bypassToken : bypassTokens) {
             if (request.getServletPath().contains(bypassToken.getFirst()) &&
@@ -79,6 +80,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return true;
             }
         }
-        return true;
+        //return true;
+        return false;
     }
 }

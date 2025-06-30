@@ -51,7 +51,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public String login(String SODIENTHOAI, String PASSWORD) throws Exception {
+    public String login(String SODIENTHOAI, String PASSWORD, Integer roleId) throws Exception {
         Optional<Account> accountOptional = accountRepository.findBySODIENTHOAI(SODIENTHOAI);
         if (accountOptional.isEmpty())
             throw new RuntimeException("Khong tim thay SODIENTHOAI hoac PASSWORD");
@@ -67,6 +67,15 @@ public class AccountService implements IAccountService {
                 throw new BadCredentialsException("Sai SODIENTHOAI hoac PASSWORD");
             }
         }
+
+        if(roleId!=null){
+            boolean expectedRole = roleId==Account.ADMIN;
+            if(existingAccount.isROLENAME()!=expectedRole)
+            {
+                throw new RuntimeException("Rolename does not exists");
+            }
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 SODIENTHOAI, PASSWORD, existingAccount.getAuthorities()
         );

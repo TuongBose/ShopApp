@@ -35,7 +35,7 @@ public class WebSecurityConfig {
                                     "/api/v1/accounts/register",
                                     "/api/v1/accounts/login"
                             ).permitAll()
-                            .requestMatchers("**").permitAll()
+                            //.requestMatchers("**").permitAll()
                             .requestMatchers(GET, "api/v1/loaisanphams**").hasAnyRole("USER", "ADMIN")
                             .requestMatchers(POST, "api/v1/loaisanphams/**").hasRole("ADMIN")
                             .requestMatchers(PUT, "api/v1/loaisanphams/**").hasRole("ADMIN")
@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, "api/v1/donhangs/**").hasRole("ADMIN")
                             .requestMatchers(POST, "api/v1/donhangs/**").hasRole("USER")
                             .requestMatchers(DELETE, "api/v1/donhangs/**").hasRole("ADMIN")
-                            .requestMatchers(GET, "api/v1/donhangs/**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(GET, "api/v1/donhangs/**").permitAll()
 
                             .requestMatchers(PUT, "api/v1/chitietdonhangs/**").hasRole("ADMIN")
                             .requestMatchers(POST, "api/v1/chitietdonhangs/**").hasRole("USER")
