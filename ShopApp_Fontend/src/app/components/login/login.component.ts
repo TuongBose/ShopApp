@@ -24,8 +24,8 @@ export class LoginComponent {
     private accountService: AccountService,
     private tokenService: TokenService
   ) {
-    this.phoneNumber = '123';
-    this.password = '555';
+    this.phoneNumber = '0904';
+    this.password = '123';
   }
 
   onPhoneNumberChange() {
@@ -34,7 +34,8 @@ export class LoginComponent {
 
   login() {
     const message = `Phone: ${this.phoneNumber}\n` +
-      `Password: ${this.password}\n`
+      `Password: ${this.password}\n`+
+      `Rememberme: ${this.rememberMe}`
     alert(message)
 
 

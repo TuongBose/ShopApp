@@ -1,6 +1,5 @@
 package com.project.Shopapp.Models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +18,6 @@ public class CTDH {
 
     @ManyToOne
     @JoinColumn(name = "MADONHANG")
-    @JsonBackReference
     private DonHang MADONHANG;
 
     @ManyToOne

@@ -11,6 +11,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { TokenInterceptor } from './interceptors/token.interceptor';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,8 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
+    
   ],
   providers: [
     provideClientHydration(withEventReplay()),

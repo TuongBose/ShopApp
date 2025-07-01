@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                             .requestMatchers(PUT, "api/v1/loaisanphams/**").hasRole("ADMIN")
                             .requestMatchers(DELETE, "api/v1/loaisanphams/**").hasRole("ADMIN")
 
-                            .requestMatchers(GET, "api/v1/sanphams**").permitAll()
+                            .requestMatchers(GET, "api/v1/sanphams/**").permitAll()
                             .requestMatchers(GET, "api/v1/sanphams/images/**").permitAll()
                             .requestMatchers(POST, "api/v1/sanphams/**").hasRole("ADMIN")
                             .requestMatchers(PUT, "api/v1/sanphams/**").hasRole("ADMIN")
