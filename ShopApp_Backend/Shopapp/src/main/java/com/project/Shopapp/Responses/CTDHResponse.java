@@ -2,6 +2,7 @@ package com.project.Shopapp.Responses;
 
 import com.project.Shopapp.DTOs.CTDH_DTO;
 import com.project.Shopapp.Models.CTDH;
+import com.project.Shopapp.Models.SanPham;
 import lombok.*;
 
 @Getter
@@ -11,7 +12,7 @@ import lombok.*;
 @Builder
 public class CTDHResponse {
     private int MADONHANG;
-    private int MASANPHAM;
+    private SanPham MASANPHAM;
     private int SOLUONG;
     private int GIABAN;
     private int TONGTIEN;
@@ -20,7 +21,7 @@ public class CTDHResponse {
     {
         return CTDHResponse.builder()
                 .MADONHANG(ctdh.getMADONHANG().getMADONHANG())
-                .MASANPHAM(ctdh.getMASANPHAM().getMASANPHAM())
+                .MASANPHAM(ctdh.getMASANPHAM())
                 .SOLUONG(ctdh.getSOLUONG())
                 .GIABAN(ctdh.getGIABAN())
                 .TONGTIEN(ctdh.getTONGTIEN())

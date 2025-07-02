@@ -10,6 +10,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { DetailProductComponent } from './components/detail-product/detail-product.component';
 import { provideHttpClient, withFetch } from '@angular/common/http';
+import { AppComponent } from './app/app.component';
 
 @NgModule({
   imports: [AppModule, ServerModule],
@@ -17,6 +18,6 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
     provideServerRouting(serverRoutes),
     provideHttpClient(withFetch())
   ],
-  bootstrap: [OrderComponent],
+  bootstrap: [AppComponent],
 })
 export class AppServerModule {}

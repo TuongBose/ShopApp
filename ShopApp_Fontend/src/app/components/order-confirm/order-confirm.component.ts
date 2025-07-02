@@ -3,6 +3,10 @@ import { SanPham } from '../../models/sanpham';
 import { CartService } from '../../services/cart.service';
 import { SanPhamService } from '../../services/sanpham.service';
 import { error } from 'console';
+import { DonHangService } from '../../services/donhang.service';
+import { environment } from '../../environments/environment';
+import { DonHangResponse } from '../../responses/donhang.response';
+import { CTDH } from '../../models/ctdh';
 
 @Component({
   selector: 'app-order-confirm',
@@ -11,57 +15,56 @@ import { error } from 'console';
   styleUrl: './order-confirm.component.css'
 })
 export class OrderConfirmComponent implements OnInit {
-  cartItems: { sanPham: SanPham, quantity: number }[] = [];
-  couponCode:string='';
-  totalAmount:number=0;
+  donHangResponse: DonHangResponse = {
+    madonhang: 0,
+    diachi: '',
+    userid: 1,
+    ghichu: '',
+    email: '',
+    tongtien: 0,
+    sodienthoai: '',
+    ngaydathang: new Date(),
+    fullname: '',
+    trangthai: '',
+    phuongthucthanhtoan: '',
+    ctdhList: [],
+  }
 
-  constructor(
-    private cartService: CartService,
-    private sanPhamService: SanPhamService
-  ) { }
+  constructor(private donHangService: DonHangService) { }
 
   ngOnInit(): void {
-    debugger
-    const cart = this.cartService.getCart();
-    const maSanPhamList = Array.from(cart.keys()); // Truyền danh sách MASANPHAM từ Map giỏ hàng
+    this.getCTDH()
+  }
 
-    // Gọi service để lấy thông tin sản phẩm dựa trên danh sách MASANPHAM
+  getCTDH(): void {
     debugger
-    this.sanPhamService.getSanPhamByMASANPHAMList(maSanPhamList).subscribe({
-      next: (sanPhams: SanPham[]) => {
+    const maDonHang = 8;
+    this.donHangService.getDonHangById(maDonHang).subscribe({
+      next: (response: any) => {
         debugger
-        this.cartItems = maSanPhamList.map((masanpham) => {
-          debugger
-          const sanPham = sanPhams.find((p) => p.masanpham === masanpham);
-          if (sanPham) {
-            // sanPham.thumnail = xu ly lay thumbnail
-          }
-          return {
-            sanPham: sanPham!,
-            quantity: cart.get(masanpham)!
-          };
+        this.donHangResponse.madonhang = response.madonhang;
+        this.donHangResponse.userid = response.userid;
+        this.donHangResponse.fullname = response.fullname;
+        this.donHangResponse.email = response.email;
+        this.donHangResponse.sodienthoai = response.sodienthoai;
+        this.donHangResponse.diachi = response.diachi;
+        this.donHangResponse.ghichu = response.ghichu;
+        this.donHangResponse.ngaydathang = response.ngaydathang;
+        this.donHangResponse.phuongthucthanhtoan = response.phuongthucthanhtoan;
+        this.donHangResponse.trangthai = response.trangthai;
+        this.donHangResponse.tongtien = response.tongtien;
+        debugger
+        this.donHangResponse.ctdhList=response.ctdhList.map((ctdh:CTDH)=>{
+          //ctdh.sanPham.thumnail = `${environment.apiBaseUrl}/sanphams/images/${ctdh}` su ly lay thumbnail
+          return ctdh;
         });
+        
       },
-      complete: () => { 
-        debugger
-        this.calculateTotal();
-       },
+      complete: () => { debugger },
       error: (error: any) => {
         debugger
-        console.error('Error fetching chi tiet: ', error)
+        console.error('Error fetching detail: ', error);
       }
     })
-  }
-
-  calculateTotal():void{
-    this.totalAmount = this.cartItems.reduce(
-      (total,item)=>total+item.sanPham.gia*item.quantity,
-      0
-    );
-  }
-
-  applyCoupon():void{
-    // Xử lý áp dụng mã giảm giá
-    // cập nhật giá trị totalAmount dựa trên mã giảm giá
   }
 }

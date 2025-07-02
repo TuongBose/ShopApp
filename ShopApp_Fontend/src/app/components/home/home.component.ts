@@ -4,6 +4,7 @@ import { SanPham } from '../../models/sanpham';
 import { SanPhamService } from '../../services/sanpham.service';
 import { LoaiSanPham } from '../../models/loaisanpham';
 import { LoaiSanPhamService } from '../../services/loaisanpham.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,11 @@ export class HomeComponent implements OnInit {
   selectedMALOAISANPHAM: number = 0;
   loaiSanPhams: LoaiSanPham[] = [];
 
-  constructor(private sanPhamService: SanPhamService, private loaiSanPhamService: LoaiSanPhamService) { }
+  constructor(
+    private sanPhamService: SanPhamService,
+    private loaiSanPhamService: LoaiSanPhamService,
+    private router: Router) { }
+    
   ngOnInit(): void {
     this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
     this.getAllLoaiSanPham(1, 100);
@@ -85,5 +90,10 @@ export class HomeComponent implements OnInit {
     this.itemsPerPage = 12;
     debugger
     this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
+  }
+
+  onProductClick(maSanPham: number) {
+    debugger
+    this.router.navigate(['/products', maSanPham]);
   }
 }

@@ -17,4 +17,8 @@ export class DonHangService{
     placeOrder(orderData: OrderDTO):Observable<any>{
         return this.http.post(this.apiCreateDonHang, orderData);
     }
+
+    getDonHangById(maDonHang: number){
+        return this.http.get(`${environment.apiBaseUrl}/donhangs/${maDonHang}`);
+    }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class DonHangResponse {
+    private int MADONHANG;
     private int USERID;
     private String FULLNAME;
     private String EMAIL;
