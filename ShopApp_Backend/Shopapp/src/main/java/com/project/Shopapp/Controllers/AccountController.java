@@ -3,6 +3,7 @@ package com.project.Shopapp.Controllers;
 import com.project.Shopapp.DTOs.AccountDTO;
 import com.project.Shopapp.DTOs.AccountLoginDTO;
 import com.project.Shopapp.Models.Account;
+import com.project.Shopapp.Responses.AccountResponse;
 import com.project.Shopapp.Responses.LoginResponse;
 import com.project.Shopapp.Services.AccountService;
 import com.project.Shopapp.Components.LocalizationUtils;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -64,6 +62,17 @@ public class AccountController {
                             .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()))
                             .build()
             );
+        }
+    }
+
+    @PostMapping("/details")
+    public ResponseEntity<?> getAccountDetails(@RequestHeader("Authorization") String token){
+        try{
+            String extractedToken = token.substring(7); // Loại bỏ "Bearer " từ chuỗi token
+            Account account = accountService.getAccountDetailsFromToken(extractedToken);
+            return ResponseEntity.ok(AccountResponse.fromAccount(account));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

@@ -68,12 +68,17 @@ public class AccountService implements IAccountService {
             }
         }
 
-        if(roleId!=null){
-            boolean expectedRole = roleId==Account.ADMIN;
-            if(existingAccount.isROLENAME()!=expectedRole)
-            {
+        // Check role account exist
+        if (roleId != null) {
+            boolean expectedRole = roleId == Account.ADMIN;
+            if (existingAccount.isROLENAME() != expectedRole) {
                 throw new RuntimeException("Rolename does not exists");
             }
+        }
+
+        // check account is active
+        if(!accountOptional.get().isIS_ACTIVE()){
+            throw new Exception("Account is locked");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -82,5 +87,21 @@ public class AccountService implements IAccountService {
         // Authenticate with Java Spring Security
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtils.generateToken(existingAccount); // Return token
+    }
+
+    @Override
+    public Account getAccountDetailsFromToken(String token) throws Exception {
+        if (jwtTokenUtils.isTokenExpired(token)) {
+            throw new Exception("Token is expired");
+        }
+
+        String phoneNumber = jwtTokenUtils.extractPhoneNumber(token);
+        Optional<Account> account = accountRepository.findBySODIENTHOAI(phoneNumber);
+
+        if (account.isPresent()) {
+            return account.get();
+        } else {
+            throw new Exception("Account not found");
+        }
     }
 }

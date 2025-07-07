@@ -35,12 +35,13 @@ public class JwtTokenUtils {
         // properties => claims
         Map<String, Object> claims = new HashMap<>();
         claims.put("SODIENTHOAI", account.getSODIENTHOAI());
+        claims.put("USERID", account.getUSERID());
         try {
             return Jwts
                     .builder()
                     .setClaims(claims)
                     .setSubject(account.getSODIENTHOAI())
-                    .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                    .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .compact();
         } catch (Exception e) {

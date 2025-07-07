@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
   sanphams: SanPham[] = [];
-  currentPage: number = 1;
+  currentPage: number = 0;
   itemsPerPage: number = 12;
   pages: number[] = [];
   totalPages: number = 0;
@@ -48,6 +48,7 @@ export class HomeComponent implements OnInit {
   }
 
   getAllSanPham(keyword: string, selectedMALOAISANPHAM: number, page: number, limit: number) {
+    debugger
     this.sanPhamService.getAllSanPham(keyword, selectedMALOAISANPHAM, page, limit).subscribe({
       next: (response: any) => {
         debugger
@@ -86,7 +87,7 @@ export class HomeComponent implements OnInit {
   }
 
   searchSanPham() {
-    this.currentPage = 1;
+    this.currentPage = 0;
     this.itemsPerPage = 12;
     debugger
     this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
 import { NgForm } from '@angular/forms';
 import { LoginResponse } from '../../responses/account/login.response';
+import { AccountResponse } from '../../responses/account/account.response';
 import { TokenService } from '../../services/token.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class LoginComponent {
   phoneNumber: string;
   password: string;
   rememberMe: boolean = false;
+  accountResponse?: AccountResponse
 
   constructor(
     private router: Router,
@@ -34,7 +36,7 @@ export class LoginComponent {
 
   login() {
     const message = `Phone: ${this.phoneNumber}\n` +
-      `Password: ${this.password}\n`+
+      `Password: ${this.password}\n` +
       `Rememberme: ${this.rememberMe}`
     alert(message)
 
@@ -49,8 +51,21 @@ export class LoginComponent {
         const { token } = response;
         if (this.rememberMe) {
           this.tokenService.setToken(token);
+          debugger
+          this.accountService.getAccountDetails(token).subscribe({
+            next: (response: any) => {
+              debugger
+              this.accountResponse = response;
+              this.accountService.saveAccountToLocalStorage(this.accountResponse);
+              this.router.navigate(['/']);
+            },
+            complete: () => { debugger },
+            error: (error: any) => {
+              debugger
+              alert(error.error.message);
+            }
+          })
         }
-        //this.router.navigate(['/login']);
       },
       complete: () => { debugger },
       error: (error: any) => {

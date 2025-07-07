@@ -5,6 +5,10 @@ import { CartService } from '../../services/cart.service';
 import { SanPhamService } from '../../services/sanpham.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DonHangService } from '../../services/donhang.service';
+import { TokenService } from '../../services/token.service';
+import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
+import { DonHang } from '../../models/donhang';
 
 @Component({
   selector: 'app-order',
@@ -26,14 +30,16 @@ export class OrderComponent implements OnInit {
     ghichu: '',
     tongtien: 0,
     phuongthucthanhtoan: 'cod',
-    cartitems:[]
+    cartitems: []
   }
 
   constructor(
     private cartService: CartService,
     private sanPhamService: SanPhamService,
     private donHangService: DonHangService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private tokenService: TokenService,
+    private router: Router,
   ) {
     this.orderForm = this.fb.group({
       fullname: ['tuong', [Validators.required]],
@@ -47,11 +53,16 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     debugger
+    this.orderData.userid = this.tokenService.getUserId();
     const cart = this.cartService.getCart();
     const maSanPhamList = Array.from(cart.keys()); // Truyền danh sách MASANPHAM từ Map giỏ hàng
 
     // Gọi service để lấy thông tin sản phẩm dựa trên danh sách MASANPHAM
     debugger
+    if (maSanPhamList.length === 0) {
+      return;
+    }
+
     this.sanPhamService.getSanPhamByMASANPHAMList(maSanPhamList).subscribe({
       next: (sanPhams: SanPham[]) => {
         debugger
@@ -59,7 +70,7 @@ export class OrderComponent implements OnInit {
           debugger
           const sanPham = sanPhams.find((p) => p.masanpham === masanpham);
           if (sanPham) {
-            // sanPham.thumnail = xu ly lay thumbnail
+            // sanPham.thumnail = `${environment.apiBaseUrl}/sanphams/images/`xu ly lay thumbnail
           }
           return {
             sanPham: sanPham!,
@@ -90,20 +101,24 @@ export class OrderComponent implements OnInit {
       this.orderData.ghichu=this.orderForm.get('ghichu')!.value;
       this.orderData.phuongthucthanhtoan=this.orderForm.get('phuongthucthanhtoan')!.value;
       */
-     // Sử dụng toán tử spread (...) để sao chép giá trị từ form vào orderData
+      // Sử dụng toán tử spread (...) để sao chép giá trị từ form vào orderData
       this.orderData = {
         ...this.orderData,
         ...this.orderForm.value
       };
-      this.orderData.cartitems=this.cartItems.map(cartItem=>({
-        masanpham:cartItem.sanPham.masanpham,
-        quantity:cartItem.quantity
+      this.orderData.cartitems = this.cartItems.map(cartItem => ({
+        masanpham: cartItem.sanPham.masanpham,
+        quantity: cartItem.quantity
       }));
 
+      this.orderData.tongtien = this.totalAmount;
+
       this.donHangService.placeOrder(this.orderData).subscribe({
-        next: (response:any) => {
+        next: (response: DonHang) => {
           debugger
-          console.log('Đặt hàng thành công');
+          alert('Đặt hàng thành công');
+          this.cartService.clearCart();
+          this.router.navigate(['/'])
         },
         complete: () => {
           debugger;
@@ -111,10 +126,10 @@ export class OrderComponent implements OnInit {
         },
         error: (error: any) => {
           debugger
-          console.error('Lỗi khi đặt hàng: ', error);
+          alert(`Lỗi khi đặt hàng: ${error}`);
         }
       });
-    }else{
+    } else {
       alert('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.');
     }
   }

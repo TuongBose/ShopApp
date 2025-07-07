@@ -6,18 +6,19 @@ import { OrderConfirmComponent } from "./components/order-confirm/order-confirm.
 import { OrderComponent } from "./components/order/order.component";
 import { RegisterComponent } from "./components/register/register.component";
 import { RouterModule, Routes } from "@angular/router";
+import { AuthGuardFn } from "./guard/auth.guard";
 
-const routes:Routes=[
-    {path:'',component:HomeComponent},
-    {path:'login',component:LoginComponent},
-    {path:'register',component:RegisterComponent},
-    {path:'products/:id',component:DetailProductComponent},
-    {path:'orders',component:OrderComponent},
-    {path:'orders/:id',component:OrderConfirmComponent},
+const routes: Routes = [
+    { path: '', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    { path: 'products/:id', component: DetailProductComponent },
+    { path: 'orders', component: OrderComponent, canActivate: [AuthGuardFn] },
+    { path: 'orders/:id', component: OrderConfirmComponent },
 ];
 
 @NgModule({
-    imports:[RouterModule.forRoot(routes)],
-    exports:[RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
-export class AppRoutingModule{}
+export class AppRoutingModule { }

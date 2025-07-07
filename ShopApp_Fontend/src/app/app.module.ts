@@ -14,6 +14,7 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -32,8 +33,8 @@ import { AppRoutingModule } from './app-routing.module';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule
-    
+    AppRoutingModule,
+    NgbModule
   ],
   providers: [
     provideClientHydration(withEventReplay()),

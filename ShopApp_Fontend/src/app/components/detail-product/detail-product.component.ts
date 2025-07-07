@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HinhAnh } from '../../models/hinhanh.image';
 import { environment } from '../../environments/environment';
 import { CartService } from '../../services/cart.service';
+import { AccountResponse } from '../../responses/account/account.response';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-detail-product',
@@ -18,44 +20,52 @@ export class DetailProductComponent implements OnInit {
   maSanPham: number = 0;
   currentImageIndex: number = 0;
   quantity: number = 1;
+  account?: AccountResponse | null;
 
   constructor(
     private sanPhamService: SanPhamService,
     private cartService: CartService,
-    // private loaiSanPhamService: LoaiSanPhamService,
-    // private router: Router,
-    // private activatedRoute: ActivatedRoute
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private accountService: AccountService
   ) { }
 
   ngOnInit(): void {
     // const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     debugger
-    const idParam =3;
-    if (idParam !== null) {
-      this.maSanPham = +idParam;
-    }
-    if (!isNaN(this.maSanPham)) {
-      this.sanPhamService.getSanPham(this.maSanPham).subscribe({
-        next: (response: any) => {
-          debugger
-          if (response.hinhAnhUrls && response.hinhAnhUrls.length > 0) {
-            response.hinhAnhUrls.forEach((product_image: HinhAnh) => {
-              product_image.image_url = `${environment.apiBaseUrl}/sanphams/images/${product_image.tenhinhanh}`;
-            });
+    this.activatedRoute.paramMap.subscribe(params => {
+      const idParam = params.get('id');
+      if (idParam !== null) {
+        this.maSanPham = +idParam; // Chuyển đổi sang số
+      } else {
+        console.error('maSanPham không được tìm thấy trong route');
+        this.router.navigate(['/']); // Điều hướng về trang chủ nếu không có tham số
+        return;
+      }
+
+      if (!isNaN(this.maSanPham)) {
+        this.sanPhamService.getSanPham(this.maSanPham).subscribe({
+          next: (response: any) => {
+            debugger
+            if (response.hinhAnhUrls && response.hinhAnhUrls.length > 0) {
+              response.hinhAnhUrls.forEach((product_image: HinhAnh) => {
+                product_image.image_url = `${environment.apiBaseUrl}/sanphams/images/${product_image.tenhinhanh}`;
+              });
+            }
+            this.sanPham = response
+            this.showImage(0);
+          },
+          complete: () => { debugger },
+          error: (error: any) => {
+            debugger;
+            console.error('Error fetching detail: ', error);
           }
-          this.sanPham = response
-          this.showImage(0);
-        },
-        complete: () => { debugger },
-        error: (error: any) => {
-          debugger;
-          console.error('Error fetching detail: ', error);
-        }
-      });
-    }
-    else {
-      console.error('Invalid masanpham: ', idParam)
-    }
+        });
+      }
+      else {
+        console.error('Invalid masanpham: ', idParam)
+      }
+    })
   }
 
   showImage(index: number): void {
@@ -107,5 +117,14 @@ export class DetailProductComponent implements OnInit {
     }
   }
 
-  buyNow(): void { }
+  buyNow(): void {
+    this.account = this.accountService.getAccountFromLocalStorage();
+    if(this.account==null)
+    {
+    this.router.navigate(['/login']);  
+    }
+    else{
+    this.router.navigate(['/orders']);
+    }
+  }
 }

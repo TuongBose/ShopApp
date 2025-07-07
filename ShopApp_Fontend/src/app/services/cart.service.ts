@@ -35,7 +35,7 @@ export class CartService {
         localStorage.setItem('cart', JSON.stringify(Array.from(this.cart.entries())));
     }
 
-    clearCart():void{
+    clearCart(): void {
         this.cart.clear();
         this.saveCartToLocalStorage();
     }

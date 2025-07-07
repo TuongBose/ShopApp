@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                                     "/api/v1/accounts/login"
                             ).permitAll()
                             //.requestMatchers("**").permitAll()
-                            .requestMatchers(GET, "api/v1/loaisanphams**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(GET, "api/v1/loaisanphams**").permitAll()
                             .requestMatchers(POST, "api/v1/loaisanphams/**").hasRole("ADMIN")
                             .requestMatchers(PUT, "api/v1/loaisanphams/**").hasRole("ADMIN")
                             .requestMatchers(DELETE, "api/v1/loaisanphams/**").hasRole("ADMIN")
