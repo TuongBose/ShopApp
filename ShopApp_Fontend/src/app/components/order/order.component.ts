@@ -14,7 +14,7 @@ import { DonHang } from '../../models/donhang';
   selector: 'app-order',
   standalone: false,
   templateUrl: './order.component.html',
-  styleUrl: './order.component.css'
+  styleUrl: './order.component.scss'
 })
 export class OrderComponent implements OnInit {
   orderForm: FormGroup;

@@ -6,7 +6,7 @@ import { OrderConfirmComponent } from "./components/order-confirm/order-confirm.
 import { OrderComponent } from "./components/order/order.component";
 import { RegisterComponent } from "./components/register/register.component";
 import { RouterModule, Routes } from "@angular/router";
-import { AuthGuardFn } from "./guard/auth.guard";
+import { AuthGuardFn } from "./guards/auth.guard";
 
 const routes: Routes = [
     { path: '', component: HomeComponent },

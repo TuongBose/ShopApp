@@ -12,7 +12,7 @@ import { CTDH } from '../../models/ctdh';
   selector: 'app-order-confirm',
   standalone: false,
   templateUrl: './order-confirm.component.html',
-  styleUrl: './order-confirm.component.css'
+  styleUrl: './order-confirm.component.scss'
 })
 export class OrderConfirmComponent implements OnInit {
   donHangResponse: DonHangResponse = {

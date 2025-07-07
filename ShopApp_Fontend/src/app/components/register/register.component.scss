@@ -1,9 +1,11 @@
+@import '../../styles/shared-styles.scss';
+
 .container{
     color:white;
     height: 100%;
 }
-.login-form{
-    background-color: rgb(12,12,55);
+.register-form{
+    background-color: $shopapp-background-color;
     border-radius: 10px;
     padding: 20px;
     max-width: 500px;
@@ -11,7 +13,7 @@
     align-items: center;
     justify-content: center;
 }
-.login-header{
+.register-header{
     text-align: center;
     color:rgb(217, 217, 248);
     margin-bottom: 20px;
@@ -50,7 +52,7 @@
 }
 .checkbox-text input[type="checkbox"]:checked{
     border-color: white;
-    background-color: rgb(233,55,178);
+    background-color: $shopapp-tint-color;
 }
 .form-check-input{
     margin-right: 5px;
@@ -59,8 +61,8 @@
     color: blue;
     text-decoration: none;
 }
-.login-button{
-    background: linear-gradient(to right, rgb(180, 58, 156), rgb(75, 39, 126));
+.register-button{
+    background: linear-gradient(to right, $shopapp-tint-color ,$shopapp-color);
     color: white;
     border-radius:30px ;
     width:100%;
