@@ -100,3 +100,17 @@
 .btn.btn-primary{
     margin-left: 10px;
 }
+
+.page-number{
+    cursor: pointer;
+    padding:5px 10px;
+    border:1px solid white;
+    margin:0 2px;
+    border-radius: 3px;
+}
+
+.page-number.active{
+    background-color: $shopapp-color !important;
+    color:white;
+    border-color: $shopapp-color !important;
+}

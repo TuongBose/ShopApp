@@ -10,13 +10,19 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { LoginComponent } from './components/login/login.component';
+import { OrderComponent } from './components/order/order.component';
+import { ProductComponent } from './components/product/product.component';
+import { CategoryComponent } from './components/catogory/catogory.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminComponent,
-    LoginComponent
+    LoginComponent,
+    OrderComponent,
+    ProductComponent,
+    CategoryComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +30,8 @@ import { LoginComponent } from './components/login/login.component';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    NgbModule
+    NgbModule,
+    
   ],
   providers: [
     provideClientHydration(withEventReplay()),

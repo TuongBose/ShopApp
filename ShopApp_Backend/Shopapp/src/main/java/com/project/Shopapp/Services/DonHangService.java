@@ -9,6 +9,8 @@ import com.project.Shopapp.Repositories.DonHangRepository;
 import com.project.Shopapp.Repositories.SanPhamRepository;
 import com.project.Shopapp.Responses.CTDHResponse;
 import com.project.Shopapp.Responses.DonHangResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -134,5 +137,18 @@ public class DonHangService implements IDonHangService {
             existingDonHang.setIS_ACTIVE(false);
             donHangRepository.save(existingDonHang);
         }
+    }
+
+    @Override
+    public Page<DonHangResponse> getAllDonHangByKeyword(String keyword, Pageable pageable) {
+        Page<DonHang> donHangPage = donHangRepository.findByKeyword(keyword,pageable);
+        return donHangPage.map(donHang -> {
+            List<CTDHResponse> ctdhResponseList = ctdhRepository.findByMADONHANG(donHang)
+                    .stream()
+                    .map(CTDHResponse::fromCTDH)
+                    .collect(Collectors.toList());
+            return DonHangResponse.fromDonHang(donHang,ctdhResponseList);
+        });
+
     }
 }

@@ -41,6 +41,7 @@ public class AccountService implements IAccountService {
                 .FACEBOOK_ACCOUNT_ID(accountDTO.getFACEBOOKACCOUNTID())
                 .GOOGLE_ACCOUNT_ID(accountDTO.getGOOGLEACCOUNTID())
                 .ROLENAME(false)
+                .IS_ACTIVE(true)
                 .build();
 
         // Kiem tra neu co accountId, khong yeu cau password

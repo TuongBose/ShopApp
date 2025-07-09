@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import { AccountResponse } from '../../responses/account/account.response';
-import { CartService } from '../../services/cart.service';
 import { TokenService } from '../../services/token.service';
-import { NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -18,8 +17,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private popoverConfig: NgbPopoverConfig,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private router:Router
   ) { }
 
   ngOnInit(): void {
@@ -33,8 +32,10 @@ export class HeaderComponent implements OnInit {
   }
 
   handleItemClick(index: number): void {
-    alert(`Clicked on "${index}"`);
-    if (index === 2) {
+    if(index ===0){
+      debugger
+      this.router.navigate(['/user-profile'])
+    }else    if (index === 2) {
       this.accountService.removeAccountFromLocalStorage();
       this.tokenService.removeToken()
       this.account = this.accountService.getAccountFromLocalStorage();
