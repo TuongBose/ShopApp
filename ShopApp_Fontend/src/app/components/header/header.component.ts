@@ -14,6 +14,8 @@ import { NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap'
 export class HeaderComponent implements OnInit {
   account?: AccountResponse | null;
   isPopoverOpen?: boolean;
+  activeNavItem: number = 0;
+
   constructor(
     private accountService: AccountService,
     private popoverConfig: NgbPopoverConfig,
@@ -38,5 +40,9 @@ export class HeaderComponent implements OnInit {
       this.account = this.accountService.getAccountFromLocalStorage();
     }
     this.isPopoverOpen = false;
+  }
+
+  setActiveNavItem(index: number) {
+    this.activeNavItem = index;
   }
 }

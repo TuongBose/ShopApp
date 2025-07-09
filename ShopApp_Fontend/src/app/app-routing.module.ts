@@ -14,6 +14,7 @@ const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'products/:id', component: DetailProductComponent },
     { path: 'orders', component: OrderComponent, canActivate: [AuthGuardFn] },
+    { path: 'user-profile', component: OrderComponent, canActivate: [AuthGuardFn] },
     { path: 'orders/:id', component: OrderConfirmComponent },
 ];
 

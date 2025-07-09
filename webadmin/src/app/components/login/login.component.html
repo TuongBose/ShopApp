@@ -1,0 +1,43 @@
+<div class="container">
+    <form #loginForm="ngForm">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="login-form mx-auto">
+                    <h2 class="login-header">Dang Nhap</h2>
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone</label>
+                        <input type="text" class="form-control" id="phoneNumber" [(ngModel)]="phoneNumber"
+                            name="phoneNumber" (input)="onPhoneNumberChange()" required
+                            (focus)="loginForm.form.markAsTouched()">
+                        <div class="divider-nospace"></div>
+                    </div>
+                    <div class="mt-5"></div>
+                    <div class="form-group password-field">
+                        <label for="password">Mat khau</label>
+                        <input type="password" required [(ngModel)]="password" placeholder="It nhat 3 ky tu"
+                            class="form-control" id="password" name="password">
+                        <i class="password-toggle fas fa-eye-slash"></i>
+                        <div class="divider-nospace"></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check checkbox-text">
+                            <span style="display:flex;">
+                                <input type="checkbox" [(ngModel)]="rememberMe" class="form-check-input" id="remember" name="rememberMe">
+                                <label class="form-check-label text-start" for="remember"></label>
+                                Ghi nho dang nhap
+                            </span>
+                            <a href="#" class="register-link">Quen mat khau</a>
+                        </div>
+                    </div>
+                    <button type="button" (click)="login()" class="login-button">Dang nhap</button>
+                    <div class="divider"></div>
+                    <p class="text-center">Ban chua dang ky?
+                        <span>
+                            <a routerLink="/register" class="register-link">Tao tai khoan</a>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

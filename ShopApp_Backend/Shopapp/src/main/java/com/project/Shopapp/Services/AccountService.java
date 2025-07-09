@@ -2,6 +2,7 @@ package com.project.Shopapp.Services;
 
 import com.project.Shopapp.Components.JwtTokenUtils;
 import com.project.Shopapp.DTOs.AccountDTO;
+import com.project.Shopapp.DTOs.UpdateAccountDTO;
 import com.project.Shopapp.Models.Account;
 import com.project.Shopapp.Repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ public class AccountService implements IAccountService {
     private final AuthenticationManager authenticationManager;
 
     @Override
+    @Transactional
     public Account createAccount(AccountDTO accountDTO) throws Exception {
         // Register Account
         String SODIENTHOAI = accountDTO.getSODIENTHOAI();
@@ -77,7 +80,7 @@ public class AccountService implements IAccountService {
         }
 
         // check account is active
-        if(!accountOptional.get().isIS_ACTIVE()){
+        if (!accountOptional.get().isIS_ACTIVE()) {
             throw new Exception("Account is locked");
         }
 
@@ -103,5 +106,50 @@ public class AccountService implements IAccountService {
         } else {
             throw new Exception("Account not found");
         }
+    }
+
+    @Override
+    @Transactional
+    public Account updateAccount(UpdateAccountDTO updateAccountDTO, int userId) throws Exception {
+        Account existingAccount = accountRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        String newPhoneNumber = updateAccountDTO.getSODIENTHOAI();
+        if (!existingAccount.getSODIENTHOAI().equals(newPhoneNumber)
+                && accountRepository.existsBySODIENTHOAI(newPhoneNumber)) {
+            throw new RuntimeException("Phone number already exists");
+        }
+
+        // Check null and update
+        if (updateAccountDTO.getFULLNAME() != null) {
+            existingAccount.setFULLNAME(updateAccountDTO.getFULLNAME());
+        }
+        if (updateAccountDTO.getSODIENTHOAI() != null) {
+            existingAccount.setSODIENTHOAI(updateAccountDTO.getSODIENTHOAI());
+        }
+        if (updateAccountDTO.getDIACHI() != null) {
+            existingAccount.setDIACHI(updateAccountDTO.getDIACHI());
+        }
+        if (updateAccountDTO.getNGAYSINH() != null) {
+            existingAccount.setNGAYSINH(updateAccountDTO.getNGAYSINH());
+        }
+        if(updateAccountDTO.getEMAIL()!=null){
+            existingAccount.setEMAIL(updateAccountDTO.getEMAIL());
+        }
+        if (updateAccountDTO.getFACEBOOKACCOUNTID() > 0) {
+            existingAccount.setFACEBOOK_ACCOUNT_ID(updateAccountDTO.getFACEBOOKACCOUNTID());
+        }
+        if (updateAccountDTO.getGOOGLEACCOUNTID() > 0) {
+            existingAccount.setGOOGLE_ACCOUNT_ID(updateAccountDTO.getGOOGLEACCOUNTID());
+        }
+
+        // Update password
+        if (updateAccountDTO.getPASSWORD() != null && !updateAccountDTO.getPASSWORD().isEmpty()) {
+            String newPassword = updateAccountDTO.getPASSWORD();
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            existingAccount.setPASSWORD(encodedPassword);
+        }
+
+        return accountRepository.save(existingAccount);
     }
 }

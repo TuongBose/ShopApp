@@ -19,6 +19,7 @@ public class AccountResponse {
     private String DIACHI;
     private String SODIENTHOAI;
     private Date NGAYSINH;
+    private String EMAIL;
 
     @JsonProperty("is_active")
     private boolean IS_ACTIVE;
@@ -39,6 +40,7 @@ public class AccountResponse {
                 .DIACHI(account.getDIACHI())
                 .SODIENTHOAI(account.getSODIENTHOAI())
                 .NGAYSINH(account.getNGAYSINH())
+                .EMAIL(account.getEMAIL())
                 .IS_ACTIVE(account.isIS_ACTIVE())
                 .FACEBOOK_ACCOUNT_ID(account.getFACEBOOK_ACCOUNT_ID())
                 .GOOGLE_ACCOUNT_ID(account.getGOOGLE_ACCOUNT_ID())

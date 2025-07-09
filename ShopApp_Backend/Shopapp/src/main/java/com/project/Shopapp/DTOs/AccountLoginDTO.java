@@ -15,5 +15,5 @@ public class AccountLoginDTO {
     @NotBlank(message = "Password khong duoc bo trong")
     private String PASSWORD;
 
-    private Integer roleid;
+    private boolean roleid;
 }
