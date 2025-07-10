@@ -25,7 +25,7 @@ import static org.springframework.http.HttpMethod.*;
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 //@EnableWebMvc
 public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                             .requestMatchers(DELETE, "api/v1/donhangs/**").hasRole("ADMIN")
                             //.requestMatchers(GET, "api/v1/donhangs/get-alldonhang-by-keyword").hasRole("ADMIN")
                             .requestMatchers(GET, "api/v1/donhangs/**").permitAll()
+                            .requestMatchers(PUT, "api/v1/donhangs/status").hasRole("ADMIN")
 
                             .requestMatchers(PUT, "api/v1/chitietdonhangs/**").hasRole("ADMIN")
                             .requestMatchers(POST, "api/v1/chitietdonhangs/**").hasRole("USER")

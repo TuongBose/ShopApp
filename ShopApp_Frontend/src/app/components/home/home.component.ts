@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
       next: (response: any) => {
         debugger
         response.sanPhamResponseList.forEach((sanPham:SanPham)=>{
-          sanPham.thumbnail=`${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
+          sanPham.thumbnail_url=`${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
         })
         this.sanphams = response.sanPhamResponseList;
         this.totalPages = response.tongSoTrang;

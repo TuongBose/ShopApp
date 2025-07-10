@@ -19,4 +19,14 @@ export class DonHangService {
             .set('limit', limit.toString());
         return this.http.get<any>(this.apiGetAllDonHang, { params });
     }
+
+    viewDetails(madonhang: number): Observable<DonHangResponse> {
+        return this.http.get<DonHangResponse>(`${environment.apiBaseUrl}/donhangs/${madonhang}`);
+    }
+
+    updateStatus(madonhang: number, status: string): Observable<DonHangResponse> {
+        return this.http.put<DonHangResponse>(`${environment.apiBaseUrl}/donhangs/status/${madonhang}`, null, {
+            params: new HttpParams().set('status', status)
+        });
+    }
 }

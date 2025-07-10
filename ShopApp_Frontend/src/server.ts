@@ -12,14 +12,52 @@ import { fileURLToPath } from 'node:url';
 if (typeof window === 'undefined') {
   global['localStorage'] = {
     getItem: (key: string) => null,
-    setItem: (key: string, value: string) => {},
-    removeItem: (key: string) => {},
-    clear: () => {},
+    setItem: (key: string, value: string) => { },
+    removeItem: (key: string) => { },
+    clear: () => { },
     length: 0,
     key: (index: number) => null
   } as Storage;
 }
 
+if (typeof window === 'undefined') {
+  const mockStorage = {
+    // Khai báo _data như một thuộc tính riêng
+    _data: new Map<string, string>(),
+
+    getItem(key: string): string | null {
+      return this['_data'].get(key) || null;
+    },
+
+    setItem(key: string, value: string): void {
+      this['_data'].set(key, value);
+    },
+
+    removeItem(key: string): void {
+      this['_data'].delete(key);
+    },
+
+    clear(): void {
+      this['_data'].clear();
+    },
+
+    get length(): number {
+      return this['_data'].size;
+    },
+
+    key(index: number): string | null {
+      const keys = Array.from(this['_data'].keys()) as string[]; // keys là string[]
+      if (index >= 0 && index < keys.length) {
+        return keys[index]; // Trả về string khi index hợp lệ
+      }
+      return null; // Trả về null khi index ngoài phạm vi
+    }
+  } as Storage;
+
+  // Gán mock cho cả localStorage và sessionStorage
+  global['localStorage'] = { ...mockStorage };
+  global['sessionStorage'] = { ...mockStorage };
+}
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 

@@ -16,6 +16,7 @@ export class OrderComponent implements OnInit {
   totalPages:number=0;
   keyword:string="";
   visiblePages: number[] = [];
+  status:string="";
 
 constructor(private donHangService:DonHangService){}
 
@@ -60,5 +61,50 @@ constructor(private donHangService:DonHangService){}
     }
 
     return new Array(endPage - startPage + 1).fill(0).map((_, index) => startPage + index);
+  }
+
+  viewDetails(maDonHang: number) {
+    this.donHangService.viewDetails(maDonHang).subscribe({
+      next: (response: DonHangResponse) => {
+        debugger;
+        console.log('Order Details:', response);
+        alert(`Chi tiết đơn hàng ${maDonHang}: ${JSON.stringify(response)}`);
+      },
+      complete: () => {
+        debugger;
+      },
+      error: (error: any) => {
+        debugger;
+        console.error('Error fetching don hang: ', error);
+      }
+    });
+  }
+
+  updateStatus(maDonHang: number, newStatus: string) {
+    this.donHangService.updateStatus(maDonHang, newStatus).subscribe({
+      next: (response: DonHangResponse) => {
+        debugger;
+        console.log('Status updated:', response);
+        this.getAllDonHang(this.keyword, this.currentPage, this.itemsPerPage); // Làm mới danh sách
+      },
+      complete: () => {
+        debugger;
+      },
+      error: (error: any) => {
+        debugger;
+        console.error('Error updating status: ', error);
+        alert('Cập nhật trạng thái thất bại: ' + (error.error?.message || error.message));
+      }
+    });
+  }
+
+  onStatusChange(maDonHang: number, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    if (target && target.value) {
+      this.updateStatus(maDonHang, target.value);
+    } else {
+      console.error('Event target or value is null/undefined');
+      alert('Vui lòng chọn trạng thái hợp lệ');
+    }
   }
 }

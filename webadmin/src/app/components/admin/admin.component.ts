@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import { TokenService } from '../../services/token.service';
 import { AccountResponse } from '../../responses/account/account.response';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -16,6 +17,7 @@ export class AdminComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private tokenService: TokenService,
+    private router:Router
   ) { }
 
   ngOnInit(): void {
@@ -30,6 +32,6 @@ showAdminComponent(componentName:string):void{
     this.accountService.removeAccountFromLocalStorage();
     this.tokenService.removeToken()
     this.account = this.accountService.getAccountFromLocalStorage();
+    this.router.navigate(['/'])
   }
-
 }

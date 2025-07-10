@@ -58,7 +58,7 @@ export class LoginComponent {
           next: (response: any) => {
             debugger
             this.accountResponse = response;
-            this.accountService.saveAccountToLocalStorage(this.accountResponse);
+            this.accountService.saveAccountToLocalStorage(this.accountResponse,this.rememberMe);
             this.router.navigate(['/']);
           },
           complete: () => { debugger },

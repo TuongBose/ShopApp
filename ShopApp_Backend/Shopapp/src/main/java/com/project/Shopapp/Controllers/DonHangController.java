@@ -81,8 +81,22 @@ public class DonHangController {
         }
     }
 
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> updateStatusDonHang(
+            @RequestParam(defaultValue = "", required = false) String status,
+            @Valid @PathVariable int id
+    ) {
+        try {
+            return ResponseEntity.ok(donHangService.updateStatus(status, id));
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/get-alldonhang-by-keyword")
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<DonHangListResponse> getAllDonHangByKeyword(
             @RequestParam(defaultValue = "", required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,

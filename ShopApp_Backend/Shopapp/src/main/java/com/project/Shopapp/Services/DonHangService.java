@@ -151,4 +151,20 @@ public class DonHangService implements IDonHangService {
         });
 
     }
+
+    @Override
+    public DonHangResponse updateStatus(String status, int id) throws Exception{
+        DonHang existingDonHang = donHangRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("Does not exist MADONHANG"));
+
+        existingDonHang.setTRANGTHAI(status);
+        donHangRepository.save(existingDonHang);
+
+        List<CTDHResponse> ctdhResponseList = ctdhRepository.findByMADONHANG(existingDonHang)
+                .stream()
+                .map(CTDHResponse::fromCTDH)
+                .collect(Collectors.toList());
+
+        return DonHangResponse.fromDonHang(existingDonHang, ctdhResponseList);
+    }
 }

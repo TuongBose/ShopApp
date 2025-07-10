@@ -45,7 +45,7 @@ export class AccountService {
     });
   }
 
-  saveAccountToLocalStorage(accountResponse?: AccountResponse) {
+  saveAccountToLocalStorage(accountResponse?: AccountResponse, rememberMe: boolean = false) {
     try {
       debugger
       if (accountResponse == null || !accountResponse) { return; }
@@ -53,36 +53,42 @@ export class AccountService {
       const accountResponseJSON = JSON.stringify(accountResponse);
 
       // Save the JSON string to local storage with a key (e.g.,"accountResponse")
-      localStorage.setItem('account', accountResponseJSON);
-      console.log('Account response saved to local storage.');
+      if (rememberMe) {
+        localStorage.setItem('account', accountResponseJSON);
+      }
+      else {
+        sessionStorage.setItem('account', accountResponseJSON)
+      }
+      console.log('Account response saved to storage.');
     } catch (error) {
-      console.error('Error saving account response to local storage: ', error);
+      console.error('Error saving account response to storage: ', error);
     }
   }
 
-  getAccountFromLocalStorage():AccountResponse|null {
+  getAccountFromLocalStorage(): AccountResponse | null {
     try {
       debugger
       // Retrieve the JSON string from local storage using the key
-      const accountResponseJSON = localStorage.getItem('account');
+      const accountResponseJSON = localStorage.getItem('account') || sessionStorage.getItem('account');
       if (accountResponseJSON == null || accountResponseJSON == undefined) { return null; }
 
       // Parse the JSON string back to an object
       const accountResponse = JSON.parse(accountResponseJSON!);
-      console.log('Account retrieved from local storage.');
+      console.log('Account retrieved from storage.');
       return accountResponse;
     } catch (error) {
-      console.error('Error retrieving account from local storage: ', error);
+      console.error('Error retrieving account from storage: ', error);
       return null;
     }
   }
 
-  removeAccountFromLocalStorage():void{
-    try{
+  removeAccountFromLocalStorage(): void {
+    try {
       localStorage.removeItem('account');
-      console.log('Account data removed from local storage.');
-    }catch(error){
-      console.error('Error revoming account from local storage: ', error)
+      sessionStorage.removeItem('account');
+      console.log('Account data removed from storage.');
+    } catch (error) {
+      console.error('Error revoming account from storage: ', error)
     }
   }
 }
