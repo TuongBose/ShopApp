@@ -50,22 +50,23 @@ export class LoginComponent {
         debugger
         const { token } = response;
         if (this.rememberMe) {
-          this.tokenService.setToken(token);
-          debugger
-          this.accountService.getAccountDetails(token).subscribe({
-            next: (response: any) => {
-              debugger
-              this.accountResponse = response;
-              this.accountService.saveAccountToLocalStorage(this.accountResponse);
-              this.router.navigate(['/']);
-            },
-            complete: () => { debugger },
-            error: (error: any) => {
-              debugger
-              alert(error.error.message);
-            }
-          })
+          this.tokenService.setToken(token, true);
         }
+        this.tokenService.setToken(token);
+        debugger
+        this.accountService.getAccountDetails(token).subscribe({
+          next: (response: any) => {
+            debugger
+            this.accountResponse = response;
+            this.accountService.saveAccountToLocalStorage(this.accountResponse);
+            this.router.navigate(['/']);
+          },
+          complete: () => { debugger },
+          error: (error: any) => {
+            debugger
+            alert(error.error.message);
+          }
+        })
       },
       complete: () => { debugger },
       error: (error: any) => {

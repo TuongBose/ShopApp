@@ -59,9 +59,10 @@ export class RegisterComponent {
       "diachi": this.address,
       "sodienthoai": this.phoneNumber,
       "ngaysinh": this.dateOfBirth,
-      "FACEBOOK_ACCOUNT_ID": 1,
-      "GOOGLE_ACCOUNT_ID": 1
+      "FACEBOOK_ACCOUNT_ID": 0,
+      "GOOGLE_ACCOUNT_ID": 0
     }
+    debugger
     this.accountService.register(registerDTO).subscribe({
       next: (response: any) => {
         debugger
@@ -69,6 +70,7 @@ export class RegisterComponent {
       },
       complete: () => { debugger },
       error: (error: any) => {
+        debugger
         alert(`Khong the dang ky, loi: ${error.error}`);
       }
     });

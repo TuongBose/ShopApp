@@ -70,7 +70,7 @@ export class OrderComponent implements OnInit {
           debugger
           const sanPham = sanPhams.find((p) => p.masanpham === masanpham);
           if (sanPham) {
-            // sanPham.thumnail = `${environment.apiBaseUrl}/sanphams/images/`xu ly lay thumbnail
+            sanPham.thumbnail = `${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`
           }
           return {
             sanPham: sanPham!,

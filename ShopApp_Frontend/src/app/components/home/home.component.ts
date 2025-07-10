@@ -52,6 +52,9 @@ export class HomeComponent implements OnInit {
     this.sanPhamService.getAllSanPham(keyword, selectedMALOAISANPHAM, page, limit).subscribe({
       next: (response: any) => {
         debugger
+        response.sanPhamResponseList.forEach((sanPham:SanPham)=>{
+          sanPham.thumbnail=`${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
+        })
         this.sanphams = response.sanPhamResponseList;
         this.totalPages = response.tongSoTrang;
         this.visiblePages = this.generateVisiblePageArray(this.currentPage, this.totalPages);

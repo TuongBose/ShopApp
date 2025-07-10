@@ -8,5 +8,6 @@ export interface SanPham {
     mota: string;
     soluongtonkho: number;
     maloaisanpham: number;
+    thumbnail:string;
     hinhAnhUrls: HinhAnh[];
 }

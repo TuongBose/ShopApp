@@ -31,4 +31,6 @@ public class SanPham extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "MALOAISANPHAM")
     private LoaiSanPham MALOAISANPHAM;
+
+    private String THUMBNAIL;
 }

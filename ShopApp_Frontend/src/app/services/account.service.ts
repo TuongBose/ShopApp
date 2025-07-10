@@ -28,6 +28,7 @@ export class AccountService {
   }
 
   register(registerDTO: RegisterDTO): Observable<any> {
+    debugger
     return this.http.post(this.apiRegister, registerDTO, this.apiConfig);
   }
 

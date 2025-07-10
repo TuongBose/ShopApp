@@ -44,6 +44,7 @@ public class SanPhamService implements ISanPhamService {
                 .MATHUONGHIEU(existingThuongHieu)
                 .MOTA(sanPhamDTO.getMOTA())
                 .SOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO())
+                .THUMBNAIL(sanPhamDTO.getTHUMBNAIL())
                 .build();
         return sanPhamRepository.save(newSanPham);
     }
@@ -85,6 +86,7 @@ public class SanPhamService implements ISanPhamService {
         existingSanPham.setSOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO());
         existingSanPham.setGIA(sanPhamDTO.getGIA());
         existingSanPham.setMOTA(sanPhamDTO.getMOTA());
+        existingSanPham.setTHUMBNAIL(sanPhamDTO.getTHUMBNAIL());
 
         return sanPhamRepository.save(existingSanPham);
     }

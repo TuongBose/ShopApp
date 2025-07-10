@@ -6,19 +6,19 @@
         <p>Chon va xem san pham tai day</p>
     </div>
     <div class="search-box">
-        <input type="text" class="form-control search-input" placeholder="Tim san pham" [(ngModel)]="keyword"/>
+        <input type="text" class="form-control search-input" placeholder="Tim san pham" [(ngModel)]="keyword" />
         <select class="form-control product-category" [(ngModel)]="selectedMALOAISANPHAM">
             <option selected disabled>Danh muc san pham</option>
             <option [value]="0">Tất cả</option>
-            <option *ngFor="let loaisanpham of loaiSanPhams" [value]="loaisanpham.maloaisanpham">{{loaisanpham.tenloaisanpham}}</option>
+            <option *ngFor="let loaisanpham of loaiSanPhams" [value]="loaisanpham.maloaisanpham">
+                {{loaisanpham.tenloaisanpham}}</option>
         </select>
         <button class="btn btn-primary ml-2" (click)="searchSanPham()">Tìm kiếm</button>
     </div>
     <div class="row">
         <div class="col-lg-4 col-md-6" *ngFor="let sanpham of sanphams">
             <div class="product-item" (click)="onProductClick(sanpham.masanpham)">
-                <img src="https://media.istockphoto.com/id/1399695296/vi/anh/ng%C6%B0%E1%BB%9Di-%C4%91%C3%A0n-%C3%B4ng-b%C3%ACnh-th%C6%B0%E1%BB%9Dng-freelancer-l%C3%A0m-vi%E1%BB%87c-tr%E1%BB%B1c-tuy%E1%BA%BFn-v%E1%BB%9Bi-macbook-v%C3%A0-%C4%91i%E1%BB%87n-tho%E1%BA%A1i-di-%C4%91%E1%BB%99ng-v%C3%A0.jpg?s=612x612&w=is&k=20&c=1z8Rf4sUS7ojfaYAU1iGgSSuqRnjjTJywkoTA-Q-_3o="
-                    alt="Hinh anh" class="product-image">
+                <img [src]="sanpham.thumbnail" alt="Hinh anh" class="product-image">
                 <h3 class="product-name">{{sanpham.tensanpham}}</h3>
                 <p class="product-description">{{sanpham.mota}}</p>
                 <p class="product-price">Gia: ${{sanpham.gia}}</p>

@@ -34,6 +34,7 @@ public class AccountService implements IAccountService {
         // Convert AccountDTO sang Account
         Account newAccount = Account.builder()
                 .FULLNAME(accountDTO.getFULLNAME())
+                .PASSWORD(accountDTO.getPASSWORD())
                 .SODIENTHOAI(accountDTO.getSODIENTHOAI())
                 .EMAIL(accountDTO.getEMAIL())
                 .DIACHI(accountDTO.getDIACHI())

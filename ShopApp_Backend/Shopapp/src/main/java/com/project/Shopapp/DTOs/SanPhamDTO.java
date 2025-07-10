@@ -26,4 +26,5 @@ public class SanPhamDTO {
     private String MOTA;
     private int SOLUONGTONKHO;
     private int MALOAISANPHAM;
+    private String THUMBNAIL;
 }
