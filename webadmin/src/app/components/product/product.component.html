@@ -1,1 +1,52 @@
-<h1>product</h1>
+<div class="container-fluid">
+    <h1>Orders Admin Page</h1>
+    <!-- Table here -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>SanPham ID</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá</th>
+                <th>Mã thương hiệu</th>
+                <th>Số lượng tồn kho</th>
+                <th>Mã loại sản phẩm</th>
+                <th>Thumbnail</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let sanPham of sanPhams; let i = index">
+                <td>{{ sanPham.masanpham }}</td>
+                <td>{{ sanPham.tensanpham }}</td>
+                <td>{{ sanPham.gia }}</td>
+                <td>{{ sanPham.mathuonghieu }}</td>
+                <td>{{ sanPham.soluongtonkho }}</td>
+                <td>{{ sanPham.maloaisanpham }}</td>
+                <td><img [src]="sanPham.thumbnail_url" style="width: 100%;"></td>
+
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item" *ngIf="currentPage > 1">
+                    <a class="page-link" (click)="onPageChange(1)">First</a>
+                </li>
+                <li class="page-item" *ngIf="currentPage > 1">
+                    <a class="page-link" (click)="onPageChange(currentPage - 1)">Previous</a>
+                </li>
+                <ng-container *ngFor="let page of visiblePages">
+                    <li class="page-item" [ngClass]="{'active': page === currentPage}">
+                        <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
+                    </li>
+                </ng-container>
+                <li class="page-item" *ngIf="currentPage < totalPages">
+                    <a class="page-link" (click)="onPageChange(currentPage + 1)">Next</a>
+                </li>
+                <li class="page-item" *ngIf="currentPage < totalPages">
+                    <a class="page-link" (click)="onPageChange(totalPages)">Last</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LoginDTO } from '../../dtos/account/login.dto';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
@@ -13,12 +13,11 @@ import { TokenService } from '../../services/token.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit{
   @ViewChild('loginForm') loginForm!: NgForm;
 
   phoneNumber: string;
   password: string;
-  rememberMe: boolean = false;
   accountResponse?: AccountResponse
 
   constructor(
@@ -30,45 +29,47 @@ export class LoginComponent {
     this.password = '123';
   }
 
+  ngOnInit(): void {
+    if(this.accountService.getAccountFromLocalStorage!=null){
+      this.router.navigate(['/admin']);
+    }
+  }
   onPhoneNumberChange() {
     console.log(`Phone typed: ${this.phoneNumber}`)
   }
 
   login() {
     const message = `Phone: ${this.phoneNumber}\n` +
-      `Password: ${this.password}\n` +
-      `Rememberme: ${this.rememberMe}`
+      `Password: ${this.password}\n`;
     alert(message)
 
 
     const loginDTO: LoginDTO = {
       "password": this.password,
       "sodienthoai": this.phoneNumber,
-      "roleid":true
+      "roleid": true
     }
     this.accountService.login(loginDTO).subscribe({
       next: (response: LoginResponse) => {
         debugger
         const { token } = response;
-        if (this.rememberMe) {
-          this.tokenService.setToken(token);
-          debugger
-          this.accountService.getAccountDetails(token).subscribe({
-            next: (response: any) => {
-              debugger
-              this.accountResponse = response;
-              this.accountService.saveAccountToLocalStorage(this.accountResponse);
-              if (this.accountResponse?.rolename === true) {
-                this.router.navigate(['/admin']);
-              }
-            },
-            complete: () => { debugger },
-            error: (error: any) => {
-              debugger
-              alert(error.error.message);
+        this.tokenService.setToken(token);
+        debugger
+        this.accountService.getAccountDetails(token).subscribe({
+          next: (response: any) => {
+            debugger
+            this.accountResponse = response;
+            this.accountService.saveAccountToLocalStorage(this.accountResponse);
+            if (this.accountResponse?.rolename === true) {
+              this.router.navigate(['/admin']);
             }
-          })
-        }
+          },
+          complete: () => { debugger },
+          error: (error: any) => {
+            debugger
+            alert(error.error.message);
+          }
+        })
       },
       complete: () => { debugger },
       error: (error: any) => {

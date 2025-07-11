@@ -9,19 +9,19 @@ import { DonHangResponse } from '../../responses/donhang.response';
   styleUrl: './order.component.scss'
 })
 export class OrderComponent implements OnInit {
-  donHang:DonHangResponse[]=[];
-  currentPage:number=0;
-  itemsPerPage:number=12;
-  pages:number[]=[];
-  totalPages:number=0;
-  keyword:string="";
+  donHang: DonHangResponse[] = [];
+  currentPage: number = 0;
+  itemsPerPage: number = 12;
+  pages: number[] = [];
+  totalPages: number = 0;
+  keyword: string = "";
   visiblePages: number[] = [];
-  status:string="";
+  status: string = "";
 
-constructor(private donHangService:DonHangService){}
+  constructor(private donHangService: DonHangService) { }
 
   ngOnInit(): void {
-        this.getAllDonHang(this.keyword, this.currentPage, this.itemsPerPage);
+    this.getAllDonHang(this.keyword, this.currentPage, this.itemsPerPage);
   }
 
   getAllDonHang(keyword: string, page: number, limit: number) {
