@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("api/v1/loaisanphams")
+@RequestMapping("${api.prefix}/loaisanphams")
 // Dependency Injection
 @RequiredArgsConstructor
 public class LoaiSanPhamController {

@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/sanphams")
+@RequestMapping("${api.prefix}/sanphams")
 @RequiredArgsConstructor
 public class SanPhamController {
     private final SanPhamService sanPhamService;
