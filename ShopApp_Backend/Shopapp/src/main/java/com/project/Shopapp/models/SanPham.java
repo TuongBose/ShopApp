@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "SANPHAM")
+@Table(name = "sanpham")
 @Builder
 // Event-driven approach with Spring Data JPA
 @EntityListeners(SanPhamListener.class)

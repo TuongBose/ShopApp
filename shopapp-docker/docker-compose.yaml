@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: shopapp
     ports:
       - 3306:3306
     networks:
@@ -65,21 +64,21 @@ services:
 #      retries: 3
 #      start_period: 20s # 20s after container created, health check
 
-  shopapp-angular-container:
-    container_name: shopapp-angular-container
-    build:
-      context: .
-      dockerfile: DockerfileAngular
-    ports:
-     - "4200:80"
-    restart: always
-    networks:
-     - shopapp-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # shopapp-angular-container:
+  #   container_name: shopapp-angular-container
+  #   build:
+  #     context: .
+  #     dockerfile: DockerfileAngular
+  #   ports:
+  #    - "4200:80"
+  #   restart: always
+  #   networks:
+  #    - shopapp-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:80/"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
       
 networks:
   shopapp-network:

@@ -2,6 +2,7 @@ package com.project.Shopapp.configurations;
 
 import com.project.Shopapp.filters.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -28,6 +29,9 @@ import static org.springframework.http.HttpMethod.*;
 public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
 
+    @Value("${api.prefix}")
+    private String apiPrefix;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -35,32 +39,32 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers(
-                                    "/api/v1/accounts/register",
-                                    "/api/v1/accounts/login"
+                                    String.format("%s/accounts/register",apiPrefix),
+                                    String.format("%s/accounts/login",apiPrefix)
                             ).permitAll()
                             //.requestMatchers("**").permitAll()
-                            .requestMatchers(GET, "api/v1/loaisanphams**").permitAll()
-                            .requestMatchers(POST, "api/v1/loaisanphams/**").hasRole("ADMIN")
-                            .requestMatchers(PUT, "api/v1/loaisanphams/**").hasRole("ADMIN")
-                            .requestMatchers(DELETE, "api/v1/loaisanphams/**").hasRole("ADMIN")
+                            .requestMatchers(GET, String.format("%s/loaisanphams**",apiPrefix)).permitAll()
+                            .requestMatchers(POST, String.format("%s/loaisanphams/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("%s/loaisanphams/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(DELETE, String.format("%s/loaisanphams/**",apiPrefix)).hasRole("ADMIN")
 
-                            .requestMatchers(GET, "api/v1/sanphams/**").permitAll()
-                            .requestMatchers(GET, "api/v1/sanphams/images/**").permitAll()
-                            .requestMatchers(POST, "api/v1/sanphams/**").hasRole("ADMIN")
-                            .requestMatchers(PUT, "api/v1/sanphams/**").hasRole("ADMIN")
-                            .requestMatchers(DELETE, "api/v1/sanphams/**").hasRole("ADMIN")
+                            .requestMatchers(GET, String.format("%s/sanphams/**",apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/sanphams/images/**",apiPrefix)).permitAll()
+                            .requestMatchers(POST, String.format("%s/sanphams/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("%s/sanphams/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(DELETE, String.format("%s/sanphams/**",apiPrefix)).hasRole("ADMIN")
 
-                            .requestMatchers(PUT, "api/v1/donhangs/**").hasRole("ADMIN")
-                            .requestMatchers(POST, "api/v1/donhangs/**").hasRole("USER")
-                            .requestMatchers(DELETE, "api/v1/donhangs/**").hasRole("ADMIN")
-                            //.requestMatchers(GET, "api/v1/donhangs/get-alldonhang-by-keyword").hasRole("ADMIN")
-                            .requestMatchers(GET, "api/v1/donhangs/**").permitAll()
-                            .requestMatchers(PUT, "api/v1/donhangs/status").hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("%s/donhangs/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("%s/donhangs/**",apiPrefix)).hasRole("USER")
+                            .requestMatchers(DELETE, String.format("%s/donhangs/**",apiPrefix)).hasRole("ADMIN")
+                            //.requestMatchers(GET, String.format("%s/donhangs/get-alldonhang-by-keyword").hasRole("ADMIN")
+                            .requestMatchers(GET, String.format("%s/donhangs/**",apiPrefix)).permitAll()
+                            .requestMatchers(PUT, String.format("%s/donhangs/status",apiPrefix)).hasRole("ADMIN")
 
-                            .requestMatchers(PUT, "api/v1/chitietdonhangs/**").hasRole("ADMIN")
-                            .requestMatchers(POST, "api/v1/chitietdonhangs/**").hasRole("USER")
-                            .requestMatchers(DELETE, "api/v1/chitietdonhangs/**").hasRole("ADMIN")
-                            .requestMatchers(GET, "api/v1/chitietdonhangs/**").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(PUT, String.format("%s/chitietdonhangs/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("%s/chitietdonhangs/**",apiPrefix)).hasRole("USER")
+                            .requestMatchers(DELETE, String.format("%s/chitietdonhangs/**",apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(GET, String.format("%s/chitietdonhangs/**",apiPrefix)).hasAnyRole("USER", "ADMIN")
 
                             .anyRequest().authenticated();
                 })

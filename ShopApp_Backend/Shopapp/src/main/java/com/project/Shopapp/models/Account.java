@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ACCOUNTS")
+@Table(name = "accounts")
 @Builder
 public class Account extends BaseEntity implements UserDetails {
     public static final int USER = 0;

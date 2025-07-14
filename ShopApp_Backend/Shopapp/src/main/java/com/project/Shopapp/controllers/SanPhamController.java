@@ -30,12 +30,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,6 +46,8 @@ public class SanPhamController {
     private final HinhAnhService hinhAnhService;
     private final LocalizationUtils localizationUtils;
     private final ISanPhamRedisService sanPhamRedisService;
+    private static final Logger logger = LoggerFactory.getLogger(SanPhamController.class);
+
 
     // Create thông tin sản phẩm
     @PostMapping("")
@@ -183,7 +185,7 @@ public class SanPhamController {
     }
 
     @GetMapping("")
-    public ResponseEntity<SanPhamListResponse> getAllSanPham(
+    public ResponseEntity<?> getAllSanPham(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
             @RequestParam(defaultValue = "0") int page,
@@ -198,16 +200,25 @@ public class SanPhamController {
         );
         logger.info(String.format("keyword = %s, MALOAISANPHAM = %d, page = %d, limit = %d",
                 keyword, MALOAISANPHAM, page, limit));
-        List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
-        if(sanPhamResponseList==null) {
-            Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
 
-            // Lấy tổng số trang
-            tongSoTrang = sanPhamResponses.getTotalPages();
-            sanPhamResponseList = sanPhamResponses.getContent();
-            sanPhamRedisService.saveAllSanPham(sanPhamResponseList,keyword,MALOAISANPHAM,pageRequest);
+        try {
+            List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+            if (sanPhamResponseList == null || sanPhamResponseList.isEmpty()) {
+                Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+
+                // Lấy tổng số trang
+                tongSoTrang = sanPhamResponses.getTotalPages();
+                sanPhamResponseList = sanPhamResponses.getContent();
+                sanPhamRedisService.saveAllSanPham(sanPhamResponseList, keyword, MALOAISANPHAM, pageRequest);
+            }
+            return ResponseEntity.ok(SanPhamListResponse
+                    .builder()
+                    .sanPhamResponseList(sanPhamResponseList)
+                    .tongSoTrang(tongSoTrang)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok(newSanPhamListResponse);
     }
 
     @GetMapping("/{id}")

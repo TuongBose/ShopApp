@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,9 @@ import java.util.List;
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtils jwtTokenUtils;
+
+    @Value("${api.prefix}")
+    private String apiPrefix;
 
     @Override
     protected void doFilterInternal(@Nonnull HttpServletRequest request,
@@ -68,10 +72,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean isBypassToken(@Nonnull HttpServletRequest request) {
         final List<Pair<String, String>> bypassTokens = Arrays.asList(
-                Pair.of("api/v1/sanphams", "GET"),
-                Pair.of("api/v1/loaisanphams", "GET"),
-                Pair.of("api/v1/accounts/register", "POST"),
-                Pair.of("api/v1/accounts/login", "POST")
+                Pair.of(String.format("%s/sanphams",apiPrefix), "GET"),
+                Pair.of(String.format("%s/loaisanphams",apiPrefix), "GET"),
+                Pair.of(String.format("%s/accounts/register",apiPrefix), "POST"),
+                Pair.of(String.format("%s/accounts/login",apiPrefix), "POST")
         );
 
         String requestPath = request.getServletPath();

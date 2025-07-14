@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "FEEDBACK")
+@Table(name = "feedback")
 @Builder
 public class Feedback {
     @Id

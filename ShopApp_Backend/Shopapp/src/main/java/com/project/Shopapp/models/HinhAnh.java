@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "HINHANH")
+@Table(name = "hinhanh")
 @Builder
 public class HinhAnh {
     public static final int MAXIMUM_IMAGES_PER_PRODUCT = 5;
