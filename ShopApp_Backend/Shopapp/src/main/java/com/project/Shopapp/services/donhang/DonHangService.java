@@ -39,42 +39,32 @@ public class DonHangService implements IDonHangService {
 
         // Convert DonHangDTO => DonHang, dùng thư viện Model Mapper
         // Tạo 1 luồng bảng ánh xạ riêng để kiểm soát việc ánh xạ
-        try {
-            modelMapper.typeMap(DonHangDTO.class, DonHang.class).addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        modelMapper.typeMap(DonHangDTO.class, DonHang.class).addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
 
         // Cập nhật các trường của DonHang từ DonHangDTO
         DonHang donHang = new DonHang();
-        try {
-            modelMapper.map(donHangDTO, donHang);
-            donHang.setUSERID(existingAccount);
-            donHang.setNGAYDATHANG(LocalDate.now());
-            donHang.setTRANGTHAI(TrangThaiDonHang.CHUAXULY);
-            donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
-            donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
-            donHangRepository.save(donHang);
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        modelMapper.map(donHangDTO, donHang);
+        donHang.setUSERID(existingAccount);
+        donHang.setNGAYDATHANG(LocalDate.now());
+        donHang.setTRANGTHAI(TrangThaiDonHang.CHUAXULY);
+        donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
+        donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
+        donHangRepository.save(donHang);
 
         List<CTDH> ctdhList = new ArrayList<>();
-        for(CartItemDTO cartItemDTO : donHangDTO.getCartitems())
-        {
-            CTDH ctdh =  new CTDH();
+        for (CartItemDTO cartItemDTO : donHangDTO.getCartitems()) {
+            CTDH ctdh = new CTDH();
             ctdh.setMADONHANG(donHang);
             int maSanPham = cartItemDTO.getMasanpham();
-            int quantity =  cartItemDTO.getQuantity();
+            int quantity = cartItemDTO.getQuantity();
 
             SanPham sanPham = sanPhamRepository.findById(maSanPham)
-                    .orElseThrow(()-> new RuntimeException("Product ID does not exists"));
+                    .orElseThrow(() -> new RuntimeException("Product ID does not exists"));
 
             ctdh.setMASANPHAM(sanPham);
             ctdh.setSOLUONG(quantity);
             ctdh.setGIABAN(sanPham.getGIA());
-            ctdh.setTONGTIEN(sanPham.getGIA()*quantity);
+            ctdh.setTONGTIEN(sanPham.getGIA() * quantity);
 
             ctdhList.add(ctdh);
         }
@@ -98,11 +88,10 @@ public class DonHangService implements IDonHangService {
         List<CTDH> ctdhList = ctdhRepository.findByMADONHANG(existingDonHang);
         List<CTDHResponse> ctdhResponseList = new ArrayList<>();
 
-        if(ctdhList.isEmpty())
+        if (ctdhList.isEmpty())
             donHangResponse.setCtdhList(null);
-        else{
-            for(CTDH ctdh : ctdhList)
-            {
+        else {
+            for (CTDH ctdh : ctdhList) {
                 ctdhResponseList.add(CTDHResponse.fromCTDH(ctdh));
             }
             donHangResponse.setCtdhList(ctdhResponseList);
@@ -140,11 +129,10 @@ public class DonHangService implements IDonHangService {
     }
 
     @Override
-    public void deleteDonHang(int id) throws Exception{
+    public void deleteDonHang(int id) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
-        if(existingDonHang!=null)
-        {
+        if (existingDonHang != null) {
             existingDonHang.setIS_ACTIVE(false);
             donHangRepository.save(existingDonHang);
         }
@@ -152,21 +140,21 @@ public class DonHangService implements IDonHangService {
 
     @Override
     public Page<DonHangResponse> getAllDonHangByKeyword(String keyword, Pageable pageable) {
-        Page<DonHang> donHangPage = donHangRepository.findByKeyword(keyword,pageable);
+        Page<DonHang> donHangPage = donHangRepository.findByKeyword(keyword, pageable);
         return donHangPage.map(donHang -> {
             List<CTDHResponse> ctdhResponseList = ctdhRepository.findByMADONHANG(donHang)
                     .stream()
                     .map(CTDHResponse::fromCTDH)
                     .collect(Collectors.toList());
-            return DonHangResponse.fromDonHang(donHang,ctdhResponseList);
+            return DonHangResponse.fromDonHang(donHang, ctdhResponseList);
         });
 
     }
 
     @Override
-    public DonHangResponse updateStatus(String status, int id) throws Exception{
+    public DonHangResponse updateStatus(String status, int id) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Does not exist MADONHANG"));
+                .orElseThrow(() -> new RuntimeException("Does not exist MADONHANG"));
 
         existingDonHang.setTRANGTHAI(status);
         donHangRepository.save(existingDonHang);
