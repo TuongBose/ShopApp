@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ public class LoaiSanPhamController {
 
 
     @PostMapping("")
+    @PreAuthorize("hasRole(ROLE_ADMIN)")
     public ResponseEntity<?> createLoaiSanPham(
             @Valid @RequestBody LoaiSanPhamDTO loaisanphamDTO,
             BindingResult result) {

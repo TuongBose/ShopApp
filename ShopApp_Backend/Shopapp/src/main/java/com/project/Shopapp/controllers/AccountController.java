@@ -10,9 +10,10 @@ import com.project.Shopapp.services.account.AccountService;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,7 @@ public class AccountController {
     }
 
     @PostMapping("/details")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> getAccountDetails(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             String extractedToken = authorizationHeader.substring(7); // Loại bỏ "Bearer " từ chuỗi token
@@ -79,6 +81,8 @@ public class AccountController {
     }
 
     @PutMapping("/details/{userId}")
+    //@Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> updateAccountDetails(
             @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable int userId,

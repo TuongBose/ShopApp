@@ -61,7 +61,7 @@ public class SanPhamService implements ISanPhamService {
             PageRequest pageRequest
     ) {
         // Lấy danh sách sản phẩm theo trang(page) và giới hạn(limit)
-        Page<SanPham> sanPhamPage = sanPhamRepository.searchSanPhams(MALOAISANPHAM,keyword,pageRequest);
+        Page<SanPham> sanPhamPage = sanPhamRepository.searchSanPhams(MALOAISANPHAM, keyword, pageRequest);
 
         // Chuyển SanPhamModel sang SanPhamResponse
         return sanPhamPage.map(SanPhamResponse::fromSanPham);
@@ -70,7 +70,9 @@ public class SanPhamService implements ISanPhamService {
     @Override
     @Transactional
     public SanPham updateSanPham(int id, SanPhamDTO sanPhamDTO) {
-        SanPham existingSanPham = getSanPhamByMASANPHAM(id);
+        SanPham existingSanPham = sanPhamRepository
+                .findById(id)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay MASANPHAM nay"));
 
         LoaiSanPham existingLoaiSanPham = loaiSanPhamRepository
                 .findById(sanPhamDTO.getMALOAISANPHAM())
@@ -80,13 +82,28 @@ public class SanPhamService implements ISanPhamService {
                 .findById(sanPhamDTO.getMATHUONGHIEU())
                 .orElseThrow(() -> new RuntimeException("Khong tim thay MATHUONGHIEU"));
 
-        existingSanPham.setTENSANPHAM(sanPhamDTO.getTENSANPHAM());
+        if (sanPhamDTO.getTENSANPHAM() != null && !sanPhamDTO.getTENSANPHAM().isEmpty()) {
+            existingSanPham.setTENSANPHAM(sanPhamDTO.getTENSANPHAM());
+        }
+
         existingSanPham.setMALOAISANPHAM(existingLoaiSanPham);
         existingSanPham.setMATHUONGHIEU(existingThuongHieu);
-        existingSanPham.setSOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO());
-        existingSanPham.setGIA(sanPhamDTO.getGIA());
-        existingSanPham.setMOTA(sanPhamDTO.getMOTA());
-        existingSanPham.setTHUMBNAIL(sanPhamDTO.getTHUMBNAIL());
+
+        if (sanPhamDTO.getSOLUONGTONKHO() >= 0) {
+            existingSanPham.setSOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO());
+        }
+
+        if (sanPhamDTO.getGIA() >= 0) {
+            existingSanPham.setGIA(sanPhamDTO.getGIA());
+        }
+
+        if (sanPhamDTO.getMOTA() != null && !sanPhamDTO.getMOTA().isEmpty()) {
+            existingSanPham.setMOTA(sanPhamDTO.getMOTA());
+        }
+
+        if (sanPhamDTO.getTHUMBNAIL() != null && !sanPhamDTO.getTHUMBNAIL().isEmpty()) {
+            existingSanPham.setTHUMBNAIL(sanPhamDTO.getTHUMBNAIL());
+        }
 
         return sanPhamRepository.save(existingSanPham);
     }

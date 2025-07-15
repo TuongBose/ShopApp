@@ -42,6 +42,7 @@ public class DonHangController {
     }
 
     @GetMapping("/account/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> getDonHang_USERID(@Valid @PathVariable int id) {
         try {
             List<DonHang> donHangList = donHangService.getDonHangByUSERID(id);

@@ -4,122 +4,122 @@ USE shopapp;
 -- TẠO BẢNG
 CREATE TABLE loaisanpham 
 (
-    maloaisanpham INT PRIMARY KEY AUTO_INCREMENT,
-    tenloaisanpham VARCHAR(255) NOT NULL
+    MALOAISANPHAM INT PRIMARY KEY AUTO_INCREMENT,
+    TENLOAISANPHAM VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE thuonghieu
 (
-    mathuonghieu INT PRIMARY KEY AUTO_INCREMENT,
-    tenthuonghieu VARCHAR(40)
+    MATHUONGHIEU INT PRIMARY KEY AUTO_INCREMENT,
+    TENTHUONGHIEU VARCHAR(40)
 );
 
 CREATE TABLE sanpham 
 (
-    masanpham INT PRIMARY KEY AUTO_INCREMENT,
-    tensanpham VARCHAR(255) NOT NULL,
-    gia INT NOT NULL,
-    mathuonghieu INT NOT NULL,
-    mota VARCHAR(500) DEFAULT '',
-    soluongtonkho INT,
-    ngaytao DATETIME,
-    chinhsua DATETIME,
-    maloaisanpham INT,
-    thumbnail VARCHAR(300) DEFAULT '',
-    CONSTRAINT fk_loaisanpham FOREIGN KEY (maloaisanpham) REFERENCES loaisanpham(maloaisanpham),
-    CONSTRAINT fk_mathuonghieu FOREIGN KEY (mathuonghieu) REFERENCES thuonghieu(mathuonghieu)
+    MASANPHAM INT PRIMARY KEY AUTO_INCREMENT,
+    TENSANPHAM VARCHAR(255) NOT NULL,
+    GIA INT NOT NULL,
+    MATHUONGHIEU INT NOT NULL,
+    MOTA VARCHAR(500) DEFAULT '',
+    SOLUONGTONKHO INT,
+    NGAYTAO DATETIME,
+    CHINHSUA DATETIME,
+    MALOAISANPHAM INT,
+    THUMBNAIL VARCHAR(300) DEFAULT '',
+    CONSTRAINT fk_loaisanpham FOREIGN KEY (MALOAISANPHAM) REFERENCES loaisanpham(MALOAISANPHAM),
+    CONSTRAINT fk_mathuonghieu FOREIGN KEY (MATHUONGHIEU) REFERENCES thuonghieu(MATHUONGHIEU)
 );
 
 CREATE TABLE hinhanh
 (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    masanpham INT,
-    maloaisanpham INT,
-    tenhinhanh VARCHAR(300),
-    CONSTRAINT fk_hinhanh_sanpham FOREIGN KEY(masanpham) REFERENCES sanpham(masanpham) ON DELETE CASCADE,
-    CONSTRAINT fk_hinhanh_loaisanpham FOREIGN KEY(maloaisanpham) REFERENCES loaisanpham(maloaisanpham) ON DELETE CASCADE
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    MASANPHAM INT,
+    MALOAISANPHAM INT,
+    TENHINHANH VARCHAR(300),
+    CONSTRAINT fk_hinhanh_sanpham FOREIGN KEY(MASANPHAM) REFERENCES sanpham(MASANPHAM) ON DELETE CASCADE,
+    CONSTRAINT fk_hinhanh_loaisanpham FOREIGN KEY(MALOAISANPHAM) REFERENCES loaisanpham(MALOAISANPHAM) ON DELETE CASCADE
 );
 
 CREATE TABLE accounts
 (
-    userid INT PRIMARY KEY AUTO_INCREMENT,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(100),
-    fullname VARCHAR(255) DEFAULT '',
-    diachi VARCHAR(255) DEFAULT '',
-    sodienthoai VARCHAR(15) NOT NULL,
-    ngaytao DATETIME,
-    chinhsua DATETIME,
-    ngaysinh DATE,
-    is_active BIT DEFAULT 1,
-    facebook_account_id INT DEFAULT 0,
-    google_account_id INT DEFAULT 0,
-    rolename BIT
+    USERID INT PRIMARY KEY AUTO_INCREMENT,
+    PASSWORD VARCHAR(255) NOT NULL,
+    EMAIL VARCHAR(100),
+    FULLNAME VARCHAR(255) DEFAULT '',
+    DIACHI VARCHAR(255) DEFAULT '',
+    SODIENTHOAI VARCHAR(15) NOT NULL,
+    NGAYTAO DATETIME,
+    CHINHSUA DATETIME,
+    NGAYSINH DATE,
+    IS_ACTIVE BIT DEFAULT 1,
+    FACEBOOK_ACCOUNT_ID INT DEFAULT 0,
+    GOOGLE_ACCOUNT_ID INT DEFAULT 0,
+    ROLENAME BIT
 );
 
 CREATE TABLE tokens
 (
-    token_id INT PRIMARY KEY AUTO_INCREMENT,
-    token VARCHAR(500) UNIQUE NOT NULL,
-    token_type VARCHAR(100) NOT NULL,
-    expiration_date DATETIME,
-    revoked BIT DEFAULT 1,
-    expired BIT DEFAULT 1,
-    userid INT,
-    CONSTRAINT fk_tokens_accounts FOREIGN KEY (userid) REFERENCES accounts(userid)
+    TOKEN_ID INT PRIMARY KEY AUTO_INCREMENT,
+    TOKEN VARCHAR(500) UNIQUE NOT NULL,
+    TOKEN_TYPE VARCHAR(100) NOT NULL,
+    EXPIRATION_DATE DATETIME,
+    REVOKED BIT DEFAULT 1,
+    EXPIRED BIT DEFAULT 1,
+    USERID INT,
+    CONSTRAINT fk_tokens_accounts FOREIGN KEY (USERID) REFERENCES accounts(USERID)
 );
 
 CREATE TABLE social_accounts
 (
-    social_account_id INT PRIMARY KEY AUTO_INCREMENT,
-    provider VARCHAR(20) NOT NULL COMMENT 'tên nhà social network',
-    provider_id VARCHAR(50) NOT NULL,
-    email VARCHAR(150) NOT NULL COMMENT 'email tài khoản',
-    name VARCHAR(100) NOT NULL COMMENT 'tên người dùng',
-    userid INT,
-    CONSTRAINT fk_social_accounts_accounts FOREIGN KEY (userid) REFERENCES accounts(userid)
+    SOCIAL_ACCOUNT_ID INT PRIMARY KEY AUTO_INCREMENT,
+    PROVIDER VARCHAR(20) NOT NULL COMMENT 'tên nhà social network',
+    PROVIDER_ID VARCHAR(50) NOT NULL,
+    EMAIL VARCHAR(150) NOT NULL COMMENT 'email tài khoản',
+    NAME VARCHAR(100) NOT NULL COMMENT 'tên người dùng',
+    USERID INT,
+    CONSTRAINT fk_social_accounts_accounts FOREIGN KEY (USERID) REFERENCES accounts(USERID)
 );
 
 CREATE TABLE donhang (
-    madonhang INT PRIMARY KEY AUTO_INCREMENT,
-    userid INT,
-    fullname VARCHAR(100) NOT NULL,
-    email VARCHAR(100) DEFAULT '',
-    sodienthoai VARCHAR(15) NOT NULL,
-    diachi VARCHAR(200) NOT NULL,
-    ghichu VARCHAR(100) DEFAULT '',
-    trangthai ENUM('chua xu ly', 'dang xu ly', 'dang van chuyen', 'giao hang thanh cong', 'da huy'),
-    ngaydathang DATE,
-    tongtien INT,
-    phuongthucthanhtoan VARCHAR(100),
-    is_active BIT DEFAULT 1,
-    CONSTRAINT fk_donhang_accounts FOREIGN KEY (userid) REFERENCES accounts(userid)
+    MADONHANG INT PRIMARY KEY AUTO_INCREMENT,
+    USERID INT,
+    FULLNAME VARCHAR(100) NOT NULL,
+    EMAIL VARCHAR(100) DEFAULT '',
+    SODIENTHOAI VARCHAR(15) NOT NULL,
+    DIACHI VARCHAR(200) NOT NULL,
+    GHICHU VARCHAR(100) DEFAULT '',
+    TRANGTHAI ENUM('chua xu ly', 'dang xu ly', 'dang van chuyen', 'giao hang thanh cong', 'da huy'),
+    NGAYDATHANG DATE,
+    TONGTIEN INT,
+    PHUONGTHUCTHANHTOAN VARCHAR(100),
+    IS_ACTIVE BIT DEFAULT 1,
+    CONSTRAINT fk_donhang_accounts FOREIGN KEY (USERID) REFERENCES accounts(USERID)
 );
 
 CREATE TABLE chitietdonhang (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    madonhang INT NOT NULL,
-    masanpham INT NOT NULL,
-    soluong INT NOT NULL,
-    giaban INT NOT NULL,
-    tongtien INT NOT NULL,
-    CONSTRAINT fk_donhang FOREIGN KEY (madonhang) REFERENCES donhang(madonhang),
-    CONSTRAINT fk_sanpham FOREIGN KEY (masanpham) REFERENCES sanpham(masanpham)
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    MADONHANG INT NOT NULL,
+    MASANPHAM INT NOT NULL,
+    SOLUONG INT NOT NULL,
+    GIABAN INT NOT NULL,
+    TONGTIEN INT NOT NULL,
+    CONSTRAINT fk_donhang FOREIGN KEY (MADONHANG) REFERENCES donhang(MADONHANG),
+    CONSTRAINT fk_sanpham FOREIGN KEY (MASANPHAM) REFERENCES sanpham(MASANPHAM)
 );
 
 CREATE TABLE feedback (
-    feedbackid INT PRIMARY KEY AUTO_INCREMENT,
-    userid INT,
-    noidung VARCHAR(255) NOT NULL,
-    sosao INT NOT NULL,
-    masanpham INT,
-    CONSTRAINT fk_spfb FOREIGN KEY (masanpham) REFERENCES sanpham(masanpham),
-    CONSTRAINT fk_feedback_accounts FOREIGN KEY (userid) REFERENCES accounts(userid)
+    FEEDBACKID INT PRIMARY KEY AUTO_INCREMENT,
+    USERID INT,
+    NOIDUNG VARCHAR(255) NOT NULL,
+    SOSAO INT NOT NULL,
+    MASANPHAM INT,
+    CONSTRAINT fk_spfb FOREIGN KEY (MASANPHAM) REFERENCES sanpham(MASANPHAM),
+    CONSTRAINT fk_feedback_accounts FOREIGN KEY (USERID) REFERENCES accounts(USERID)
 );
 
 -- Example data
 
-INSERT INTO loaisanpham (tenloaisanpham) VALUES
+INSERT INTO loaisanpham (TENLOAISANPHAM) VALUES
 ('Điện thoại'),
 ('Máy tính xách tay'),
 ('Tai nghe'),
@@ -128,7 +128,7 @@ INSERT INTO loaisanpham (tenloaisanpham) VALUES
 ('Máy ảnh'),
 ('Loa Bluetooth');
 
-INSERT INTO thuonghieu (tenthuonghieu) VALUES
+INSERT INTO thuonghieu (TENTHUONGHIEU) VALUES
 ('Apple'),
 ('Samsung'),
 ('Xiaomi'),

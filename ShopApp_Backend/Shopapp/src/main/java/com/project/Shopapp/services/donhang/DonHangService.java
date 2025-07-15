@@ -33,21 +33,32 @@ public class DonHangService implements IDonHangService {
     @Override
     public DonHangResponse createDonHang(DonHangDTO donHangDTO) throws Exception {
         // Tìm xem Account có tồn tại không
-        Account existingAccount = accountRepository.findById(donHangDTO.getUSERID()).orElseThrow(() -> new RuntimeException("Khong tim thay USERID nay!!!"));
+        Account existingAccount = accountRepository
+                .findById(donHangDTO.getUSERID())
+                .orElseThrow(() -> new RuntimeException("Khong tim thay USERID nay!!!"));
 
         // Convert DonHangDTO => DonHang, dùng thư viện Model Mapper
         // Tạo 1 luồng bảng ánh xạ riêng để kiểm soát việc ánh xạ
-        modelMapper.typeMap(DonHangDTO.class, DonHang.class).addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
+        try {
+            modelMapper.typeMap(DonHangDTO.class, DonHang.class).addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         // Cập nhật các trường của DonHang từ DonHangDTO
         DonHang donHang = new DonHang();
-        modelMapper.map(donHangDTO, donHang);
-        donHang.setUSERID(existingAccount);
-        donHang.setNGAYDATHANG(LocalDate.now());
-        donHang.setTRANGTHAI(TrangThaiDonHang.CHUAXULY);
-        donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
-        donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
-        donHangRepository.save(donHang);
+        try {
+            modelMapper.map(donHangDTO, donHang);
+            donHang.setUSERID(existingAccount);
+            donHang.setNGAYDATHANG(LocalDate.now());
+            donHang.setTRANGTHAI(TrangThaiDonHang.CHUAXULY);
+            donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
+            donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
+            donHangRepository.save(donHang);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         List<CTDH> ctdhList = new ArrayList<>();
         for(CartItemDTO cartItemDTO : donHangDTO.getCartitems())
