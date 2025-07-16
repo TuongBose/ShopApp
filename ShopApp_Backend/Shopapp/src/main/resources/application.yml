@@ -19,13 +19,25 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  redis:
-    host: ${REDIS_HOST:localhost} # Default to 'localhost' if not provided
-    port: ${REDIS_PORT:6379}
   messages:
     basename: i18n/messages
     encoding: UTF-8
     default-locale: en
+  # flyway
+  # Duong dan toi thu muc chua cac script Flyway
+  flyway:
+    locations: classpath:/db/migration,classpath:/dev/db/migration
+    # Phien ban baseline se = 1 va khong thuc hien bat ky thay doi nao trong DB
+    baseline-on-migrate: true
+    baseline-version: 0
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost} # Default to 'localhost' if not provided
+      port: ${REDIS_PORT:6379}
+# Deployment Docker
+#  config:
+#    import: optional:file:.env[.properties]
+
 
 api:
   prefix: /api/v1
@@ -50,6 +62,7 @@ logging:
   level:
     org:
       springframework.security: DEBUG
+      flywaydb: DEBUG
 
 # swagger-ui custom path
 springdoc:

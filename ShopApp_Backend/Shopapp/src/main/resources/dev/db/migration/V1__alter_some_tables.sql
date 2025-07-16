@@ -1,0 +1,24 @@
+-- versioned migrations
+
+-- TENLOAISANPHAM cua bang loaisanpham phai UNIQUE
+ALTER TABLE loaisanpham MODIFY TENLOAISANPHAM VARCHAR(50) UNIQUE;
+
+-- Sua truong GIA thanh DECIMAL
+ALTER TABLE sanpham MODIFY GIA DECIMAL(10,2);
+
+-- Sua truong THUMBNAIL thanh do dai 255
+ALTER TABLE sanpham MODIFY THUMBNAIL VARCHAR(255);
+
+-- Sua truong SODIENTHOAI thanh do dai 15
+-- Sua truong PASSWORD thanh do dai 60 NOT NULL
+-- Mac dinh la 1 cho ROLENAME
+ALTER TABLE accounts MODIFY COLUMN SODIENTHOAI VARCHAR(15);
+ALTER TABLE accounts MODIFY COLUMN PASSWORD CHAR(60) NOT NULL;
+ALTER TABLE accounts ALTER COLUMN ROLENAME SET DEFAULT b'1';
+
+-- Sua truong GIABAN thanh DECIMAL
+-- Sua truong SOLUONG mac dinh la 1
+-- Sua truong TONGTIEN thanh DECIMAL mac dinh la 0
+ALTER TABLE chitietdonhang MODIFY COLUMN GIABAN DECIMAL(10,2);
+ALTER TABLE chitietdonhang MODIFY COLUMN SOLUONG INT DEFAULT 1;
+ALTER TABLE chitietdonhang MODIFY COLUMN TONGTIEN DECIMAL(10,2) DEFAULT 0;
