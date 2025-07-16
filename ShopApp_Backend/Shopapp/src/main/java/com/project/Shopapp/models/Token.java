@@ -32,4 +32,6 @@ public class Token {
     @ManyToOne
     @JoinColumn(name = "USERID")
     private Account USERID;
+
+    private boolean IS_MOBILE;
 }
