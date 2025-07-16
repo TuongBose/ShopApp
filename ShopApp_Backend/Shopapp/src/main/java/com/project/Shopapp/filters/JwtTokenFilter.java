@@ -78,6 +78,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/loaisanphams**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/accounts/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/accounts/login", apiPrefix), "POST"),
+                Pair.of(String.format("%s/accounts/refreshToken", apiPrefix), "POST"),
 
                 // Healthcheck, khong yeu cau JWT token
                 Pair.of(String.format("%s/healthcheck/health", apiPrefix), "GET"),

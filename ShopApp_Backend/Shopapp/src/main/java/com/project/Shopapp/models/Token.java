@@ -34,4 +34,9 @@ public class Token {
     private Account USERID;
 
     private boolean IS_MOBILE;
+
+    @Column(name = "REFRESH_TOKEN", nullable = false)
+    private String refreshToken;
+
+    private LocalDateTime REFRESH_EXPIRATION_DATE;
 }

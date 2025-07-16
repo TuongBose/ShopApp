@@ -3,6 +3,8 @@ package com.project.Shopapp.responses;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,4 +16,10 @@ public class LoginResponse {
 
     @JsonProperty("token")
     private String token;
+
+    private String tokenType;
+    private String refreshToken;
+    private String userName;
+    private List<String> role;
+    private int id;
 }

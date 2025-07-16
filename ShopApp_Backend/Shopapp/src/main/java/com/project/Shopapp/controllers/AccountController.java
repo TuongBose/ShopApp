@@ -2,8 +2,10 @@ package com.project.Shopapp.controllers;
 
 import com.project.Shopapp.dtos.AccountDTO;
 import com.project.Shopapp.dtos.AccountLoginDTO;
+import com.project.Shopapp.dtos.RefreshTokenDTO;
 import com.project.Shopapp.dtos.UpdateAccountDTO;
 import com.project.Shopapp.models.Account;
+import com.project.Shopapp.models.Token;
 import com.project.Shopapp.responses.AccountResponse;
 import com.project.Shopapp.responses.LoginResponse;
 import com.project.Shopapp.services.account.AccountService;
@@ -12,11 +14,11 @@ import com.project.Shopapp.services.token.TokenService;
 import com.project.Shopapp.utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +34,7 @@ public class AccountController {
     private final LocalizationUtils localizationUtils;
     private final TokenService tokenService;
 
-    private boolean isMobileDevice(String accountAgent)
-    {
+    private boolean isMobileDevice(String accountAgent) {
         // Kiem tra User-Agent header de xac dinh thiet bi di dong
         // Vi du don gian:
         return accountAgent.toLowerCase().contains("mobile");
@@ -68,13 +69,18 @@ public class AccountController {
                     accountLoginDTO.isRoleid() ? Account.ADMIN : Account.USER
             );
             String accountAgent = request.getHeader("User-Agent");
-            Account account = accountService.getAccountDetailsFromToken(token);
-            tokenService.addToken(account,token,isMobileDevice(accountAgent));
+            Account accountDetail = accountService.getAccountDetailsFromToken(token);
+            Token jwtToken = tokenService.addToken(accountDetail, token, isMobileDevice(accountAgent));
 
             return ResponseEntity.ok(
                     LoginResponse.builder()
                             .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
                             .token(token)
+                            .tokenType(jwtToken.getTOKEN_TYPE())
+                            .refreshToken(jwtToken.getRefreshToken())
+                            .userName(accountDetail.getFULLNAME())
+                            .role(accountDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                            .id(accountDetail.getUSERID())
                             .build()
             );
         } catch (Exception e) {
@@ -83,6 +89,25 @@ public class AccountController {
                             .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()))
                             .build()
             );
+        }
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
+        try {
+            Account accountDetail = accountService.getAccountDetailsFromRefreshToken(refreshTokenDTO.getRefreshToken());
+            Token jwtToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken(), accountDetail);
+            return ResponseEntity.ok(LoginResponse.builder()
+                    .message("Refresh token successfully")
+                    .token(jwtToken.getTOKEN())
+                    .tokenType(jwtToken.getTOKEN_TYPE())
+                    .refreshToken(jwtToken.getRefreshToken())
+                    .userName(accountDetail.getFULLNAME())
+                    .role(accountDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .id(accountDetail.getUSERID())
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

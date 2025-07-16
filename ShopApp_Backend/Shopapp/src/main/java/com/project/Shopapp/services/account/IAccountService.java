@@ -8,5 +8,6 @@ public interface IAccountService {
     Account createAccount(AccountDTO accountDTO) throws Exception;
     String login(String SODIENTHOAI, String PASSWORD, Integer roleId) throws Exception;
     Account getAccountDetailsFromToken(String token) throws Exception;
+    Account getAccountDetailsFromRefreshToken(String refreshToken) throws Exception;
     Account updateAccount(UpdateAccountDTO updateAccountDTO, int userId) throws Exception;
 }

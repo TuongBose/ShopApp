@@ -9,4 +9,5 @@ import java.util.List;
 public interface TokenRepository extends JpaRepository<Token, Integer> {
     List<Token> findByUSERID(Account account);
     Token findByTOKEN(String token);
+    Token findByRefreshToken(String refreshToken);
 }

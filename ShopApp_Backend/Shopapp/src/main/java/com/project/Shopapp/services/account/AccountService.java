@@ -4,7 +4,9 @@ import com.project.Shopapp.components.JwtTokenUtils;
 import com.project.Shopapp.dtos.AccountDTO;
 import com.project.Shopapp.dtos.UpdateAccountDTO;
 import com.project.Shopapp.models.Account;
+import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.AccountRepository;
+import com.project.Shopapp.repositories.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +24,7 @@ public class AccountService implements IAccountService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
 
     @Override
     @Transactional
@@ -108,6 +111,12 @@ public class AccountService implements IAccountService {
         } else {
             throw new Exception("Account not found");
         }
+    }
+
+    @Override
+    public Account getAccountDetailsFromRefreshToken(String refreshToken) throws Exception {
+        Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
+        return getAccountDetailsFromToken(existingToken.getTOKEN());
     }
 
     @Override
