@@ -5,12 +5,23 @@ import { SanPhamService } from '../../services/sanpham.service';
 import { LoaiSanPham } from '../../models/loaisanpham';
 import { LoaiSanPhamService } from '../../services/loaisanpham.service';
 import { Router } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  standalone: false,
+  standalone: true,
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
+  imports:[
+    HeaderComponent,
+    FooterComponent,
+    CommonModule,
+    FormsModule
+  ]
+
 })
 export class HomeComponent implements OnInit {
   sanphams: SanPham[] = [];

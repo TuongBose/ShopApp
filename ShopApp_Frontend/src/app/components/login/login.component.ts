@@ -1,18 +1,28 @@
 import { Component, ViewChild } from '@angular/core';
 import { LoginDTO } from '../../dtos/account/login.dto';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AccountService } from '../../services/account.service';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { LoginResponse } from '../../responses/account/login.response';
 import { AccountResponse } from '../../responses/account/account.response';
 import { TokenService } from '../../services/token.service';
 import { CartService } from '../../services/cart.service';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  standalone: false,
+  standalone: true,
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
+  imports:[
+    HeaderComponent,
+    FooterComponent,
+    CommonModule,
+    FormsModule,
+    RouterModule
+  ]
 })
 export class LoginComponent {
   @ViewChild('loginForm') loginForm!: NgForm;
@@ -21,6 +31,7 @@ export class LoginComponent {
   password: string;
   rememberMe: boolean = false;
   accountResponse?: AccountResponse
+  showPassword:boolean=false;
 
   constructor(
     private router: Router,

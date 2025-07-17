@@ -2,13 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../services/account.service';
 import { AccountResponse } from '../../responses/account/account.response';
 import { TokenService } from '../../services/token.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-header',
-  standalone: false,
+  standalone: true,
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.scss',
+  imports:[
+    CommonModule,
+    NgbModule,
+    RouterModule
+  ]
 })
 export class HeaderComponent implements OnInit {
   account?: AccountResponse | null;

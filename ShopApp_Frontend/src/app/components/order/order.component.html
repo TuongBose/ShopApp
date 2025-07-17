@@ -11,30 +11,34 @@
                     <label for="name" class="form-label">Họ và tên</label>
                     <input type="text" formControlName="fullname" class="form-control" id="name"
                         [class.is-invalid]="orderForm.get('fullname')!.invalid && orderForm.get('fullname')!.touched">
-                    <div *ngIf="orderForm.get('fullname')!.invalid&& orderForm.get('fullname')!.touched"
-                        class="invalid-feedback">Họ và tên bắt buộc</div>
+                    @if(orderForm.get('fullname')!.invalid&& orderForm.get('fullname')!.touched)
+                    {<div class="invalid-feedback">Họ và tên bắt buộc</div>}
                 </div>
+
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" formControlName="email" class="form-control" id="email"
                         [class.is-invalid]="orderForm.get('email')!.invalid && orderForm.get('email')!.touched">
-                    <div *ngIf="orderForm.get('email')!.invalid&& orderForm.get('email')!.touched"
-                        class="invalid-feedback">Email không hợp lệ</div>
+                    @if(orderForm.get('email')!.invalid&& orderForm.get('email')!.touched)
+                    {<div class="invalid-feedback">Email không hợp lệ</div>}
                 </div>
+
                 <div class="mb-3">
                     <label for="phone" class="form-label">Số điện thoại</label>
                     <input type="text" formControlName="sodienthoai" class="form-control" id="phone"
                         [class.is-invalid]="orderForm.get('sodienthoai')!.invalid && orderForm.get('sodienthoai')!.touched">
-                    <div *ngIf="orderForm.get('sodienthoai')!.invalid&& orderForm.get('sodienthoai')!.touched"
-                        class="invalid-feedback">Số điện thoại không hợp lệ</div>
+                    @if(orderForm.get('sodienthoai')!.invalid&& orderForm.get('sodienthoai')!.touched)
+                    {<div class="invalid-feedback">Số điện thoại không hợp lệ</div>}
                 </div>
+
                 <div class="mb-3">
                     <label for="phone" class="form-label">Địa chỉ</label>
                     <input type="text" formControlName="diachi" class="form-control" id="phone"
                         [class.is-invalid]="orderForm.get('diachi')!.invalid && orderForm.get('diachi')!.touched">
-                    <div *ngIf="orderForm.get('diachi')!.invalid&& orderForm.get('diachi')!.touched"
-                        class="invalid-feedback">Địa chỉ không hợp lệ</div>
+                    @if(orderForm.get('diachi')!.invalid&& orderForm.get('diachi')!.touched)
+                    {<div class="invalid-feedback">Địa chỉ không hợp lệ</div>}
                 </div>
+
                 <div class="mb-3">
                     <label for="phone" class="form-label">Ghi chú</label>
                     <input type="text" formControlName="ghichu" class="form-control" id="phone"
@@ -80,7 +84,7 @@
                                 <td>{{item.sanPham.gia|number:'1.2-2'}}</td>
                                 <td>{{item.sanPham.gia*item.quantity|number:'1.2-2'}}</td>
                                 <td class="btn btn-danger" style="margin-top: 35px; margin-right: 15px;"
-                                (click)="confirmDelete(i)">Xóa</td>
+                                    (click)="confirmDelete(i)">Xóa</td>
                             </tr>
                         </ng-container>
                     </tbody>

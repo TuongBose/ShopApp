@@ -5,7 +5,8 @@
         <p>Xem thông tin chi tiết đơn hàng</p>
     </div>
 
-    <div *ngIf="donHangResponse" class="row">
+    @if(donHangResponse){
+    <div class="row">
         <!-- Hiển thị thông tin người nhận -->
         <div class="col-md-6">
             <h2 class="product-header">Thông tin người nhận</h2>
@@ -61,5 +62,6 @@
             </div>
         </div>
     </div>
+}
 </div>
 <app-footer></app-footer>

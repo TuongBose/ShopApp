@@ -3,20 +3,32 @@ import { SanPham } from '../../models/sanpham';
 import { OrderDTO } from '../../dtos/order.dto';
 import { CartService } from '../../services/cart.service';
 import { SanPhamService } from '../../services/sanpham.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DonHangService } from '../../services/donhang.service';
 import { TokenService } from '../../services/token.service';
 import { environment } from '../../environments/environment';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { DonHang } from '../../models/donhang';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-order',
-  standalone: false,
+  standalone: true,
   templateUrl: './order.component.html',
-  styleUrl: './order.component.scss'
+  styleUrl: './order.component.scss',
+  imports:[
+    HeaderComponent,
+    FooterComponent,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule
+  ]
 })
 export class OrderComponent implements OnInit {
+  cart: Map<number, number> = new Map();
   orderForm: FormGroup;
   cartItems: { sanPham: SanPham, quantity: number }[] = [];
   couponCode: string = '';
@@ -32,8 +44,6 @@ export class OrderComponent implements OnInit {
     phuongthucthanhtoan: 'cod',
     cartitems: []
   }
-
-private cart: Map<number, number> = new Map<number, number>();
 
   constructor(
     private cartService: CartService,

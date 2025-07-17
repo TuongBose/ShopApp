@@ -1,14 +1,23 @@
 import { Component, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
 import { RegisterDTO } from '../../dtos/account/register.dto';
+import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-register',
-  standalone: false,
+  standalone: true,
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    HeaderComponent,
+    FooterComponent
+  ]
 })
 export class RegisterComponent {
   @ViewChild('registerForm') registerForm!: NgForm;
@@ -20,6 +29,8 @@ export class RegisterComponent {
   address: string;
   isAccepted: boolean;
   dateOfBirth: Date;
+  showPassword: boolean = false;
+  showRetypePassword: boolean = false;
 
   constructor(private router: Router, private accountService: AccountService) {
     this.phoneNumber = '';
@@ -50,8 +61,8 @@ export class RegisterComponent {
       `Date of Birth: ${this.dateOfBirth}`
     alert(message)
 
-    
-    const registerDTO:RegisterDTO = {
+
+    const registerDTO: RegisterDTO = {
       "password": this.password,
       "retypepassword": this.retypePassword,
       "email": this.email,

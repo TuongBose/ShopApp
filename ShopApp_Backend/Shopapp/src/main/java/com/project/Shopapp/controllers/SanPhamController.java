@@ -184,41 +184,70 @@ public class SanPhamController {
         return ResponseEntity.ok("Fake SanPhams thanh cong!!!");
     }
 
+//    @GetMapping("")
+//    public ResponseEntity<?> getAllSanPham(
+//            @RequestParam(defaultValue = "") String keyword,
+//            @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int limit
+//    ) {
+//        int tongSoTrang = 0;
+//        // Tạo Pageable từ thông tin trang và giới hạn
+//        PageRequest pageRequest = PageRequest.of(
+//                page, limit,
+//                //Sort.by("NGAYTAO").descending()
+//                Sort.by("MASANPHAM").ascending()
+//        );
+//        logger.info(String.format("keyword = %s, MALOAISANPHAM = %d, page = %d, limit = %d",
+//                keyword, MALOAISANPHAM, page, limit));
+//
+//        try {
+//            List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+//            if (sanPhamResponseList == null || sanPhamResponseList.isEmpty()) {
+//                Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+//
+//                // Lấy tổng số trang
+//                tongSoTrang = sanPhamResponses.getTotalPages();
+//                sanPhamResponseList = sanPhamResponses.getContent();
+//                sanPhamRedisService.saveAllSanPham(sanPhamResponseList, keyword, MALOAISANPHAM, pageRequest);
+//            }
+//            return ResponseEntity.ok(SanPhamListResponse
+//                    .builder()
+//                    .sanPhamResponseList(sanPhamResponseList)
+//                    .tongSoTrang(tongSoTrang)
+//                    .build());
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+
+    // getAllSanPham old
     @GetMapping("")
-    public ResponseEntity<?> getAllSanPham(
+    public ResponseEntity<SanPhamListResponse> getAllSanPham(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "0") int limit
     ) {
-        int tongSoTrang = 0;
         // Tạo Pageable từ thông tin trang và giới hạn
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
                 //Sort.by("NGAYTAO").descending()
                 Sort.by("MASANPHAM").ascending()
         );
-        logger.info(String.format("keyword = %s, MALOAISANPHAM = %d, page = %d, limit = %d",
-                keyword, MALOAISANPHAM, page, limit));
+        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
 
-        try {
-            List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
-            if (sanPhamResponseList == null || sanPhamResponseList.isEmpty()) {
-                Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+        // Lấy tổng số trang
+        int tongSoTrang = sanPhamResponses.getTotalPages();
+        List<SanPhamResponse> dsSanPham = sanPhamResponses.getContent();
 
-                // Lấy tổng số trang
-                tongSoTrang = sanPhamResponses.getTotalPages();
-                sanPhamResponseList = sanPhamResponses.getContent();
-                sanPhamRedisService.saveAllSanPham(sanPhamResponseList, keyword, MALOAISANPHAM, pageRequest);
-            }
-            return ResponseEntity.ok(SanPhamListResponse
-                    .builder()
-                    .sanPhamResponseList(sanPhamResponseList)
-                    .tongSoTrang(tongSoTrang)
-                    .build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        SanPhamListResponse newSanPhamListResponse = SanPhamListResponse
+                .builder()
+                .sanPhamResponseList(dsSanPham)
+                .tongSoTrang(tongSoTrang)
+                .build();
+
+        return ResponseEntity.ok(newSanPhamListResponse);
     }
 
     @GetMapping("/{id}")

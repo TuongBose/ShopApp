@@ -32,12 +32,23 @@ spring:
     baseline-version: 0
   data:
     redis:
+      use-redis-cache: false # On off redis
       host: ${REDIS_HOST:localhost} # Default to 'localhost' if not provided
       port: ${REDIS_PORT:6379}
+  security:
+    oauth2:
+      client:
+        registration:
+          facebook:
+            clientId: YOUR_FACEBOOK_APP_ID
+            clientSecret: YOUR_FACEBOOK_APP_SECRET
+            scope:
+              - email
+              - public_profile
+
 # Deployment Docker
 #  config:
 #    import: optional:file:.env[.properties]
-
 
 api:
   prefix: /api/v1

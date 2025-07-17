@@ -8,12 +8,22 @@ import { environment } from '../../environments/environment';
 import { CartService } from '../../services/cart.service';
 import { AccountResponse } from '../../responses/account/account.response';
 import { AccountService } from '../../services/account.service';
+import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-detail-product',
-  standalone: false,
+  standalone: true,
   templateUrl: './detail-product.component.html',
-  styleUrl: './detail-product.component.css'
+  styleUrl: './detail-product.component.css',
+  imports:[
+    CommonModule,
+    HeaderComponent,
+    FooterComponent,
+    NgbModule
+  ]
 })
 export class DetailProductComponent implements OnInit {
   sanPham?: SanPham;

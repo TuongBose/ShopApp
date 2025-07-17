@@ -25,9 +25,24 @@ export class CartService {
 
     private getCartKey(): string {
         const accountResponseJSON = localStorage.getItem('account');
-        const accountResponse = JSON.parse(accountResponseJSON!);
-        debugger;
-        return `cart:${accountResponse.userid}`
+        
+        if (!accountResponseJSON) {
+            console.warn('Chưa đăng nhập, không thể tạo key giỏ hàng.');
+            return 'cart:anonymous';
+        }
+
+        try {
+            const accountResponse = JSON.parse(accountResponseJSON);
+            if (!accountResponse || typeof accountResponse.userid !== 'number') {
+                console.warn('Dữ liệu tài khoản không hợp lệ.');
+                return 'cart:anonymous'; // hoặc throw new Error(...)
+            }
+
+            return `cart:${accountResponse.userid}`;
+        } catch (err) {
+            console.error('Lỗi khi parse account từ localStorage:', err);
+            return 'cart:anonymous';
+        }
     }
 
     addToCart(masanpham: number, quantity: number = 1): void {

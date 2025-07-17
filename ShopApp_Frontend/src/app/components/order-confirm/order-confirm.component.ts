@@ -1,18 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { SanPham } from '../../models/sanpham';
-import { CartService } from '../../services/cart.service';
-import { SanPhamService } from '../../services/sanpham.service';
-import { error } from 'console';
 import { DonHangService } from '../../services/donhang.service';
-import { environment } from '../../environments/environment';
 import { DonHangResponse } from '../../responses/donhang.response';
 import { CTDH } from '../../models/ctdh';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-order-confirm',
-  standalone: false,
+  standalone: true,
   templateUrl: './order-confirm.component.html',
-  styleUrl: './order-confirm.component.scss'
+  styleUrl: './order-confirm.component.scss',
+  imports:[
+    HeaderComponent,
+    FooterComponent,
+    CommonModule
+  ]
 })
 export class OrderConfirmComponent implements OnInit {
   donHangResponse: DonHangResponse = {

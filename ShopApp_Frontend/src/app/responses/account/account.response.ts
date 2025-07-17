@@ -8,4 +8,5 @@ export interface AccountResponse {
     sodienthoai: string;
     is_active: boolean;
     fullname: string;
+    email:string;
 }

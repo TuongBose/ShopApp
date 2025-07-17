@@ -3,6 +3,7 @@ import { environment } from "../environments/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { SanPham } from "../models/sanpham";
+import { insertSanPhamDTO } from "../dtos/insertsanpham.dto";
 
 @Injectable({
     providedIn: 'root'
@@ -32,4 +33,18 @@ export class SanPhamService {
         const params = new HttpParams().set('ids', MASANPHAMList.join(','));
         return this.http.get<SanPham[]>(`${this.apiGetAllSanPham}/by-ids`,{params});
     }
+
+    deleteSanPham(masanpham: number): Observable<string>{
+        debugger
+        return this.http.delete<string>( `${this.apiGetAllSanPham}/${masanpham}`)
+    }
+
+    insertSanPham(insertSanPhamDTO: insertSanPhamDTO):Observable<any>{
+        return this.http.post(`${this.apiGetAllSanPham}`,insertSanPhamDTO);
+    }
+
+    // uploadImages(masanpham: number, files:File[]):Observable<any>{
+    //     const formData=new FormData();
+    //     for(let i = 0;i<files.length;i++    )
+    // }
 }
