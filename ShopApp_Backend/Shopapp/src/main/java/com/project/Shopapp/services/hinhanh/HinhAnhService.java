@@ -21,7 +21,12 @@ public class HinhAnhService implements IHinhAnhService {
 
         List<HinhAnhResponse> hinhAnhResponseList = new ArrayList<>();
         if (hinhAnhList.isEmpty()) {
-            throw new RuntimeException("Không có hình ảnh nào");
+            HinhAnhResponse newHinhAnhResponse = HinhAnhResponse.builder()
+                    .MALOAISANPHAM(0)
+                    .MASANPHAM(0)
+                    .TENHINHANH("notfound.jpg")
+                    .build();
+            hinhAnhResponseList.add(newHinhAnhResponse);
         } else {
             for (HinhAnh hinhAnh : hinhAnhList) {
                 HinhAnhResponse newHinhAnhResponse = HinhAnhResponse
@@ -32,7 +37,7 @@ public class HinhAnhService implements IHinhAnhService {
                         .build();
                 hinhAnhResponseList.add(newHinhAnhResponse);
             }
-            return hinhAnhResponseList;
         }
+        return hinhAnhResponseList;
     }
 }

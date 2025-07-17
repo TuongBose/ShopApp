@@ -40,8 +40,9 @@
                 <h2>{{sanPham?.tensanpham}}</h2>
                 <p>{{sanPham?.mota}}</p>
                 <p>Gia: ${{sanPham?.gia}}</p>
+                <p>Tổng tiền: ${{getTotalPrice() | number: '1.2-2'}}</p>
                 <div class="product-actions">
-                    <button class="btn btn-primary" (click)="addToCart()">Them vao gio hang</button>
+                    <button class="btn btn-primary" (click)="addToCart()">Thêm vào giỏ hàng</button>
                     <button class="btn btn-success" (click)="buyNow()">Mua ngay</button>
                 </div>
                 <div class="product-quantity">

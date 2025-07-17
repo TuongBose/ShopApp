@@ -6,6 +6,7 @@ import { NgForm } from '@angular/forms';
 import { LoginResponse } from '../../responses/account/login.response';
 import { AccountResponse } from '../../responses/account/account.response';
 import { TokenService } from '../../services/token.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,8 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private accountService: AccountService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private cartService: CartService
   ) {
     this.phoneNumber = '0904';
     this.password = '123';
@@ -61,7 +63,9 @@ export class LoginComponent {
             this.accountService.saveAccountToLocalStorage(this.accountResponse,this.rememberMe);
             this.router.navigate(['/']);
           },
-          complete: () => { debugger },
+          complete: () => { 
+            this.cartService.refreshCart();
+            debugger },
           error: (error: any) => {
             debugger
             alert(error.error.message);

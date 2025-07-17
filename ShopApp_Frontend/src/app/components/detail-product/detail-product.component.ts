@@ -21,6 +21,7 @@ export class DetailProductComponent implements OnInit {
   currentImageIndex: number = 0;
   quantity: number = 1;
   account?: AccountResponse | null;
+  isPressAddToCart:boolean=false;
 
   constructor(
     private sanPhamService: SanPhamService,
@@ -31,7 +32,6 @@ export class DetailProductComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     debugger
     this.activatedRoute.paramMap.subscribe(params => {
       const idParam = params.get('id');
@@ -99,6 +99,7 @@ export class DetailProductComponent implements OnInit {
 
   addToCart(): void {
     debugger
+    this.isPressAddToCart=true;
     if (this.sanPham) {
       this.cartService.addToCart(this.sanPham.masanpham, this.quantity);
     }
@@ -108,6 +109,7 @@ export class DetailProductComponent implements OnInit {
   }
 
   increaseQuantity(): void {
+    debugger;
     this.quantity++;
   }
 
@@ -119,12 +121,21 @@ export class DetailProductComponent implements OnInit {
 
   buyNow(): void {
     this.account = this.accountService.getAccountFromLocalStorage();
-    if(this.account==null)
-    {
-    this.router.navigate(['/login']);  
+    if (this.account == null) {
+      this.router.navigate(['/login']);
     }
-    else{
-    this.router.navigate(['/orders']);
+    else {
+      if(this.isPressAddToCart==false){
+        this.addToCart();
+      }
+      this.router.navigate(['/orders']);
     }
+  }
+
+  getTotalPrice(): number {
+    if (this.sanPham) {
+      return this.sanPham.gia * this.quantity;
+    }
+    return 0;
   }
 }

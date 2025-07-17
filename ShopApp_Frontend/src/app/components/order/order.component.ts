@@ -33,6 +33,8 @@ export class OrderComponent implements OnInit {
     cartitems: []
   }
 
+private cart: Map<number, number> = new Map<number, number>();
+
   constructor(
     private cartService: CartService,
     private sanPhamService: SanPhamService,
@@ -139,6 +141,43 @@ export class OrderComponent implements OnInit {
       (total, item) => total + item.sanPham.gia * item.quantity,
       0
     );
+  }
+
+  decreaseQuantity(index: number): void {
+    if (this.cartItems[index].quantity > 1) {
+      this.cartItems[index].quantity--;
+      // Cập nhật lại this.cart từ this.cartItems
+      this.updateCartFromCartItems();
+      this.calculateTotal();
+    }
+  }
+
+  increaseQuantity(index: number): void {
+    this.cartItems[index].quantity++;
+    debugger;
+    // Cập nhật lại this.cart từ this.cartItems
+    this.updateCartFromCartItems();
+    this.calculateTotal();
+  }
+
+  confirmDelete(index: number): void {
+    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+      // Xoa san pham khoi danh sach cartItems
+      this.cartItems.splice(index, 1);
+      // Cập nhật lại this.cart từ this.cartItems
+      this.updateCartFromCartItems();
+      // Tinh toan lai tong tien
+      this.calculateTotal();
+    }
+
+  }
+
+  private updateCartFromCartItems():void{
+    this.cart.clear();
+    this.cartItems.forEach((item)=>{
+      this.cart.set(item.sanPham.masanpham,item.quantity);
+    });
+    this.cartService.setCart(this.cart);
   }
 
   applyCoupon(): void {
