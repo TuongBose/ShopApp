@@ -64,7 +64,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngFor="let item of cartItems; let i = index">
+                        @for(item of cartItems; track item.sanPham.masanpham;let i = $index){
+                            <ng-container>
                             <tr>
                                 <td>
                                     <div class="product-info">
@@ -87,6 +88,8 @@
                                     (click)="confirmDelete(i)">Xóa</td>
                             </tr>
                         </ng-container>
+                        }
+                        
                     </tbody>
                 </table>
                 <div class="text-start mt-3">
