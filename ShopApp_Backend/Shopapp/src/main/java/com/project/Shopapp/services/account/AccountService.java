@@ -3,11 +3,15 @@ package com.project.Shopapp.services.account;
 import com.project.Shopapp.components.JwtTokenUtils;
 import com.project.Shopapp.dtos.AccountDTO;
 import com.project.Shopapp.dtos.UpdateAccountDTO;
+import com.project.Shopapp.exceptions.DataNotFoundException;
+import com.project.Shopapp.exceptions.InvalidPasswordException;
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.AccountRepository;
 import com.project.Shopapp.repositories.TokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -144,7 +149,7 @@ public class AccountService implements IAccountService {
         if (updateAccountDTO.getNGAYSINH() != null) {
             existingAccount.setNGAYSINH(updateAccountDTO.getNGAYSINH());
         }
-        if(updateAccountDTO.getEMAIL()!=null){
+        if (updateAccountDTO.getEMAIL() != null) {
             existingAccount.setEMAIL(updateAccountDTO.getEMAIL());
         }
         if (updateAccountDTO.getFACEBOOKACCOUNTID() > 0) {
@@ -162,5 +167,36 @@ public class AccountService implements IAccountService {
         }
 
         return accountRepository.save(existingAccount);
+    }
+
+    @Override
+    public Page<Account> getAllAccountCustomer(String keyword, Pageable pageable) throws Exception {
+        return accountRepository.findAll(keyword, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(int userId, String newPassword) throws DataNotFoundException, InvalidPasswordException {
+        Account existingAccount = accountRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Account not found"));
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        existingAccount.setPASSWORD(encodedPassword);
+        accountRepository.save(existingAccount);
+
+        // reset password => clear token
+        List<Token> tokens = tokenRepository.findByUSERID(existingAccount);
+        for(Token token : tokens){
+            tokenRepository.delete(token);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void blockOrEnable(int userId, boolean active) throws DataNotFoundException {
+        Account existingAccount = accountRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Account not found"));
+        existingAccount.setIS_ACTIVE(active);
+        accountRepository.save(existingAccount);
     }
 }

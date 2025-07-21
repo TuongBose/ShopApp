@@ -4,8 +4,11 @@ import com.project.Shopapp.dtos.AccountDTO;
 import com.project.Shopapp.dtos.AccountLoginDTO;
 import com.project.Shopapp.dtos.RefreshTokenDTO;
 import com.project.Shopapp.dtos.UpdateAccountDTO;
+import com.project.Shopapp.exceptions.DataNotFoundException;
+import com.project.Shopapp.exceptions.InvalidPasswordException;
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
+import com.project.Shopapp.responses.AccountListResponse;
 import com.project.Shopapp.responses.AccountResponse;
 import com.project.Shopapp.responses.LoginResponse;
 import com.project.Shopapp.services.account.AccountService;
@@ -15,6 +18,9 @@ import com.project.Shopapp.utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,8 +29,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/accounts")
@@ -142,6 +151,67 @@ public class AccountController {
 
             Account updateAccount = accountService.updateAccount(updateAccountDTO, userId);
             return ResponseEntity.ok(AccountResponse.fromAccount(updateAccount));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> getAllAccountCustomer(
+            @RequestParam(defaultValue = "", required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        try {
+            PageRequest pageRequest = PageRequest.of(
+                    page, limit,
+                    Sort.by("USERID").ascending()
+            );
+            Page<AccountResponse> accountPage = accountService.getAllAccountCustomer(keyword, pageRequest)
+                    .map(AccountResponse::fromAccount);
+
+            // Lay tong so trang
+            int totalPages = accountPage.getTotalPages();
+            List<AccountResponse> accountResponses = accountPage.getContent();
+            return ResponseEntity.ok(AccountListResponse
+                    .builder()
+                    .accountResponseList(accountResponses)
+                    .totalPages(totalPages)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/reset-password/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> resetPassword(@Valid @PathVariable int userId) {
+        try {
+            String newPassword = UUID.randomUUID().toString().substring(0, 5); // Create new password
+            accountService.resetPassword(userId, newPassword);
+            return ResponseEntity.ok(newPassword);
+        } catch (InvalidPasswordException e) {
+            return ResponseEntity.badRequest().body("Invalid password");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body("Account not found");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/block/{userId}/{active}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> block(
+            @Valid @PathVariable int userId,
+            @Valid @PathVariable int active
+    ) {
+        try {
+            accountService.blockOrEnable(userId, active > 0);
+            String message = active > 0 ? "Successfully enable the account." : "Successfully blocked the account.";
+            return ResponseEntity.ok().body(message);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body("Account not found");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

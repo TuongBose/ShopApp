@@ -15,6 +15,7 @@ import java.util.Date;
 public class UpdateAccountDTO {
     @NotBlank(message = "Password khong duoc bo trong")
     private String PASSWORD;
+    private String RETYPEPASSWORD;
     private String EMAIL;
     private String FULLNAME;
     private String DIACHI;

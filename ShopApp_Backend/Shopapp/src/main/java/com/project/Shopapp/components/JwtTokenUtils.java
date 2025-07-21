@@ -3,12 +3,12 @@ package com.project.Shopapp.components;
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.TokenRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -24,6 +24,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtTokenUtils {
     private final TokenRepository tokenRepository;
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtils.class);
 
     @Value("${jwt.expiration}")
     private Long expiration; // Save to an environment variable
@@ -80,12 +81,21 @@ public class JwtTokenUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String phoneNumber = extractPhoneNumber(token);
-        Token existingToken = tokenRepository.findByTOKEN(token);
-        if (existingToken == null || existingToken.isREVOKED()) {
-            return false;
+    public boolean validateToken(String token, Account userDetails) {
+        try {
+            String phoneNumber = extractPhoneNumber(token);
+            Token existingToken = tokenRepository.findByTOKEN(token);
+            if (existingToken == null || existingToken.isREVOKED() || !userDetails.isIS_ACTIVE()) {
+                return false;
+            }
+            return (phoneNumber.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
         }
-        return (phoneNumber.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return false;
     }
 }
