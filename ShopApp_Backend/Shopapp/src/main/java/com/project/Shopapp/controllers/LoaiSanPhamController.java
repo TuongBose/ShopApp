@@ -3,7 +3,7 @@ package com.project.Shopapp.controllers;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.dtos.LoaiSanPhamDTO;
 import com.project.Shopapp.models.LoaiSanPham;
-import com.project.Shopapp.responses.UpdateLoaiSanPhamResponse;
+import com.project.Shopapp.responses.loaisanpham.UpdateLoaiSanPhamResponse;
 import com.project.Shopapp.services.loaisanpham.LoaiSanPhamService;
 import com.project.Shopapp.utils.MessageKeys;
 import jakarta.servlet.http.HttpServletRequest;

@@ -2,7 +2,7 @@ package com.project.Shopapp.services.donhang;
 
 import com.project.Shopapp.models.DonHang;
 import com.project.Shopapp.dtos.DonHangDTO;
-import com.project.Shopapp.responses.DonHangResponse;
+import com.project.Shopapp.responses.donhang.DonHangResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

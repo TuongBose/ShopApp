@@ -32,4 +32,8 @@ public class CTDH {
 
     @Column(name = "TONGTIEN", nullable = false)
     private int TONGTIEN;
+
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 }

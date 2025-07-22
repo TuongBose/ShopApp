@@ -4,7 +4,7 @@ import com.project.Shopapp.dtos.HinhAnhDTO;
 import com.project.Shopapp.dtos.SanPhamDTO;
 import com.project.Shopapp.models.HinhAnh;
 import com.project.Shopapp.models.SanPham;
-import com.project.Shopapp.responses.SanPhamResponse;
+import com.project.Shopapp.responses.sanpham.SanPhamResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 

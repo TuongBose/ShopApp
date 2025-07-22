@@ -1,6 +1,8 @@
-package com.project.Shopapp.responses;
+package com.project.Shopapp.responses.sanpham;
 
 import com.project.Shopapp.models.SanPham;
+import com.project.Shopapp.responses.BaseResponse;
+import com.project.Shopapp.responses.hinhanh.HinhAnhResponse;
 import lombok.*;
 
 import java.util.List;

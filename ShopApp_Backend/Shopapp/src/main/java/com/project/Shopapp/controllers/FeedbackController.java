@@ -3,15 +3,12 @@ package com.project.Shopapp.controllers;
 import com.project.Shopapp.dtos.FeedbackDTO;
 import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.models.Account;
-import com.project.Shopapp.models.Feedback;
-import com.project.Shopapp.responses.FeedbackResponse;
+import com.project.Shopapp.responses.feedback.FeedbackResponse;
 import com.project.Shopapp.services.feedback.IFeedbackService;
-import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 

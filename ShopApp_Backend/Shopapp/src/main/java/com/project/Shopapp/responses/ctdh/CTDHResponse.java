@@ -1,4 +1,4 @@
-package com.project.Shopapp.responses;
+package com.project.Shopapp.responses.ctdh;
 
 import com.project.Shopapp.models.CTDH;
 import com.project.Shopapp.models.SanPham;

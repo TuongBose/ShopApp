@@ -2,8 +2,7 @@ package com.project.Shopapp.services.feedback;
 
 import com.project.Shopapp.dtos.FeedbackDTO;
 import com.project.Shopapp.exceptions.DataNotFoundException;
-import com.project.Shopapp.models.Feedback;
-import com.project.Shopapp.responses.FeedbackResponse;
+import com.project.Shopapp.responses.feedback.FeedbackResponse;
 
 import java.util.List;
 

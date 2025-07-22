@@ -1,11 +1,7 @@
-package com.project.Shopapp.responses;
+package com.project.Shopapp.responses.feedback;
 
-import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Feedback;
-import com.project.Shopapp.models.SanPham;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.project.Shopapp.responses.account.AccountResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;

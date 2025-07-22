@@ -3,7 +3,7 @@ package com.project.Shopapp.controllers;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.dtos.CTDH_DTO;
 import com.project.Shopapp.models.CTDH;
-import com.project.Shopapp.responses.CTDHResponse;
+import com.project.Shopapp.responses.ctdh.CTDHResponse;
 import com.project.Shopapp.services.ctdh.CTDHService;
 import com.project.Shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;

@@ -65,6 +65,9 @@ public class WebSecurityConfig {
                             // feedbacks
                             .requestMatchers(GET,String.format("%s/feedbacks/**",apiPrefix)).permitAll()
 
+                            // coupons
+                            .requestMatchers(GET,String.format("%s/coupons/**",apiPrefix)).permitAll()
+
                             // loaisanphams
                             .requestMatchers(GET, String.format("%s/loaisanphams**", apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("%s/loaisanphams/**", apiPrefix)).hasRole(Role.ADMIN)

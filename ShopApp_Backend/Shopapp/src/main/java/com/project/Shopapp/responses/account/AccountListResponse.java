@@ -1,6 +1,7 @@
-package com.project.Shopapp.responses;
+package com.project.Shopapp.responses.account;
 
 import java.util.List;
+
 import lombok.*;
 
 @Getter

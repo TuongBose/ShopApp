@@ -10,7 +10,7 @@ import com.project.Shopapp.repositories.HinhAnhRepository;
 import com.project.Shopapp.repositories.LoaiSanPhamRepository;
 import com.project.Shopapp.repositories.SanPhamRepository;
 import com.project.Shopapp.repositories.ThuongHieuRepository;
-import com.project.Shopapp.responses.SanPhamResponse;
+import com.project.Shopapp.responses.sanpham.SanPhamResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

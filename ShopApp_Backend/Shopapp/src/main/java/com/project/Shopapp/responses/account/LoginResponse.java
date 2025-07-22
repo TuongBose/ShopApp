@@ -1,4 +1,4 @@
-package com.project.Shopapp.responses;
+package com.project.Shopapp.responses.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

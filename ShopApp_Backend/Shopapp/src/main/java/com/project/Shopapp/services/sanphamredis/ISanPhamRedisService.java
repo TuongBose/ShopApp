@@ -1,6 +1,6 @@
 package com.project.Shopapp.services.sanphamredis;
 
-import com.project.Shopapp.responses.SanPhamResponse;
+import com.project.Shopapp.responses.sanpham.SanPhamResponse;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;

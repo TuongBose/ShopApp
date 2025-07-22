@@ -39,4 +39,8 @@ public class DonHang {
     private int TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
     private boolean IS_ACTIVE;
+
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 }

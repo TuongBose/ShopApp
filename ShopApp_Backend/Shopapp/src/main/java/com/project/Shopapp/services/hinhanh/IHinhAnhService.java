@@ -1,7 +1,7 @@
 package com.project.Shopapp.services.hinhanh;
 
 import com.project.Shopapp.models.SanPham;
-import com.project.Shopapp.responses.HinhAnhResponse;
+import com.project.Shopapp.responses.hinhanh.HinhAnhResponse;
 
 import java.util.List;
 

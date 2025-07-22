@@ -8,7 +8,7 @@ import com.project.Shopapp.models.SanPham;
 import com.project.Shopapp.repositories.AccountRepository;
 import com.project.Shopapp.repositories.FeedbackRepository;
 import com.project.Shopapp.repositories.SanPhamRepository;
-import com.project.Shopapp.responses.FeedbackResponse;
+import com.project.Shopapp.responses.feedback.FeedbackResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

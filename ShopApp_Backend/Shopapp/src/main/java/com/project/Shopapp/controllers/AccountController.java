@@ -8,9 +8,9 @@ import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.exceptions.InvalidPasswordException;
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
-import com.project.Shopapp.responses.AccountListResponse;
-import com.project.Shopapp.responses.AccountResponse;
-import com.project.Shopapp.responses.LoginResponse;
+import com.project.Shopapp.responses.account.AccountListResponse;
+import com.project.Shopapp.responses.account.AccountResponse;
+import com.project.Shopapp.responses.account.LoginResponse;
 import com.project.Shopapp.services.account.AccountService;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.services.token.TokenService;
@@ -29,11 +29,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/accounts")

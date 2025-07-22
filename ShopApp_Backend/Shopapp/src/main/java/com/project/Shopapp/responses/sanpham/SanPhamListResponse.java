@@ -1,4 +1,4 @@
-package com.project.Shopapp.responses;
+package com.project.Shopapp.responses.sanpham;
 
 import lombok.*;
 
