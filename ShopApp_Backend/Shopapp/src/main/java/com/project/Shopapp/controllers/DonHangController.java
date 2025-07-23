@@ -3,6 +3,7 @@ package com.project.Shopapp.controllers;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.dtos.DonHangDTO;
 import com.project.Shopapp.models.DonHang;
+import com.project.Shopapp.responses.ResponseObject;
 import com.project.Shopapp.responses.donhang.DonHangListResponse;
 import com.project.Shopapp.responses.donhang.DonHangResponse;
 import com.project.Shopapp.services.donhang.DonHangService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -28,38 +30,44 @@ public class DonHangController {
     private final LocalizationUtils localizationUtils;
 
     @PostMapping("")
-    public ResponseEntity<?> createDonHang(@RequestBody @Valid DonHangDTO donHangDTO, BindingResult result) {
-        try {
-            if (result.hasErrors()) {
-                List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body(errorMessage);
-            }
-            DonHangResponse donHangResponse = donHangService.createDonHang(donHangDTO);
-            return ResponseEntity.ok(donHangResponse);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<ResponseObject> createDonHang(
+            @RequestBody @Valid DonHangDTO donHangDTO,
+            BindingResult result
+    ) throws Exception {
+        if (result.hasErrors()) {
+            List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(String.join("; ", errorMessage))
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build());
         }
+        DonHangResponse donHangResponse = donHangService.createDonHang(donHangDTO);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Insert order successfully")
+                .status(HttpStatus.OK)
+                .data(donHangResponse)
+                .build());
     }
 
     @GetMapping("/account/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<?> getDonHang_USERID(@Valid @PathVariable int id) {
-        try {
-            List<DonHang> donHangList = donHangService.getDonHangByUSERID(id);
-            return ResponseEntity.ok(donHangList);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> getDonHang_USERID(@Valid @PathVariable int id) throws Exception {
+        List<DonHang> donHangList = donHangService.getDonHangByUSERID(id);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get list of orders successfully")
+                .status(HttpStatus.OK)
+                .data(donHangList)
+                .build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDonHang_MADONHANG(@Valid @PathVariable int id) {
-        try {
-            DonHangResponse existingDonHangResponse = donHangService.getDonHangByMADONHANG(id);
-            return ResponseEntity.ok(existingDonHangResponse);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> getDonHang_MADONHANG(@Valid @PathVariable int id) throws Exception{
+        DonHangResponse existingDonHangResponse = donHangService.getDonHangByMADONHANG(id);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get list of orders successfully")
+                .status(HttpStatus.OK)
+                .data(existingDonHangResponse)
+                .build());
     }
 
     @PutMapping("/{id}")
@@ -88,9 +96,7 @@ public class DonHangController {
     ) {
         try {
             return ResponseEntity.ok(donHangService.updateStatus(status, id));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

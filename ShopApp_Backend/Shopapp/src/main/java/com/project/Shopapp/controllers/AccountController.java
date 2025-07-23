@@ -8,13 +8,17 @@ import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.exceptions.InvalidPasswordException;
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
+import com.project.Shopapp.responses.ResponseObject;
 import com.project.Shopapp.responses.account.AccountListResponse;
 import com.project.Shopapp.responses.account.AccountResponse;
 import com.project.Shopapp.responses.account.LoginResponse;
+import com.project.Shopapp.responses.account.RegisterResponse;
 import com.project.Shopapp.services.account.AccountService;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.services.token.TokenService;
 import com.project.Shopapp.utils.MessageKeys;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -47,20 +51,38 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> createAccount(@Valid @RequestBody AccountDTO accountDTO, BindingResult result) {
-        try {
-            if (result.hasErrors()) {
-                List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body(errorMessages);
-            }
-            if (!accountDTO.getPASSWORD().equals(accountDTO.getRETYPEPASSWORD()))
-                return ResponseEntity.badRequest().body(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH));
+    public ResponseEntity<ResponseObject> createAccount(
+            @Valid @RequestBody AccountDTO accountDTO,
+            BindingResult result
+    ) throws Exception {
+        RegisterResponse registerResponse = new RegisterResponse();
 
-            Account newAccount = accountService.createAccount(accountDTO);
-            return ResponseEntity.ok(newAccount);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+            registerResponse.setMessage(String.join("; ", errorMessages));
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(String.join("; ", errorMessages))
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(registerResponse)
+                    .build());
         }
+        if (!accountDTO.getPASSWORD().equals(accountDTO.getRETYPEPASSWORD())) {
+            registerResponse.setMessage(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH));
+
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(registerResponse.getMessage())
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(registerResponse)
+                    .build());
+        }
+        Account newAccount = accountService.createAccount(accountDTO);
+        registerResponse.setMessage("Signing up successfully");
+        registerResponse.setAccount(newAccount);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message(registerResponse.getMessage())
+                .status(HttpStatus.CREATED)
+                .data(registerResponse)
+                .build());
     }
 
     @PostMapping("/login")
@@ -130,7 +152,7 @@ public class AccountController {
     }
 
     @PutMapping("/details/{userId}")
-    //@Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> updateAccountDetails(
             @RequestHeader("Authorization") String authorizationHeader,
@@ -155,30 +177,31 @@ public class AccountController {
 
     @GetMapping("")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> getAllAccountCustomer(
+    public ResponseEntity<ResponseObject> getAllAccountCustomer(
             @RequestParam(defaultValue = "", required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
-    ) {
-        try {
-            PageRequest pageRequest = PageRequest.of(
-                    page, limit,
-                    Sort.by("USERID").ascending()
-            );
-            Page<AccountResponse> accountPage = accountService.getAllAccountCustomer(keyword, pageRequest)
-                    .map(AccountResponse::fromAccount);
+    ) throws Exception {
+        PageRequest pageRequest = PageRequest.of(
+                page, limit,
+                Sort.by("USERID").ascending()
+        );
+        Page<AccountResponse> accountPage = accountService.getAllAccountCustomer(keyword, pageRequest)
+                .map(AccountResponse::fromAccount);
 
-            // Lay tong so trang
-            int totalPages = accountPage.getTotalPages();
-            List<AccountResponse> accountResponses = accountPage.getContent();
-            return ResponseEntity.ok(AccountListResponse
-                    .builder()
-                    .accountResponseList(accountResponses)
-                    .totalPages(totalPages)
-                    .build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        // Lay tong so trang
+        int totalPages = accountPage.getTotalPages();
+        List<AccountResponse> accountResponses = accountPage.getContent();
+        AccountListResponse accountListResponse = AccountListResponse
+                .builder()
+                .accountResponseList(accountResponses)
+                .totalPages(totalPages)
+                .build();
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get list of Account customer successfully")
+                .status(HttpStatus.OK)
+                .data(accountListResponse)
+                .build());
     }
 
     @PutMapping("/reset-password/{userId}")

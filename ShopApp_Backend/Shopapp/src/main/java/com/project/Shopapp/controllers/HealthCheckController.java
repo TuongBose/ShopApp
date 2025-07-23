@@ -1,6 +1,8 @@
 package com.project.Shopapp.controllers;
 
+import com.project.Shopapp.responses.ResponseObject;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,13 +15,11 @@ import java.net.UnknownHostException;
 @RequestMapping("${api.prefix}/healthcheck")
 public class HealthCheckController {
     @GetMapping("/health")
-    public ResponseEntity<?> healthCheck(){
-        try{
-            String computerName = InetAddress.getLocalHost().getHostName();
-            return ResponseEntity.ok("ok, Computer Name: "+ computerName);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("failed");
-        }
+    public ResponseEntity<ResponseObject> healthCheck() throws Exception {
+        String computerName = InetAddress.getLocalHost().getHostName();
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("ok, Computer Name: " + computerName)
+                .status(HttpStatus.OK)
+                .build());
     }
-
 }

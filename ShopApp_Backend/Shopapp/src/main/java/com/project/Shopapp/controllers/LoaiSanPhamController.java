@@ -3,13 +3,13 @@ package com.project.Shopapp.controllers;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.dtos.LoaiSanPhamDTO;
 import com.project.Shopapp.models.LoaiSanPham;
-import com.project.Shopapp.responses.loaisanpham.UpdateLoaiSanPhamResponse;
+import com.project.Shopapp.responses.ResponseObject;
 import com.project.Shopapp.services.loaisanpham.LoaiSanPhamService;
 import com.project.Shopapp.utils.MessageKeys;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -26,14 +26,12 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class LoaiSanPhamController {
     private final LoaiSanPhamService loaiSanPhamService;
-    private final MessageSource messageSource;
-    private final LocaleResolver localeResolver;
     private final LocalizationUtils localizationUtils;
 
 
     @PostMapping("")
     @PreAuthorize("hasRole(ROLE_ADMIN)")
-    public ResponseEntity<?> createLoaiSanPham(
+    public ResponseEntity<ResponseObject> createLoaiSanPham(
             @Valid @RequestBody LoaiSanPhamDTO loaisanphamDTO,
             BindingResult result) {
         if (result.hasErrors()) {
@@ -41,45 +39,66 @@ public class LoaiSanPhamController {
                     .stream()
                     .map(FieldError::getDefaultMessage)
                     .toList();
-            return ResponseEntity.badRequest().body(errorMessage);
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(String.join("; ", errorMessage))
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build());
         }
         loaiSanPhamService.createLoaiSanPham(loaisanphamDTO);
-        return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.INSERT_LOAISANPHAM_SUCCESSFULLY));
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message(localizationUtils.getLocalizedMessage(MessageKeys.INSERT_LOAISANPHAM_SUCCESSFULLY))
+                .status(HttpStatus.CREATED)
+                .build());
     }
 
     @GetMapping("")
-    public ResponseEntity<List<LoaiSanPham>> getAllLoaiSanPham(
+    public ResponseEntity<ResponseObject> getAllLoaiSanPham(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
     ) {
         List<LoaiSanPham> dsLoaiSanPham = loaiSanPhamService.getAllLoaiSanPham();
-        return ResponseEntity.ok(dsLoaiSanPham);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get list of categories successfully")
+                .status(HttpStatus.OK)
+                .data(dsLoaiSanPham)
+                .build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UpdateLoaiSanPhamResponse> updateLoaiSanPham(
+    @PreAuthorize("hasRole(ROLE_ADMIN)")
+    public ResponseEntity<ResponseObject> updateLoaiSanPham(
             @PathVariable int id,
-            @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO,
-            HttpServletRequest request) {
-        try {
-            loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
-            Locale locale = localeResolver.resolveLocale(request);
-            return ResponseEntity.ok(UpdateLoaiSanPhamResponse.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_LOAISANPHAM_SUCCESSFULLY))
-                    .build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    UpdateLoaiSanPhamResponse.builder()
-                            .message(e.getMessage())
-                            .build()
-            );
-        }
+            @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO
+    ) {
+        loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_LOAISANPHAM_SUCCESSFULLY))
+                .status(HttpStatus.OK)
+                .data(loaiSanPhamService.getLoaiSanPhamByMASANPHAM(id))
+                .build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteLoaiSanPham(@PathVariable int id) {
+    @PreAuthorize("hasRole(ROLE_ADMIN)")
+    public ResponseEntity<ResponseObject> deleteLoaiSanPham(@PathVariable int id) throws Exception {
         loaiSanPhamService.deleteLoaiSanPham(id);
-        return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_LOAISANPHAM_SUCCESSFULLY,id));
+        return ResponseEntity.ok(ResponseObject.builder()
+                .status(HttpStatus.OK)
+                .message("Delete LoaiSanPham successfully")
+                .build());
+
+        //return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_LOAISANPHAM_SUCCESSFULLY, id));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getLoaiSanPhamById(
+            @PathVariable int id
+    ) {
+        LoaiSanPham existingLoaiSanPham = loaiSanPhamService.getLoaiSanPhamByMASANPHAM(id);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(existingLoaiSanPham)
+                .message("Get Loai San Pham information successfully")
+                .status(HttpStatus.OK)
+                .build());
+    }
 }

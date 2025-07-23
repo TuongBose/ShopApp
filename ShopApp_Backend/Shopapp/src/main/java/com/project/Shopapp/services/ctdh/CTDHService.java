@@ -1,6 +1,7 @@
 package com.project.Shopapp.services.ctdh;
 
 import com.project.Shopapp.dtos.CTDH_DTO;
+import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.models.CTDH;
 import com.project.Shopapp.models.DonHang;
 import com.project.Shopapp.models.SanPham;
@@ -48,15 +49,15 @@ public class CTDHService implements ICTDHService {
     }
 
     @Override
-    public CTDH updateCTDH(int id, CTDH_DTO ctdh_dto) {
+    public CTDH updateCTDH(int id, CTDH_DTO ctdh_dto) throws DataNotFoundException{
         CTDH existingCTDH = ctdhRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay ID"));
+                .orElseThrow(() -> new DataNotFoundException("Khong tim thay ID"));
 
         DonHang existingDonHang = donHangRepository.findById(ctdh_dto.getMADONHANG())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new DataNotFoundException("Khong tim thay MADONHANG"));
 
         SanPham existingSanPham = sanPhamRepository.findById(ctdh_dto.getMASANPHAM())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MASANPHAM"));
+                .orElseThrow(() -> new DataNotFoundException("Khong tim thay MASANPHAM"));
 
         existingCTDH.setMADONHANG(existingDonHang);
         existingCTDH.setMASANPHAM(existingSanPham);

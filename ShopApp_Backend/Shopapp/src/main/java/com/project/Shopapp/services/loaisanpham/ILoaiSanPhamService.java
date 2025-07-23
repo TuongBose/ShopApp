@@ -10,5 +10,5 @@ public interface ILoaiSanPhamService {
     LoaiSanPham getLoaiSanPhamByMASANPHAM(int id);
     List<LoaiSanPham> getAllLoaiSanPham();
     LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO);
-    void deleteLoaiSanPham(int id);
+    LoaiSanPham deleteLoaiSanPham(int id) throws Exception;
 }

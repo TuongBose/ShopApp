@@ -1,9 +1,11 @@
 package com.project.Shopapp.services.hinhanh;
 
+import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.models.HinhAnh;
 import com.project.Shopapp.models.SanPham;
 import com.project.Shopapp.repositories.HinhAnhRepository;
 import com.project.Shopapp.responses.hinhanh.HinhAnhResponse;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +41,13 @@ public class HinhAnhService implements IHinhAnhService {
             }
         }
         return hinhAnhResponseList;
+    }
+
+    @Override
+    public void deleteHinhAnh(int id) throws DataNotFoundException {
+        HinhAnh existingHinhAnh = hinhAnhRepository.findById(id)
+                        .orElseThrow(()->new DataNotFoundException("Product image does not exist"));
+
+         hinhAnhRepository.deleteById(existingHinhAnh.getID());
     }
 }

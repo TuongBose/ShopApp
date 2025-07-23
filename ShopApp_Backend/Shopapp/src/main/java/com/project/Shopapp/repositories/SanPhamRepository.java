@@ -1,5 +1,6 @@
 package com.project.Shopapp.repositories;
 
+import com.project.Shopapp.models.LoaiSanPham;
 import com.project.Shopapp.models.SanPham;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import java.util.List;
 public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
     boolean existsByTENSANPHAM(String TENSANPHAM);
     Page<SanPham> findAll(Pageable pageable); // Phan trang
+    List<SanPham> findByMALOAISANPHAM(LoaiSanPham loaiSanPham);
 
     @Query(
             "SELECT p FROM SanPham p WHERE " +

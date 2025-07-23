@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                             .requestMatchers(GET,String.format("%s/coupons/**",apiPrefix)).permitAll()
 
                             // loaisanphams
-                            .requestMatchers(GET, String.format("%s/loaisanphams**", apiPrefix)).permitAll()
+                            .requestMatchers(GET, String.format("%s/loaisanphams/**", apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("%s/loaisanphams/**", apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(PUT, String.format("%s/loaisanphams/**", apiPrefix)).hasRole(Role.ADMIN)
                             .requestMatchers(DELETE, String.format("%s/loaisanphams/**", apiPrefix)).hasRole(Role.ADMIN)
