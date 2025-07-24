@@ -17,6 +17,7 @@ import com.project.Shopapp.services.account.AccountService;
 import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.services.token.TokenService;
 import com.project.Shopapp.utils.MessageKeys;
+import com.project.Shopapp.utils.ValidationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -107,15 +107,11 @@ public class AccountController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(
-            @Valid @RequestBody AccountLoginDTO accountLoginDTO,
+            @RequestBody AccountLoginDTO accountLoginDTO,
             HttpServletRequest request
     ) throws Exception {
         // Kiểm tra thông tin đăng nhập và sinh token
-        String token = accountService.login(
-                accountLoginDTO.getSODIENTHOAI(),
-                accountLoginDTO.getPASSWORD(),
-                accountLoginDTO.isRoleid() ? Account.ADMIN : Account.USER
-        );
+        String token = accountService.login(accountLoginDTO);
         String accountAgent = request.getHeader("User-Agent");
         Account accountDetail = accountService.getAccountDetailsFromToken(token);
         Token jwtToken = tokenService.addToken(accountDetail, token, isMobileDevice(accountAgent));

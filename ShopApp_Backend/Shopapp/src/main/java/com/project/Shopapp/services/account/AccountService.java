@@ -2,6 +2,7 @@ package com.project.Shopapp.services.account;
 
 import com.project.Shopapp.components.JwtTokenUtils;
 import com.project.Shopapp.dtos.AccountDTO;
+import com.project.Shopapp.dtos.AccountLoginDTO;
 import com.project.Shopapp.dtos.UpdateAccountDTO;
 import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.exceptions.InvalidPasswordException;
@@ -10,6 +11,7 @@ import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.AccountRepository;
 import com.project.Shopapp.repositories.TokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,9 +37,11 @@ public class AccountService implements IAccountService {
     @Transactional
     public Account createAccount(AccountDTO accountDTO) throws Exception {
         // Register Account
-        String SODIENTHOAI = accountDTO.getSODIENTHOAI();
-        if (accountRepository.existsBySODIENTHOAI(SODIENTHOAI))
-            throw new RuntimeException("So dien thoai nay da ton tai");
+        if (accountDTO.getSODIENTHOAI() != null && accountRepository.existsBySODIENTHOAI(accountDTO.getSODIENTHOAI()))
+            throw new DataIntegrityViolationException("Phone number already exists");
+
+        if (accountDTO.getEMAIL() != null && accountRepository.existsByEMAIL(accountDTO.getEMAIL()))
+            throw new DataIntegrityViolationException("Email already exists");
 
         // Convert AccountDTO sang Account
         Account newAccount = Account.builder()
@@ -64,38 +68,53 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public String login(String SODIENTHOAI, String PASSWORD, Integer roleId) throws Exception {
-        Optional<Account> accountOptional = accountRepository.findBySODIENTHOAI(SODIENTHOAI);
-        if (accountOptional.isEmpty())
-            throw new RuntimeException("Khong tim thay SODIENTHOAI hoac PASSWORD");
+    public String login(AccountLoginDTO accountLoginDTO) throws Exception {
+        Optional<Account> accountOptional = Optional.empty();
+        String subject = null;
+        int roleId = accountLoginDTO.isRoleid() ? Account.ADMIN : Account.USER;
+
+        // Check if the user exists by phone number
+        if (accountLoginDTO.getSODIENTHOAI() != null && !accountLoginDTO.getSODIENTHOAI().isBlank()) {
+            accountOptional = accountRepository.findBySODIENTHOAI(accountLoginDTO.getSODIENTHOAI());
+            subject = accountLoginDTO.getSODIENTHOAI();
+        }
+
+        if (accountOptional.isEmpty() && accountLoginDTO.getEMAIL() != null) {
+            accountOptional = accountRepository.findByEMAIL(accountLoginDTO.getEMAIL());
+            subject = accountLoginDTO.getEMAIL();
+        }
+
+        if (accountOptional.isEmpty()) {
+            throw new DataNotFoundException("Phone number/email or password not found");
+        }
 
         // Return Account
         //return accountOptional.get();
-
+        // Get the existing Account
         Account existingAccount = accountOptional.get();
 
         // Check password
         if (existingAccount.getFACEBOOK_ACCOUNT_ID() == 0 && existingAccount.getGOOGLE_ACCOUNT_ID() == 0) {
-            if (!passwordEncoder.matches(PASSWORD, existingAccount.getPassword())) {
-                throw new BadCredentialsException("Sai SODIENTHOAI hoac PASSWORD");
+            if (!passwordEncoder.matches(accountLoginDTO.getPASSWORD(), existingAccount.getPassword())) {
+                throw new BadCredentialsException("Phone number/email or password not found");
             }
         }
 
         // Check role account exist
-        if (roleId != null) {
-            boolean expectedRole = roleId == Account.ADMIN;
-            if (existingAccount.isROLENAME() != expectedRole) {
-                throw new RuntimeException("Rolename does not exists");
-            }
+        boolean expectedRole = roleId == Account.ADMIN;
+        if (existingAccount.isROLENAME() != expectedRole) {
+            throw new RuntimeException("Rolename does not exists");
         }
 
         // check account is active
-        if (!accountOptional.get().isIS_ACTIVE()) {
+        if (!existingAccount.isIS_ACTIVE()) {
             throw new Exception("Account is locked");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                SODIENTHOAI, PASSWORD, existingAccount.getAuthorities()
+                subject,
+                accountLoginDTO.getPASSWORD(),
+                existingAccount.getAuthorities()
         );
         // Authenticate with Java Spring Security
         authenticationManager.authenticate(authenticationToken);
@@ -186,7 +205,7 @@ public class AccountService implements IAccountService {
 
         // reset password => clear token
         List<Token> tokens = tokenRepository.findByUSERID(existingAccount);
-        for(Token token : tokens){
+        for (Token token : tokens) {
             tokenRepository.delete(token);
         }
     }

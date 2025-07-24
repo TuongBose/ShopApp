@@ -1,5 +1,6 @@
 package com.project.Shopapp.configurations;
 
+import com.project.Shopapp.models.Account;
 import com.project.Shopapp.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -21,25 +24,38 @@ public class SecurityConfig {
     // Account detail object
     @Bean
     public UserDetailsService accountDetailsService() {
-        return SODIENTHOAI -> accountRepository.findBySODIENTHOAI(SODIENTHOAI)
-                .orElseThrow(() -> new UsernameNotFoundException("Khong tim thay SODIENTHOAI nay!!!"));
+        return subject -> {
+            // Attempt to find account by phone number
+            Optional<Account> accountByPhoneNumber = accountRepository.findBySODIENTHOAI(subject);
+            if (accountByPhoneNumber.isPresent()) {
+                return accountByPhoneNumber.get(); // Return UserDetails if found
+            }
+            // If user not found by phone number, attempt to find account by email
+            Optional<Account> accountByEmail = accountRepository.findByEMAIL(subject);
+            if (accountByEmail.isPresent()) {
+                return accountByEmail.get(); // Return UserDetails if found
+            }
+
+            // If user not found by either phone number or email, throw UsernameNotFoundException
+            throw new UsernameNotFoundException("User not found with subject: " + subject);
+        };
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider authProvider =new DaoAuthenticationProvider();
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(accountDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 }

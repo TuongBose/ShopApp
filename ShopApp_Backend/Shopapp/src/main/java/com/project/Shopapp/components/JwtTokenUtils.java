@@ -51,7 +51,7 @@ public class JwtTokenUtils {
                     .compact();
         } catch (Exception e) {
             // Có thể dùng Logger, instead System.out.println
-            throw new InvalidParameterException("Khong the tao jwt token, error: " + e.getMessage());
+            throw new InvalidParameterException("Can not create jwt token, error: " + e.getMessage());
         }
     }
 
