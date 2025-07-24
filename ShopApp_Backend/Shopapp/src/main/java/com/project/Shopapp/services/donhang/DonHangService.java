@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class DonHangService implements IDonHangService {
             ctdh.setMASANPHAM(sanPham);
             ctdh.setSOLUONG(quantity);
             ctdh.setGIABAN(sanPham.getGIA());
-            ctdh.setTONGTIEN(sanPham.getGIA() * quantity);
+            ctdh.setTONGTIEN(sanPham.getGIA().multiply(BigDecimal.valueOf(quantity)));
 
             ctdhList.add(ctdh);
         }
@@ -148,7 +149,6 @@ public class DonHangService implements IDonHangService {
                     .collect(Collectors.toList());
             return DonHangResponse.fromDonHang(donHang, ctdhResponseList);
         });
-
     }
 
     @Override

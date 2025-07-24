@@ -3,6 +3,8 @@ package com.project.Shopapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Setter
 @Getter
@@ -21,7 +23,7 @@ public class SanPham extends BaseEntity {
     private String TENSANPHAM;
 
     @Column(name = "GIA", nullable = false)
-    private int GIA;
+    private BigDecimal GIA;
 
     @ManyToOne
     @JoinColumn(name = "MATHUONGHIEU")

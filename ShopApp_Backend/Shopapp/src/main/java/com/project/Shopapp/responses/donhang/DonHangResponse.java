@@ -4,6 +4,7 @@ import com.project.Shopapp.models.DonHang;
 import com.project.Shopapp.responses.ctdh.CTDHResponse;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class DonHangResponse {
     private String GHICHU;
     private String TRANGTHAI;
     private LocalDate NGAYDATHANG;
-    private int TONGTIEN;
+    private BigDecimal TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
     private boolean IS_ACTIVE;
     private List<CTDHResponse> ctdhList;

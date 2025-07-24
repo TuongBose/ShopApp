@@ -5,6 +5,7 @@ import com.project.Shopapp.responses.BaseResponse;
 import com.project.Shopapp.responses.hinhanh.HinhAnhResponse;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -16,7 +17,7 @@ public class SanPhamResponse extends BaseResponse {
 
     private int MASANPHAM;
     private String TENSANPHAM;
-    private int GIA;
+    private BigDecimal GIA;
     private int MATHUONGHIEU;
     private String MOTA;
     private int SOLUONGTONKHO;

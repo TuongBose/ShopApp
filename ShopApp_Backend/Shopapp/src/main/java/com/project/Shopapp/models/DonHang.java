@@ -3,6 +3,7 @@ package com.project.Shopapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -36,7 +37,7 @@ public class DonHang {
     private String GHICHU;
     private String TRANGTHAI;
     private LocalDate NGAYDATHANG;
-    private int TONGTIEN;
+    private BigDecimal TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
     private boolean IS_ACTIVE;
 

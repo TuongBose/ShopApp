@@ -1,6 +1,8 @@
 package com.project.Shopapp.dtos;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -11,6 +13,6 @@ public class CTDH_DTO {
     private int MADONHANG;
     private int MASANPHAM;
     private int SOLUONG;
-    private int GIABAN;
-    private int TONGTIEN;
+    private BigDecimal GIABAN;
+    private BigDecimal TONGTIEN;
 }

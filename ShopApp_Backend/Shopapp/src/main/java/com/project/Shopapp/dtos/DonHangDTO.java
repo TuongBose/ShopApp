@@ -3,6 +3,7 @@ package com.project.Shopapp.dtos;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -19,7 +20,7 @@ public class DonHangDTO {
     private String SODIENTHOAI;
     private String DIACHI;
     private String GHICHU;
-    private int TONGTIEN;
+    private BigDecimal TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
     private List<CartItemDTO> cartitems;
 }

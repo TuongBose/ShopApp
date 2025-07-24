@@ -14,5 +14,5 @@ public class RegisterResponse {
     private String message;
 
     @JsonProperty("account")
-    private Account account;
+    private AccountResponse account;
 }

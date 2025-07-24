@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @Getter
 @Setter
@@ -17,7 +19,7 @@ public class SanPhamDTO {
     private String TENSANPHAM;
 
     @Min(value = 0, message = "Gia san pham phai lon hon hoac bang 0")
-    private int GIA;
+    private BigDecimal GIA;
     private int MATHUONGHIEU;
     private String MOTA;
     private int SOLUONGTONKHO;

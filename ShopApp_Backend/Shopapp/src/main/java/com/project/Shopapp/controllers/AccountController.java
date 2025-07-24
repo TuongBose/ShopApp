@@ -97,7 +97,7 @@ public class AccountController {
         }
         Account newAccount = accountService.createAccount(accountDTO);
         registerResponse.setMessage("Signing up successfully");
-        registerResponse.setAccount(newAccount);
+        registerResponse.setAccount(AccountResponse.fromAccount(newAccount));
         return ResponseEntity.ok(ResponseObject.builder()
                 .message(registerResponse.getMessage())
                 .status(HttpStatus.CREATED)

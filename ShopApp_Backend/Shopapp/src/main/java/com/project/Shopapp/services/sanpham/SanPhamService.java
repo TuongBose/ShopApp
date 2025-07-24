@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -93,7 +94,7 @@ public class SanPhamService implements ISanPhamService {
             existingSanPham.setSOLUONGTONKHO(sanPhamDTO.getSOLUONGTONKHO());
         }
 
-        if (sanPhamDTO.getGIA() >= 0) {
+        if (sanPhamDTO.getGIA() != null && sanPhamDTO.getGIA().compareTo(BigDecimal.ZERO) >= 0) {
             existingSanPham.setGIA(sanPhamDTO.getGIA());
         }
 

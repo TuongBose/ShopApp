@@ -1,5 +1,6 @@
 package com.project.Shopapp.controllers;
 
+import java.math.BigDecimal;
 import java.nio.file.*;
 
 import com.github.javafaker.Faker;
@@ -161,14 +162,14 @@ public class SanPhamController {
     @PostMapping("/generateFakeSanPhams")
     public ResponseEntity<String> generateFakeSanPhams() {
         Faker faker = new Faker();
-        for (int i = 0; i < 5700; i++) {
+        for (int i = 0; i < 200; i++) {
             String tenSanPham = faker.commerce().productName();
             if (sanPhamService.existsByTENSANPHAM(tenSanPham)) continue;
 
             SanPhamDTO newSanPhamDTO = SanPhamDTO
                     .builder()
                     .TENSANPHAM(tenSanPham)
-                    .GIA(faker.number().numberBetween(10, 90000000))
+                    .GIA(BigDecimal.valueOf(faker.number().numberBetween(10L, 9000)))
                     .MATHUONGHIEU(faker.number().numberBetween(1, 5))
                     .MOTA(faker.lorem().sentence())
                     .SOLUONGTONKHO(faker.number().numberBetween(1, 10000))

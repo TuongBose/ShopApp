@@ -3,6 +3,8 @@ package com.project.Shopapp.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 @Getter
@@ -28,10 +30,10 @@ public class CTDH {
     private int SOLUONG;
 
     @Column(name = "GIABAN", nullable = false)
-    private int GIABAN;
+    private BigDecimal GIABAN;
 
     @Column(name = "TONGTIEN", nullable = false)
-    private int TONGTIEN;
+    private BigDecimal TONGTIEN;
 
     @ManyToOne
     @JoinColumn(name = "coupon_id")

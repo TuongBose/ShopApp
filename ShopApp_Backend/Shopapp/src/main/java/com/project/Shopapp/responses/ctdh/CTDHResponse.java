@@ -4,6 +4,8 @@ import com.project.Shopapp.models.CTDH;
 import com.project.Shopapp.models.SanPham;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,8 +15,8 @@ public class CTDHResponse {
     private int MADONHANG;
     private SanPham MASANPHAM;
     private int SOLUONG;
-    private int GIABAN;
-    private int TONGTIEN;
+    private BigDecimal GIABAN;
+    private BigDecimal TONGTIEN;
 
     public static CTDHResponse fromCTDH(CTDH ctdh)
     {
