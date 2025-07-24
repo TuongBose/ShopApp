@@ -13,8 +13,8 @@ spring:
       ddl-auto: none  # khong de java tự động tạo bảng, cot, v.v (thay vào đó, sử dụng các cau lenh SQL để tạo bang, cot, v.v)
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
+      dialect: org.hibernate.dialect.MySQL8Dialect
+      format_sql: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -35,6 +35,14 @@ spring:
       use-redis-cache: false # On off redis
       host: ${REDIS_HOST:localhost} # Default to 'localhost' if not provided
       port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        "[spring.json.type.mapping]": category:com.project.Shopapp.models.LoaiSanPham
+    consumer:
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
   security:
     oauth2:
       client:

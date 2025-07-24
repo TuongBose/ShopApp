@@ -31,6 +31,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,6 +67,25 @@ public class AccountController {
                     .data(registerResponse)
                     .build());
         }
+        if (accountDTO.getEMAIL() == null || accountDTO.getEMAIL().trim().isBlank()) {
+            if (accountDTO.getSODIENTHOAI() == null || accountDTO.getSODIENTHOAI().isBlank()) {
+                return ResponseEntity.badRequest().body(ResponseObject.builder()
+                        .message("At least email or phone number is required")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .data(null)
+                        .build());
+            } else {
+                if (!ValidationUtils.isValidPhoneNumber(accountDTO.getSODIENTHOAI())) {
+                    throw new Exception("Invalid phone number");
+                }
+            }
+        } else {
+            // Email not blank
+            if (!ValidationUtils.isValidEmail(accountDTO.getEMAIL())) {
+                throw new Exception("Invalid email format");
+            }
+        }
+
         if (!accountDTO.getPASSWORD().equals(accountDTO.getRETYPEPASSWORD())) {
             registerResponse.setMessage(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH));
 

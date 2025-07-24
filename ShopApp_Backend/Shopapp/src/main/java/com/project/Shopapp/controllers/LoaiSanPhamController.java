@@ -1,6 +1,7 @@
 package com.project.Shopapp.controllers;
 
 import com.project.Shopapp.components.LocalizationUtils;
+import com.project.Shopapp.components.converters.CategoryMessageConverter;
 import com.project.Shopapp.dtos.LoaiSanPhamDTO;
 import com.project.Shopapp.models.LoaiSanPham;
 import com.project.Shopapp.responses.ResponseObject;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -27,6 +29,7 @@ import java.util.Locale;
 public class LoaiSanPhamController {
     private final LoaiSanPhamService loaiSanPhamService;
     private final LocalizationUtils localizationUtils;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
     @PostMapping("")
@@ -44,10 +47,15 @@ public class LoaiSanPhamController {
                     .status(HttpStatus.BAD_REQUEST)
                     .build());
         }
-        loaiSanPhamService.createLoaiSanPham(loaisanphamDTO);
+        LoaiSanPham loaiSanPham = loaiSanPhamService.createLoaiSanPham(loaisanphamDTO);
+
+        this.kafkaTemplate.send("insert-a-category",loaiSanPham); // producer
+        this.kafkaTemplate.setMessageConverter(new CategoryMessageConverter());
+
         return ResponseEntity.ok(ResponseObject.builder()
                 .message(localizationUtils.getLocalizedMessage(MessageKeys.INSERT_LOAISANPHAM_SUCCESSFULLY))
                 .status(HttpStatus.CREATED)
+                .data(loaiSanPham)
                 .build());
     }
 
@@ -57,6 +65,8 @@ public class LoaiSanPhamController {
             @RequestParam("limit") int limit
     ) {
         List<LoaiSanPham> dsLoaiSanPham = loaiSanPhamService.getAllLoaiSanPham();
+        this.kafkaTemplate.send("get-all-categories", dsLoaiSanPham);
+
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Get list of categories successfully")
                 .status(HttpStatus.OK)

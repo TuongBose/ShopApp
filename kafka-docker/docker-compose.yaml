@@ -11,6 +11,9 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       # Định nghĩa danh sách các máy chủ Zookeeper trong cluster, bao gồm chính zookeeper-01 và hai máy chủ khác zookeeper-02 và zookeeper-03
       ZOOKEEPER_SERVERS: zookeeper-01:2888:3888;zookeeper-02:2888:3888;zookeeper-03:2888:3888
+      # 2888: Port được sử dụng cho giao tiếp giữa các máy chủ Zookeeper
+      # 3888: Port được sử dụng cho giao tiếp giữa các client và máy chủ Zookeeper
+
     networks:
       - shopapp-network
     volumes:
@@ -79,7 +82,7 @@ services:
 
       # Thiết lập số bản sao cho chủ đề offset trong Kafka
       # topic "offset" lưu thông tin về vị trí đọc cuối của mỗi consumer trong mỗi phân vùng của 1 Kafka topic
-      KAFKA_OFFSETS_TOPIC_RELICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       # Chủ đề này lưu trữ thông tin về trạng thái của các giao dịch
       # Cho phép Kafka khôi phục giao dịch dang dở trong trường hợp broker gặp sự cố
 
