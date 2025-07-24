@@ -86,93 +86,93 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
+    public ResponseEntity<ResponseObject> login(
             @Valid @RequestBody AccountLoginDTO accountLoginDTO,
-            HttpServletRequest request) {
+            HttpServletRequest request
+    ) throws Exception {
         // Kiểm tra thông tin đăng nhập và sinh token
-        try {
-            String token = accountService.login(
-                    accountLoginDTO.getSODIENTHOAI(),
-                    accountLoginDTO.getPASSWORD(),
-                    accountLoginDTO.isRoleid() ? Account.ADMIN : Account.USER
-            );
-            String accountAgent = request.getHeader("User-Agent");
-            Account accountDetail = accountService.getAccountDetailsFromToken(token);
-            Token jwtToken = tokenService.addToken(accountDetail, token, isMobileDevice(accountAgent));
+        String token = accountService.login(
+                accountLoginDTO.getSODIENTHOAI(),
+                accountLoginDTO.getPASSWORD(),
+                accountLoginDTO.isRoleid() ? Account.ADMIN : Account.USER
+        );
+        String accountAgent = request.getHeader("User-Agent");
+        Account accountDetail = accountService.getAccountDetailsFromToken(token);
+        Token jwtToken = tokenService.addToken(accountDetail, token, isMobileDevice(accountAgent));
 
-            return ResponseEntity.ok(
-                    LoginResponse.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
-                            .token(token)
-                            .tokenType(jwtToken.getTOKEN_TYPE())
-                            .refreshToken(jwtToken.getRefreshToken())
-                            .userName(accountDetail.getFULLNAME())
-                            .role(accountDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                            .id(accountDetail.getUSERID())
-                            .build()
-            );
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    LoginResponse.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()))
-                            .build()
-            );
-        }
+        LoginResponse loginResponse = LoginResponse.builder()
+                .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
+                .token(token)
+                .tokenType(jwtToken.getTOKEN_TYPE())
+                .refreshToken(jwtToken.getRefreshToken())
+                .userName(accountDetail.getFULLNAME())
+                .role(accountDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .id(accountDetail.getUSERID())
+                .build();
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message(loginResponse.getMessage())
+                .status(HttpStatus.OK)
+                .data(loginResponse)
+                .build());
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
-        try {
-            Account accountDetail = accountService.getAccountDetailsFromRefreshToken(refreshTokenDTO.getRefreshToken());
-            Token jwtToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken(), accountDetail);
-            return ResponseEntity.ok(LoginResponse.builder()
-                    .message("Refresh token successfully")
-                    .token(jwtToken.getTOKEN())
-                    .tokenType(jwtToken.getTOKEN_TYPE())
-                    .refreshToken(jwtToken.getRefreshToken())
-                    .userName(accountDetail.getFULLNAME())
-                    .role(accountDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                    .id(accountDetail.getUSERID())
-                    .build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) throws Exception {
+        Account accountDetail = accountService.getAccountDetailsFromRefreshToken(refreshTokenDTO.getRefreshToken());
+        Token jwtToken = tokenService.refreshToken(refreshTokenDTO.getRefreshToken(), accountDetail);
+        LoginResponse loginResponse = LoginResponse.builder()
+                .message("Refresh token successfully")
+                .token(jwtToken.getTOKEN())
+                .tokenType(jwtToken.getTOKEN_TYPE())
+                .refreshToken(jwtToken.getRefreshToken())
+                .userName(accountDetail.getFULLNAME())
+                .role(accountDetail.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .id(accountDetail.getUSERID())
+                .build();
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message(loginResponse.getMessage())
+                .status(HttpStatus.OK)
+                .data(loginResponse)
+                .build());
     }
 
     @PostMapping("/details")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<?> getAccountDetails(@RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            String extractedToken = authorizationHeader.substring(7); // Loại bỏ "Bearer " từ chuỗi token
-            Account account = accountService.getAccountDetailsFromToken(extractedToken);
-            return ResponseEntity.ok(AccountResponse.fromAccount(account));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> getAccountDetails(
+            @RequestHeader("Authorization") String authorizationHeader
+    ) throws Exception {
+        String extractedToken = authorizationHeader.substring(7); // Loại bỏ "Bearer " từ chuỗi token
+        Account account = accountService.getAccountDetailsFromToken(extractedToken);
+        AccountResponse accountResponse = AccountResponse.fromAccount(account);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get user's detail successfully")
+                .status(HttpStatus.OK)
+                .data(accountResponse)
+                .build());
     }
 
     @PutMapping("/details/{userId}")
     @Operation(security = {@SecurityRequirement(name = "bearer-key")})
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-    public ResponseEntity<?> updateAccountDetails(
+    public ResponseEntity<ResponseObject> updateAccountDetails(
             @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable int userId,
             @RequestBody UpdateAccountDTO updateAccountDTO
-    ) {
-        try {
-            String extractedToken = authorizationHeader.substring(7); // Loại bỏ "Bearer " từ chuỗi token
-            Account account = accountService.getAccountDetailsFromToken(extractedToken);
+    ) throws Exception {
+        String extractedToken = authorizationHeader.substring(7); // Loại bỏ "Bearer " từ chuỗi token
+        Account account = accountService.getAccountDetailsFromToken(extractedToken);
 
-            // Đảm bảo rằng user gọi request chứa token phải trùng với user muốn update
-            if (account.getUSERID() != userId) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            Account updateAccount = accountService.updateAccount(updateAccountDTO, userId);
-            return ResponseEntity.ok(AccountResponse.fromAccount(updateAccount));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        // Đảm bảo rằng user gọi request chứa token phải trùng với user muốn update
+        if (account.getUSERID() != userId) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
+        Account updateAccount = accountService.updateAccount(updateAccountDTO, userId);
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Update user detail successfully")
+                .status(HttpStatus.OK)
+                .data(AccountResponse.fromAccount(updateAccount))
+                .build());
     }
 
     @GetMapping("")

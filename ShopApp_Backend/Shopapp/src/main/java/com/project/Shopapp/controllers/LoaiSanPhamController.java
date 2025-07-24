@@ -30,7 +30,7 @@ public class LoaiSanPhamController {
 
 
     @PostMapping("")
-    @PreAuthorize("hasRole(ROLE_ADMIN)")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> createLoaiSanPham(
             @Valid @RequestBody LoaiSanPhamDTO loaisanphamDTO,
             BindingResult result) {
@@ -65,7 +65,7 @@ public class LoaiSanPhamController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole(ROLE_ADMIN)")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> updateLoaiSanPham(
             @PathVariable int id,
             @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO
@@ -79,7 +79,7 @@ public class LoaiSanPhamController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole(ROLE_ADMIN)")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> deleteLoaiSanPham(@PathVariable int id) throws Exception {
         loaiSanPhamService.deleteLoaiSanPham(id);
         return ResponseEntity.ok(ResponseObject.builder()
