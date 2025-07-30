@@ -36,7 +36,10 @@ spring:
       host: ${REDIS_HOST:localhost} # Default to 'localhost' if not provided
       port: ${REDIS_PORT:6379}
   kafka:
-    bootstrap-servers: localhost:9092
+    client:
+      dns:
+        lookup: use_dns_cache
+    bootstrap-servers: ${KAFKA_BROKER_SERVER:localhost}:${KAFKA_BROKER_PORT:9092}
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
@@ -53,10 +56,6 @@ spring:
             scope:
               - email
               - public_profile
-
-# Deployment Docker
-#  config:
-#    import: optional:file:.env[.properties]
 
 api:
   prefix: /api/v1
