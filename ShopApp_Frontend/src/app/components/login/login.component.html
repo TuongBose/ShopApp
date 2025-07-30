@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <div class="login-form mx-auto">
-                    <h2 class="login-header">Dang Nhap</h2>
+                    <h2 class="login-header">Đăng nhập</h2>
                     <div class="form-group">
                         <label for="phoneNumber">Phone</label>
                         <input type="text" class="form-control" id="phoneNumber" [(ngModel)]="phoneNumber"
@@ -26,16 +26,20 @@
                             <span style="display:flex;">
                                 <input type="checkbox" [(ngModel)]="rememberMe" class="form-check-input" id="remember" name="rememberMe">
                                 <label class="form-check-label text-start" for="remember"></label>
-                                Ghi nho dang nhap
+                                Ghi nhớ đăng nhập
                             </span>
-                            <a href="#" class="register-link">Quen mat khau</a>
+                            <a href="#" class="register-link">Quên mật khẩu</a>
                         </div>
                     </div>
-                    <button type="button" (click)="login()" class="login-button">Dang nhap</button>
+                    <button type="button" (click)="login()" class="login-button">Đăng nhập</button>
                     <div class="divider"></div>
-                    <p class="text-center">Ban chua dang ky?
+                    <div class="social-login-buttons">
+                        <button type="button" (click)="loginWithGoogle()"  class="social-button google-button">Đăng nhập với Google</button>
+                        <button type="button" (click)="loginWithFacebook()"  class="social-button facebook-button">Đăng nhập với Facebook</button>
+                    </div>
+                    <p class="text-center">Bạn chưa có tài khoản?
                         <span>
-                            <a routerLink="/register" class="register-link">Tao tai khoan</a>
+                            <a (click)="createAccount()" class="register-link">Tạo tài khoản</a>
                         </span>
                     </p>
                 </div>

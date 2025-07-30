@@ -21,8 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -73,6 +73,63 @@ public class AccountService implements IAccountService {
         String subject = null;
         int roleId = accountLoginDTO.isRoleid() ? Account.ADMIN : Account.USER;
 
+        // Check by Google Account ID
+        if (accountLoginDTO.getGoogleAccountId() != null && accountLoginDTO.isGoogleAccountIdValid()) {
+            accountOptional = accountRepository.findByGOOGLE_ACCOUNT_ID(accountLoginDTO.getGoogleAccountId());
+            subject = "Google:" + accountLoginDTO.getGoogleAccountId();
+            // Neu khong tim thay nguoi dung tao ban ghi moi
+            if (accountOptional.isEmpty()) {
+                Account newAccount = Account.builder()
+                        .FULLNAME(accountLoginDTO.getFullName() != null ? accountLoginDTO.getFullName() : "")
+                        .EMAIL(accountLoginDTO.getEMAIL() != null ? accountLoginDTO.getEMAIL() : "")
+                        .profileImage(accountLoginDTO.getProfileImage() != null ? accountLoginDTO.getProfileImage() : "")
+                        .ROLENAME(accountLoginDTO.isRoleid())
+                        .GOOGLE_ACCOUNT_ID(accountLoginDTO.getGoogleAccountId())
+                        .PASSWORD("")
+                        .DIACHI("")
+                        .SODIENTHOAI(accountLoginDTO.getSODIENTHOAI() != null ? accountLoginDTO.getSODIENTHOAI() : "")
+                        .NGAYSINH(new Date())
+                        .IS_ACTIVE(true)
+                        .build();
+                // Luu nguoi dung moi vao CSDL
+                accountRepository.save(newAccount);
+
+                // Optional tro thanh co gia tri voi nguoi dung moi
+                accountOptional = Optional.of(newAccount);
+            }
+
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("email", accountLoginDTO.getEMAIL());
+            return jwtTokenUtils.generateToken(accountOptional.get());
+        }
+
+        // Check by Facebook Account ID
+        if (accountLoginDTO.isFacebookAccountIdValid()) {
+            accountOptional = accountRepository.findByFACEBOOK_ACCOUNT_ID(accountLoginDTO.getFacebookAccountId());
+            subject = "Facebook:" + accountLoginDTO.getFacebookAccountId();
+            // Neu khong tim thay nguoi dung tao ban ghi moi
+            if (accountOptional.isEmpty()) {
+                Account newAccount = Account.builder()
+                        .FULLNAME(accountLoginDTO.getFullName() != null ? accountLoginDTO.getFullName() : "")
+                        .EMAIL(accountLoginDTO.getEMAIL() != null ? accountLoginDTO.getEMAIL() : "")
+                        .profileImage(accountLoginDTO.getProfileImage() != null ? accountLoginDTO.getProfileImage() : "")
+                        .ROLENAME(accountLoginDTO.isRoleid())
+                        .GOOGLE_ACCOUNT_ID(null)
+                        .FACEBOOK_ACCOUNT_ID(accountLoginDTO.getFacebookAccountId())
+                        .PASSWORD("")
+                        .DIACHI("")
+                        .SODIENTHOAI(accountLoginDTO.getSODIENTHOAI() != null ? accountLoginDTO.getSODIENTHOAI() : "")
+                        .NGAYSINH(new Date())
+                        .IS_ACTIVE(true)
+                        .build();
+                // Luu nguoi dung moi vao CSDL
+                accountRepository.save(newAccount);
+
+                // Optional tro thanh co gia tri voi nguoi dung moi
+                accountOptional = Optional.of(newAccount);
+            }
+        }
+
         // Check if the user exists by phone number
         if (accountLoginDTO.getSODIENTHOAI() != null && !accountLoginDTO.getSODIENTHOAI().isBlank()) {
             accountOptional = accountRepository.findBySODIENTHOAI(accountLoginDTO.getSODIENTHOAI());
@@ -94,7 +151,7 @@ public class AccountService implements IAccountService {
         Account existingAccount = accountOptional.get();
 
         // Check password
-        if (existingAccount.getFACEBOOK_ACCOUNT_ID() == 0 && existingAccount.getGOOGLE_ACCOUNT_ID() == 0) {
+        if (existingAccount.getFACEBOOK_ACCOUNT_ID() == null && existingAccount.getGOOGLE_ACCOUNT_ID() == null) {
             if (!passwordEncoder.matches(accountLoginDTO.getPASSWORD(), existingAccount.getPassword())) {
                 throw new BadCredentialsException("Phone number/email or password not found");
             }

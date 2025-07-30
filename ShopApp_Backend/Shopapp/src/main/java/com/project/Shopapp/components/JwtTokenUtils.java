@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.InvalidParameterException;
@@ -39,13 +38,16 @@ public class JwtTokenUtils {
     public String generateToken(Account account) throws Exception {
         // properties => claims
         Map<String, Object> claims = new HashMap<>();
-        claims.put("SODIENTHOAI", account.getSODIENTHOAI());
-        claims.put("USERID", account.getUSERID());
+        // Add subject identifier (phone number or email)
+        String subject =getSubject(account);
+        claims.put("subject",subject);
+        // Add user ID
+        claims.put("userId", account.getUSERID());
         try {
             return Jwts
                     .builder()
                     .setClaims(claims)
-                    .setSubject(account.getSODIENTHOAI())
+                    .setSubject(subject)
                     .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .compact();
@@ -98,4 +100,16 @@ public class JwtTokenUtils {
         }
         return false;
     }
+
+    private static String getSubject (Account account){
+        // Determine subject identifier (phone number or email)
+        String subject = account.getSODIENTHOAI();
+        if(subject==null||subject.isBlank()){
+            // If phone number is null or blank, use email as subject
+            subject= account.getEMAIL();
+        }
+        return  subject;
+    }
+
+
 }

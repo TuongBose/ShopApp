@@ -38,9 +38,9 @@ public class Account extends BaseEntity implements UserDetails {
 
     private Date NGAYSINH;
     private boolean IS_ACTIVE;
-    private int FACEBOOK_ACCOUNT_ID;
-    private int GOOGLE_ACCOUNT_ID;
-
+    private String FACEBOOK_ACCOUNT_ID;
+    private String GOOGLE_ACCOUNT_ID;
+    private String profileImage;
     private boolean ROLENAME;
 
     @Override

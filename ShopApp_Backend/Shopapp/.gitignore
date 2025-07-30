@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+# Don't commit secret config
+application.yml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

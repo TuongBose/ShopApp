@@ -15,6 +15,7 @@ import com.project.Shopapp.responses.account.LoginResponse;
 import com.project.Shopapp.responses.account.RegisterResponse;
 import com.project.Shopapp.services.account.AccountService;
 import com.project.Shopapp.components.LocalizationUtils;
+import com.project.Shopapp.services.auth.IAuthService;
 import com.project.Shopapp.services.token.TokenService;
 import com.project.Shopapp.utils.MessageKeys;
 import com.project.Shopapp.utils.ValidationUtils;
@@ -35,6 +36,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -42,6 +45,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+    private final IAuthService authService;
     private final LocalizationUtils localizationUtils;
     private final TokenService tokenService;
 
@@ -159,11 +163,10 @@ public class AccountController {
     ) throws Exception {
         String extractedToken = authorizationHeader.substring(7); // Loại bỏ "Bearer " từ chuỗi token
         Account account = accountService.getAccountDetailsFromToken(extractedToken);
-        AccountResponse accountResponse = AccountResponse.fromAccount(account);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Get user's detail successfully")
                 .status(HttpStatus.OK)
-                .data(accountResponse)
+                .data(AccountResponse.fromAccount(account))
                 .build());
     }
 
@@ -251,5 +254,85 @@ public class AccountController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // Angular, bam dang nhap google, redirect den trang dang nhap google, dang nhap xong co "code"
+    // Tu "code" => google token => lay ra cac thong tin khac
+    @GetMapping("/auth/social-login")
+    public ResponseEntity<String> socialAuth(
+            @RequestParam("login_type") String loginType,
+            HttpServletRequest request
+    ) {
+        // request.getRequestURI()
+        loginType = loginType.trim().toLowerCase(); // Loai bo dau cach va chuyen thanh chu thuong
+        String url = authService.generateAuthUrl(loginType);
+        return ResponseEntity.ok(url);
+    }
+
+    @GetMapping("/auth/social/callback")
+    public ResponseEntity<ResponseObject> callback(
+            @RequestParam("code") String code,
+            @RequestParam("login_type") String loginType,
+            HttpServletRequest request
+    ) throws Exception {
+        // Call the AuthService to get user info
+        Map<String, Object> userInfo = authService.authenticateAndFetchProfile(code, loginType);
+
+        if (userInfo == null) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message("Failed to authenticate")
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(null)
+                    .build());
+        }
+
+        String accountId = "";
+        String name = "";
+        String picture = "";
+        String email = "";
+
+        if (loginType.trim().equals("google")) {
+            accountId = (String) Objects.requireNonNullElse(userInfo.get("sub"), "");
+            name = (String) Objects.requireNonNullElse(userInfo.get("name"), "");
+            picture = (String) Objects.requireNonNullElse(userInfo.get("picture"), "");
+            email = (String) Objects.requireNonNullElse(userInfo.get("email"), "");
+        } else if (loginType.trim().equals("facebook")) {
+            accountId = (String) Objects.requireNonNullElse(userInfo.get("id"), "");
+            name = (String) Objects.requireNonNullElse(userInfo.get("name"), "");
+            email = (String) Objects.requireNonNullElse(userInfo.get("email"), "");
+            // Lay URL anh tu cau truc du lieu cua facebook
+            Object pictureObj = userInfo.get("picture");
+            if (pictureObj instanceof Map) {
+                Map<?, ?> pictureData = (Map<?, ?>) pictureObj;
+                Object dataObj = pictureData.get("data");
+
+                if (dataObj instanceof Map) {
+                    Map<?, ?> dataMap = (Map<?, ?>) dataObj;
+                    Object urlObj = dataMap.get("url");
+                    if (urlObj instanceof String) {
+                        picture = (String) urlObj;
+                    }
+                }
+            }
+        }
+
+        // Create object AccountLoginDTO
+        AccountLoginDTO accountLoginDTO = AccountLoginDTO.builder()
+                .EMAIL(email)
+                .fullName(name)
+                .PASSWORD("")
+                .SODIENTHOAI("")
+                .profileImage(picture)
+                .build();
+
+        if (loginType.trim().equals("google")) {
+            accountLoginDTO.setGoogleAccountId(accountId);
+//            accountLoginDTO.setFacebookAccountId("");
+        } else if (loginType.trim().equals("facebook")) {
+            accountLoginDTO.setGoogleAccountId("");
+//            accountLoginDTO.setFacebookAccountId(accountId);
+        }
+
+        return this.login(accountLoginDTO,request);
     }
 }
