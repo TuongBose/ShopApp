@@ -12,13 +12,17 @@ import { DonHang } from '../../models/donhang';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
+import { PaymentService } from '../../services/payment.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ToastService } from '../../services/toast.service';
+import { error } from 'console';
 
 @Component({
   selector: 'app-order',
   standalone: true,
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss',
-  imports:[
+  imports: [
     HeaderComponent,
     FooterComponent,
     CommonModule,
@@ -52,6 +56,8 @@ export class OrderComponent implements OnInit {
     private fb: FormBuilder,
     private tokenService: TokenService,
     private router: Router,
+    private paymentService: PaymentService,
+    private toastService: ToastService
   ) {
     this.orderForm = this.fb.group({
       fullname: ['tuong', [Validators.required]],
@@ -125,6 +131,52 @@ export class OrderComponent implements OnInit {
 
       this.orderData.tongtien = this.totalAmount;
 
+      if (this.orderData.phuongthucthanhtoan === 'vnpay') {
+        debugger
+        const amount = this.orderData.tongtien || 0;
+
+        // Bước 1: gọi API tạo link thanh toán
+        this.paymentService.createPaymentUrl({ amount, language: 'vn' })
+          .subscribe({
+            next: (res: ApiResponse) => {
+              // res.data la URL thanh toan
+              const paymentUrl = res.data;
+              console.log('URL thanh toán: ', paymentUrl);
+
+              // Bước 2: Tách vnp_TxnRef từ URL vừa trả về
+              const vnp_TxnRef = new URL(paymentUrl).searchParams.get('vnp_TxnRef') || '';
+
+              // Bước 3: gọi palceOrder kèm theo vnp_TxnRef
+              this.donHangService.placeOrder({
+                ...this.orderData,
+                vnp_txn_ref: vnp_TxnRef
+              }).subscribe({
+                next: (placeOrderResponse: ApiResponse) => {
+                  // Bước 4: Nếu đặt hàng thành công, điều hướng sang trang thanh toán
+                  debugger
+                  window.location.href = paymentUrl;
+                },
+                error: (err: HttpErrorResponse) => {
+                  debugger
+                  this.toastService.showToast({
+                    error: err,
+                    defaultMsg: 'Lỗi trong quá trình đặt hàng',
+                    title: 'Lỗi Đặt Hàng'
+                  });
+
+                }
+              })
+            },
+            error:(err:HttpErrorResponse)=>{
+              this.toastService.showToast({
+                error:err,
+                defaultMsg: 'Lỗi kết nối đến cổng thanh toán',
+                title:'Lỗi thanh toán',
+              });
+            }
+          })
+      }
+
       this.donHangService.placeOrder(this.orderData).subscribe({
         next: (response: DonHang) => {
           debugger
@@ -145,53 +197,54 @@ export class OrderComponent implements OnInit {
       alert('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.');
     }
   }
+}
 
-  calculateTotal(): void {
-    this.totalAmount = this.cartItems.reduce(
-      (total, item) => total + item.sanPham.gia * item.quantity,
-      0
-    );
+calculateTotal(): void {
+  this.totalAmount = this.cartItems.reduce(
+    (total, item) => total + item.sanPham.gia * item.quantity,
+    0
+  );
+}
+
+decreaseQuantity(index: number): void {
+  if(this.cartItems[index].quantity > 1) {
+  this.cartItems[index].quantity--;
+  // Cập nhật lại this.cart từ this.cartItems
+  this.updateCartFromCartItems();
+  this.calculateTotal();
+}
   }
 
-  decreaseQuantity(index: number): void {
-    if (this.cartItems[index].quantity > 1) {
-      this.cartItems[index].quantity--;
-      // Cập nhật lại this.cart từ this.cartItems
-      this.updateCartFromCartItems();
-      this.calculateTotal();
-    }
-  }
+increaseQuantity(index: number): void {
+  this.cartItems[index].quantity++;
+  debugger;
+  // Cập nhật lại this.cart từ this.cartItems
+  this.updateCartFromCartItems();
+  this.calculateTotal();
+}
 
-  increaseQuantity(index: number): void {
-    this.cartItems[index].quantity++;
-    debugger;
-    // Cập nhật lại this.cart từ this.cartItems
-    this.updateCartFromCartItems();
-    this.calculateTotal();
-  }
-
-  confirmDelete(index: number): void {
-    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-      // Xoa san pham khoi danh sach cartItems
-      this.cartItems.splice(index, 1);
-      // Cập nhật lại this.cart từ this.cartItems
-      this.updateCartFromCartItems();
-      // Tinh toan lai tong tien
-      this.calculateTotal();
-    }
+confirmDelete(index: number): void {
+  if(confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+  // Xoa san pham khoi danh sach cartItems
+  this.cartItems.splice(index, 1);
+  // Cập nhật lại this.cart từ this.cartItems
+  this.updateCartFromCartItems();
+  // Tinh toan lai tong tien
+  this.calculateTotal();
+}
 
   }
 
-  private updateCartFromCartItems():void{
-    this.cart.clear();
-    this.cartItems.forEach((item)=>{
-      this.cart.set(item.sanPham.masanpham,item.quantity);
-    });
-    this.cartService.setCart(this.cart);
-  }
+  private updateCartFromCartItems(): void {
+  this.cart.clear();
+  this.cartItems.forEach((item) => {
+    this.cart.set(item.sanPham.masanpham, item.quantity);
+  });
+  this.cartService.setCart(this.cart);
+}
 
-  applyCoupon(): void {
-    // Xử lý áp dụng mã giảm giá
-    // cập nhật giá trị totalAmount dựa trên mã giảm giá
-  }
+applyCoupon(): void {
+  // Xử lý áp dụng mã giảm giá
+  // cập nhật giá trị totalAmount dựa trên mã giảm giá
+}
 }

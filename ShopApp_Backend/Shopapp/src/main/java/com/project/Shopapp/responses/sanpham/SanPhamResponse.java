@@ -23,6 +23,7 @@ public class SanPhamResponse extends BaseResponse {
     private int SOLUONGTONKHO;
     private int MALOAISANPHAM;
     private String THUMBNAIL;
+    private int totalPages;
     private List<HinhAnhResponse> hinhAnhUrls;
 
     public static SanPhamResponse fromSanPham(SanPham sanPham) {
@@ -36,6 +37,7 @@ public class SanPhamResponse extends BaseResponse {
                 .SOLUONGTONKHO(sanPham.getSOLUONGTONKHO())
                 .MALOAISANPHAM(sanPham.getMALOAISANPHAM().getMALOAISANPHAM())
                 .THUMBNAIL(sanPham.getTHUMBNAIL())
+                .totalPages(0)
                 .build();
         newSanPhamResponse.setNGAYTAO(sanPham.getNGAYTAO());
         newSanPhamResponse.setCHINHSUA(sanPham.getCHINHSUA());
@@ -53,6 +55,7 @@ public class SanPhamResponse extends BaseResponse {
                 .SOLUONGTONKHO(sanPham.getSOLUONGTONKHO())
                 .MALOAISANPHAM(sanPham.getMALOAISANPHAM().getMALOAISANPHAM())
                 .THUMBNAIL(sanPham.getTHUMBNAIL())
+                .totalPages(0)
                 .hinhAnhUrls(hinhAnhList)
                 .build();
         newSanPhamResponse.setNGAYTAO(sanPham.getNGAYTAO());

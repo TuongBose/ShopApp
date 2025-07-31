@@ -9,6 +9,7 @@ import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
@@ -61,8 +62,9 @@ export class HomeComponent implements OnInit {
   getAllSanPham(keyword: string, selectedMALOAISANPHAM: number, page: number, limit: number) {
     debugger
     this.sanPhamService.getAllSanPham(keyword, selectedMALOAISANPHAM, page, limit).subscribe({
-      next: (response: any) => {
+      next: (apiresponse: ApiResponse) => {
         debugger
+        const response = apiresponse.data;
         response.sanPhamResponseList.forEach((sanPham:SanPham)=>{
           sanPham.thumbnail_url=`${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
         })
@@ -73,9 +75,12 @@ export class HomeComponent implements OnInit {
       complete: () => {
         debugger;
       },
-      error: (error: any) => {
-        debugger;
-        console.error('Error fetching sanpham: ', error)
+      error: (error: HttpErrorResponse) => {
+        this.toastService.showToast({
+          error: error,
+            defaultMsg:'Lấy dữ liệu sản phẩm không thành công',
+            title:'Lỗi'
+        })
       }
     });
   }

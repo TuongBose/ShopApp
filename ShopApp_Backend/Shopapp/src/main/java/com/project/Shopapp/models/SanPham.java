@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -37,4 +39,9 @@ public class SanPham extends BaseEntity {
     private LoaiSanPham MALOAISANPHAM;
 
     private String THUMBNAIL;
+
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private List<Favorite> favorites = new ArrayList<>();
 }

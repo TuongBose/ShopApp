@@ -16,16 +16,16 @@ public class GlobalExceptionHandle {
                 ResponseObject.builder()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .message(exception.getMessage())
-                        .build()
-        );
+                        .build());
     }
 
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ResponseObject> handleResourceNotFoundException(DataNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseObject.builder()
-                .status(HttpStatus.NOT_FOUND)
-                .message(exception.getMessage())
-                .build());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseObject.builder()
+                        .status(HttpStatus.NOT_FOUND)
+                        .message(exception.getMessage())
+                        .build());
     }
 }

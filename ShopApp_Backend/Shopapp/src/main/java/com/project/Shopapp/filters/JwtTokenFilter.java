@@ -51,7 +51,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             final String token = authHeader.substring(7);
-            final String phoneNumber = jwtTokenUtils.extractPhoneNumber(token);
+            final String phoneNumber = jwtTokenUtils.getSubject(token);
 
             if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Account userDetails = (Account) userDetailsService.loadUserByUsername(phoneNumber);
@@ -68,7 +68,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response); //enable bypass
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write(e.getMessage());
         }
     }
 
@@ -77,6 +79,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/sanphams**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/loaisanphams**", apiPrefix), "GET"),
                 Pair.of(String.format("%s/accounts/register", apiPrefix), "POST"),
+                Pair.of(String.format("%s/accounts/register/admin", apiPrefix), "POST"),
                 Pair.of(String.format("%s/accounts/login", apiPrefix), "POST"),
                 Pair.of(String.format("%s/accounts/refreshToken", apiPrefix), "POST"),
 
@@ -99,7 +102,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/feedbacks**", apiPrefix), "GET"),
 
                 // coupon
-                Pair.of(String.format("%s/coupons**", apiPrefix), "GET")
+                Pair.of(String.format("%s/coupons**", apiPrefix), "GET"),
+
+                // policy
+                Pair.of(String.format("%s/policies**", apiPrefix), "GET"),
+
+                //Đăng nhập social
+                Pair.of(String.format("%s/users/auth/social-login**", apiPrefix), "GET"),
+                Pair.of(String.format("%s/users/auth/social/callback**", apiPrefix), "GET")
                 );
 
         String requestPath = request.getServletPath();

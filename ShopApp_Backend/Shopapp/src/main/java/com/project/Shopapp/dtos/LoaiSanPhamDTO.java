@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoaiSanPhamDTO {
-    @NotEmpty(message = "Ten loai san pham khong duoc bo trong")
+    @NotEmpty(message = "Category's name cannot be empty")
     private String TENLOAISANPHAM;
 }

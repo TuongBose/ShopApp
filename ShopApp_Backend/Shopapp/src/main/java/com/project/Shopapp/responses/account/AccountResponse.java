@@ -23,10 +23,10 @@ public class AccountResponse {
     private boolean IS_ACTIVE;
 
     @JsonProperty("facebook_account_id")
-    private int FACEBOOK_ACCOUNT_ID;
+    private String FACEBOOK_ACCOUNT_ID;
 
     @JsonProperty("google_account_id")
-    private int GOOGLE_ACCOUNT_ID;
+    private String GOOGLE_ACCOUNT_ID;
 
     private boolean ROLENAME;
 

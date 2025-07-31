@@ -3,6 +3,10 @@ package com.project.Shopapp.services.auth;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeRequestUrl;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +66,7 @@ public class AuthService implements IAuthService {
                     Arrays.asList("email", "profile", "openid")
             );
             url = urlBuilder.build();
-        }
-        {
+        } else if ("facebook".equals(loginType)) {
             url = UriComponentsBuilder
                     .fromUriString(facebookAuthUri)
                     .queryParam("client_id", facebookClientId)

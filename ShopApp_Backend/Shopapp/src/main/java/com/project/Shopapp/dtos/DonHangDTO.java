@@ -1,5 +1,6 @@
 package com.project.Shopapp.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -24,5 +25,9 @@ public class DonHangDTO {
     private String GHICHU;
     private BigDecimal TONGTIEN;
     private String PHUONGTHUCTHANHTOAN;
+
+    @JsonProperty("status")
+    private String status;
+
     private List<CartItemDTO> cartitems;
 }

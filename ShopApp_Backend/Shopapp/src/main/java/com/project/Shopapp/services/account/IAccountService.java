@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface IAccountService {
     Account createAccount(AccountDTO accountDTO) throws Exception;
+    Account createUserAdmin(AccountDTO accountDTO) throws Exception;
     //String login(String EMAIL, String SODIENTHOAI, String PASSWORD, Integer roleId) throws Exception;
     String login(AccountLoginDTO accountLoginDTO) throws Exception;
     Account getAccountDetailsFromToken(String token) throws Exception;
@@ -19,4 +20,6 @@ public interface IAccountService {
     Page<Account> getAllAccountCustomer(String keyword, Pageable pageable) throws Exception;
     void resetPassword(int userId, String newPassword) throws DataNotFoundException, InvalidPasswordException;
     void blockOrEnable(int userId, boolean active) throws DataNotFoundException;
+    void changeProfileImage(int userId, String imageName) throws Exception;
+    String loginSocial(AccountLoginDTO accountLoginDTO) throws Exception;
 }

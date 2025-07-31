@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface IHinhAnhService {
     List<HinhAnhResponse> getAllHinhAnhByMaSanPham(SanPham sanPham);
-    void deleteHinhAnh(int id) throws DataNotFoundException;
+    HinhAnh deleteHinhAnh(int id) throws DataNotFoundException;
 }

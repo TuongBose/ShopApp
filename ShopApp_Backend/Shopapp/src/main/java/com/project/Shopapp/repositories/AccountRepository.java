@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Integer> {
@@ -30,4 +31,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "OR o.DIACHI LIKE %:keyword% " +
             "OR o.SODIENTHOAI LIKE %:keyword%)")
     Page<Account> findAll(@Param("keyword") String keyword, Pageable pageable);
+
+    List<Account> findAllByROLENAMEFalse(); // user
+    List<Account> findAllByROLENAMETrue(); // admin
 }

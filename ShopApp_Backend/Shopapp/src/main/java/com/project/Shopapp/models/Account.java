@@ -5,11 +5,9 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Setter
@@ -18,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "accounts")
 @Builder
-public class Account extends BaseEntity implements UserDetails {
+public class Account extends BaseEntity implements UserDetails, OAuth2User {
     public static final int USER = 0;
     public static final int ADMIN = 1;
 
@@ -46,11 +44,11 @@ public class Account extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String name = "USER";
-        if(ROLENAME)
+        if (ROLENAME)
             name = "ADMIN";
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("ROLE_"+ name));
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + name));
         //authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorityList;
     }
@@ -62,7 +60,12 @@ public class Account extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return SODIENTHOAI;
+        if (SODIENTHOAI != null && !SODIENTHOAI.isEmpty()) {
+            return SODIENTHOAI;
+        } else if (EMAIL != null && !EMAIL.isEmpty()) {
+            return EMAIL;
+        }
+        return "";
     }
 
     @Override
@@ -84,4 +87,16 @@ public class Account extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public String getName() {
+        return getAttribute("name");
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return new HashMap<String, Object>();
+    }
+
+
 }

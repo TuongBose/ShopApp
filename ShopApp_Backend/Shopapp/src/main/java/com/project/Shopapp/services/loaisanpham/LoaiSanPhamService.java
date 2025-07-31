@@ -19,14 +19,19 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
     private final SanPhamRepository sanPhamRepository;
 
     @Override
+    @Transactional
     public LoaiSanPham createLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO) {
-        LoaiSanPham newLoaiSanPham = LoaiSanPham.builder().TENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM()).build();
+        LoaiSanPham newLoaiSanPham = LoaiSanPham
+                .builder()
+                .TENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM())
+                .build();
         return loaiSanPhamRepository.save(newLoaiSanPham);
     }
 
     @Override
     public LoaiSanPham getLoaiSanPhamByMASANPHAM(int id) {
-        return loaiSanPhamRepository.findById(id).orElseThrow(() -> new RuntimeException("Khong tim thay loai san pham"));
+        return loaiSanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
     }
 
     @Override
@@ -35,6 +40,7 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
     }
 
     @Override
+    @Transactional
     public LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO) {
         LoaiSanPham existingLoaiSanPham = getLoaiSanPhamByMASANPHAM(id);
         existingLoaiSanPham.setTENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM());
@@ -50,7 +56,7 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
 
         List<SanPham> sanPhams = sanPhamRepository.findByMALOAISANPHAM(loaiSanPham);
         if (!sanPhams.isEmpty()) {
-            throw new IllegalStateException("Cannot delete LoaiSanPham with associated products");
+            throw new IllegalStateException("Cannot delete category with associated products");
         } else {
             loaiSanPhamRepository.deleteById(id);
             return loaiSanPham;

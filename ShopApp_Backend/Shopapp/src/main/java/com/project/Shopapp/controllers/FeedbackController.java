@@ -85,4 +85,15 @@ public class FeedbackController {
                 .data(null)
                 .build());
     }
+
+    @PostMapping("/generateFakeComments")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ResponseObject> generateFakeFeedbacks() throws Exception {
+        feedbackService.generateFakeFeedbacks();
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Insert fake feedbacks succcessfully")
+                .data(null)
+                .status(HttpStatus.OK)
+                .build());
+    }
 }

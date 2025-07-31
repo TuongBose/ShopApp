@@ -47,7 +47,7 @@ public class DonHangService implements IDonHangService {
         modelMapper.map(donHangDTO, donHang);
         donHang.setUSERID(existingAccount);
         donHang.setNGAYDATHANG(LocalDate.now());
-        donHang.setTRANGTHAI(TrangThaiDonHang.CHUAXULY);
+        donHang.setTRANGTHAI(OrderStatus.CHUAXULY);
         donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
         donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
         donHangRepository.save(donHang);

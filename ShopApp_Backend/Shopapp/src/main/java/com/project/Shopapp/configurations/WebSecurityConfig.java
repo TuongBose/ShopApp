@@ -2,11 +2,14 @@ package com.project.Shopapp.configurations;
 
 import com.project.Shopapp.filters.JwtTokenFilter;
 import com.project.Shopapp.models.Role;
+import jakarta.websocket.Endpoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,7 +17,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -38,8 +43,9 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(customizer->customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .sessionManagement(c->c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers(
                                     String.format("%s/accounts/register", apiPrefix),
@@ -104,7 +110,8 @@ public class WebSecurityConfig {
                 })
 
                 .csrf(AbstractHttpConfigurer::disable)
-
+                .oauth2Login(Customizer.withDefaults())
+                .oauth2ResourceServer(c->c.opaqueToken(Customizer.withDefaults()))
                 .cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
                     @Override
                     public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
@@ -118,6 +125,7 @@ public class WebSecurityConfig {
                         httpSecurityCorsConfigurer.configurationSource(source);
                     }
                 })
+                .securityMatcher(String.valueOf(EndpointRequest.toAnyEndpoint()))
                 .build();
     }
 }

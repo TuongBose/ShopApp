@@ -1,5 +1,6 @@
 package com.project.Shopapp.services.feedback;
 
+import com.github.javafaker.Faker;
 import com.project.Shopapp.dtos.FeedbackDTO;
 import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.models.Account;
@@ -13,7 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,5 +109,42 @@ public class FeedbackService implements IFeedbackService {
         return feedbacks.stream()
                 .map(FeedbackResponse::fromFeedback)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void generateFakeFeedbacks() throws Exception {
+        Faker faker = new Faker();
+        Random random = new Random();
+        List<Account> accounts = accountRepository.findAll();
+        List<SanPham> sanPhams = sanPhamRepository.findAll();
+        List<Feedback> feedbacks = new ArrayList<>();
+
+        final int totalRecords = 10000;
+        final int batchSize = 1000;
+        for (int i = 0; i < totalRecords; i++) {
+            Account account = accounts.get(random.nextInt(accounts.size()));
+            SanPham sanPham = sanPhams.get(random.nextInt(sanPhams.size()));
+
+            // Generate a fake feedback
+            Feedback feedback = Feedback.builder()
+                    .NOIDUNG(faker.lorem().sentence())
+                    .MASANPHAM(sanPham)
+                    .USERID(account)
+                    .SOSAO(faker.number().numberBetween(1, 5))
+                    .build();
+
+            // Set a random created date within the range of 2015 to now
+            LocalDateTime startDate = LocalDateTime.of(2015, 1, 1, 0, 0);
+            LocalDateTime endDate = LocalDateTime.now();
+            long randomEpoch = ThreadLocalRandom.current()
+                    .nextLong(startDate.toEpochSecond(ZoneOffset.UTC), endDate.toEpochSecond(ZoneOffset.UTC));
+            feedback.setCreatedAt(LocalDateTime.ofEpochSecond(randomEpoch, 0, ZoneOffset.UTC));
+            // Save the comment
+            feedbacks.add(feedback);
+            if (feedbacks.size() >= batchSize) {
+                feedbackRepository.saveAll(feedbacks);
+                feedbacks.clear();
+            }
+        }
     }
 }

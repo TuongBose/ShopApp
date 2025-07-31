@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface CouponConditionRepository extends JpaRepository<CouponCondition, Long> {
     List<CouponCondition> findByCouponId(Long couponId);
-
 }

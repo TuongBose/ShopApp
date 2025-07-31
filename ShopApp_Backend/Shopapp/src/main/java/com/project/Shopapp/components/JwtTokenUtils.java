@@ -5,6 +5,7 @@ import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.TokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.InvalidParameterException;
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +41,8 @@ public class JwtTokenUtils {
         // properties => claims
         Map<String, Object> claims = new HashMap<>();
         // Add subject identifier (phone number or email)
-        String subject =getSubject(account);
-        claims.put("subject",subject);
+        String subject = getSubject(account);
+        claims.put("subject", subject);
         // Add user ID
         claims.put("userId", account.getUSERID());
         try {
@@ -85,31 +87,44 @@ public class JwtTokenUtils {
 
     public boolean validateToken(String token, Account userDetails) {
         try {
-            String phoneNumber = extractPhoneNumber(token);
+            String subject = extractClaim(token, Claims::getSubject);
+            // subject is phonenumber or email
             Token existingToken = tokenRepository.findByTOKEN(token);
             if (existingToken == null || existingToken.isREVOKED() || !userDetails.isIS_ACTIVE()) {
                 return false;
             }
-            return (phoneNumber.equals(userDetails.getUsername())) && !isTokenExpired(token);
+            return (subject.equals(userDetails.getUsername())) && !isTokenExpired(token);
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             logger.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
             logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
         }
+
         return false;
     }
 
-    private static String getSubject (Account account){
+    private static String getSubject(Account account) {
         // Determine subject identifier (phone number or email)
         String subject = account.getSODIENTHOAI();
-        if(subject==null||subject.isBlank()){
+        if (subject == null || subject.isBlank()) {
             // If phone number is null or blank, use email as subject
-            subject= account.getEMAIL();
+            subject = account.getEMAIL();
         }
-        return  subject;
+        return subject;
     }
 
+    private String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] keyBytes = new byte[32]; // 256-bit key
+        random.nextBytes(keyBytes);
+        return Encoders.BASE64.encode(keyBytes);
+    }
 
+    public String getSubject(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
 }

@@ -5,10 +5,13 @@ import java.nio.file.*;
 
 import com.github.javafaker.Faker;
 import com.project.Shopapp.components.LocalizationUtils;
+import com.project.Shopapp.components.SecurityUtils;
 import com.project.Shopapp.dtos.HinhAnhDTO;
 import com.project.Shopapp.dtos.SanPhamDTO;
+import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.HinhAnh;
 import com.project.Shopapp.models.SanPham;
+import com.project.Shopapp.responses.ResponseObject;
 import com.project.Shopapp.responses.hinhanh.HinhAnhResponse;
 import com.project.Shopapp.responses.sanpham.SanPhamListResponse;
 import com.project.Shopapp.responses.sanpham.SanPhamResponse;
@@ -16,6 +19,8 @@ import com.project.Shopapp.services.hinhanh.HinhAnhService;
 import com.project.Shopapp.services.sanphamredis.ISanPhamRedisService;
 import com.project.Shopapp.services.sanpham.SanPhamService;
 import com.project.Shopapp.utils.MessageKeys;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -47,6 +53,8 @@ public class SanPhamController {
     private final HinhAnhService hinhAnhService;
     private final LocalizationUtils localizationUtils;
     private final ISanPhamRedisService sanPhamRedisService;
+    private final SecurityUtils securityUtils;
+
     private static final Logger logger = LoggerFactory.getLogger(SanPhamController.class);
 
 
@@ -73,47 +81,63 @@ public class SanPhamController {
 
     // Upload ảnh
     @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadImages(
+    public ResponseEntity<ResponseObject> uploadImages(
             @PathVariable int id,
             @RequestParam("files") List<MultipartFile> files
-    ) {
-        try {
-            SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
+    ) throws Exception {
+        SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
 
-            if (files == null) {
-                files = new ArrayList<MultipartFile>();
-            }
-            if (files.size() > HinhAnh.MAXIMUM_IMAGES_PER_PRODUCT)
-                return ResponseEntity.badRequest().body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_MAX_5));
-            List<HinhAnhDTO> hinhAnhDTOS = new ArrayList<>();
-            for (MultipartFile file : files) {
-                if (file.getSize() == 0) continue;
-
-                if (file.getSize() > 10 * 1024 * 1024) {
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_LARGE));
-                }
-
-                String contentType = file.getContentType();
-                if (contentType == null || !contentType.startsWith("image/")) {
-                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_MUST_BE_IMAGE));
-                }
-
-                // Lưu file
-                String filename = storeFile(file);
-
-                // Lưu vào hình ảnh vào bảng HINHANH trong DataBase
-                HinhAnhDTO newHinhAnhDTO = HinhAnhDTO.builder()
-                        .MALOAISANPHAM(existingSanPham.getMALOAISANPHAM().getMALOAISANPHAM())
-                        .MASANPHAM(existingSanPham.getMASANPHAM())
-                        .TENHINHANH(filename)
-                        .build();
-                sanPhamService.createHinhAnh(newHinhAnhDTO);
-                hinhAnhDTOS.add(newHinhAnhDTO);
-            }
-            return ResponseEntity.ok().body(hinhAnhDTOS);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        if (files == null) {
+            files = new ArrayList<MultipartFile>();
         }
+        if (files.size() > HinhAnh.MAXIMUM_IMAGES_PER_PRODUCT) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_MAX_5))
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(null)
+                    .build());
+        }
+
+        List<HinhAnhDTO> hinhAnhDTOS = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (file.getSize() == 0) continue;
+
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                        .body(ResponseObject.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_LARGE))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .data(null)
+                                .build());
+            }
+
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(
+                        ResponseObject.builder()
+                                .message(localizationUtils.getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_MUST_BE_IMAGE))
+                                .status(HttpStatus.BAD_REQUEST)
+                                .data(null)
+                                .build());
+            }
+
+            // Lưu file
+            String filename = storeFile(file);
+
+            // Lưu vào hình ảnh vào bảng HINHANH trong DataBase
+            HinhAnhDTO newHinhAnhDTO = HinhAnhDTO.builder()
+                    .MALOAISANPHAM(existingSanPham.getMALOAISANPHAM().getMALOAISANPHAM())
+                    .MASANPHAM(existingSanPham.getMASANPHAM())
+                    .TENHINHANH(filename)
+                    .build();
+            sanPhamService.createHinhAnh(newHinhAnhDTO);
+            hinhAnhDTOS.add(newHinhAnhDTO);
+        }
+        return ResponseEntity.ok().body(ResponseObject.builder()
+                .message("Upload image successfully")
+                .status(HttpStatus.CREATED)
+                .data(hinhAnhDTOS)
+                .build());
     }
 
     @GetMapping("/images/{imageName}")
@@ -185,114 +209,179 @@ public class SanPhamController {
         return ResponseEntity.ok("Fake SanPhams thanh cong!!!");
     }
 
-//    @GetMapping("")
-//    public ResponseEntity<?> getAllSanPham(
-//            @RequestParam(defaultValue = "") String keyword,
-//            @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int limit
-//    ) {
-//        int tongSoTrang = 0;
-//        // Tạo Pageable từ thông tin trang và giới hạn
-//        PageRequest pageRequest = PageRequest.of(
-//                page, limit,
-//                //Sort.by("NGAYTAO").descending()
-//                Sort.by("MASANPHAM").ascending()
-//        );
-//        logger.info(String.format("keyword = %s, MALOAISANPHAM = %d, page = %d, limit = %d",
-//                keyword, MALOAISANPHAM, page, limit));
-//
-//        try {
-//            List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
-//            if (sanPhamResponseList == null || sanPhamResponseList.isEmpty()) {
-//                Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
-//
-//                // Lấy tổng số trang
-//                tongSoTrang = sanPhamResponses.getTotalPages();
-//                sanPhamResponseList = sanPhamResponses.getContent();
-//                sanPhamRedisService.saveAllSanPham(sanPhamResponseList, keyword, MALOAISANPHAM, pageRequest);
-//            }
-//            return ResponseEntity.ok(SanPhamListResponse
-//                    .builder()
-//                    .sanPhamResponseList(sanPhamResponseList)
-//                    .tongSoTrang(tongSoTrang)
-//                    .build());
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
-    // getAllSanPham old
     @GetMapping("")
-    public ResponseEntity<SanPhamListResponse> getAllSanPham(
+    public ResponseEntity<ResponseObject> getAllSanPhamCatch(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "0") int limit
-    ) {
+            @RequestParam(defaultValue = "10") int limit
+    ) throws Exception {
+        int tongSoTrang = 0;
         // Tạo Pageable từ thông tin trang và giới hạn
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
                 //Sort.by("NGAYTAO").descending()
                 Sort.by("MASANPHAM").ascending()
         );
-        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+        logger.info(String.format("keyword = %s, MALOAISANPHAM = %d, page = %d, limit = %d",
+                keyword, MALOAISANPHAM, page, limit));
 
-        // Lấy tổng số trang
-        int tongSoTrang = sanPhamResponses.getTotalPages();
-        List<SanPhamResponse> dsSanPham = sanPhamResponses.getContent();
+        List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+        if (sanPhamResponseList != null && !sanPhamResponseList.isEmpty()) {
+            tongSoTrang = sanPhamResponseList.get(0).getTotalPages();
+        }
+        if (sanPhamResponseList == null || sanPhamResponseList.isEmpty()) {
+            Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
 
-        SanPhamListResponse newSanPhamListResponse = SanPhamListResponse
+            // Lấy tổng số trang
+            tongSoTrang = sanPhamResponses.getTotalPages();
+            sanPhamResponseList = sanPhamResponses.getContent();
+            for (SanPhamResponse sanPhamResponse : sanPhamResponseList) {
+                sanPhamResponse.setTotalPages(tongSoTrang);
+            }
+            sanPhamRedisService.saveAllSanPham(sanPhamResponseList, keyword, MALOAISANPHAM, pageRequest);
+        }
+
+        SanPhamListResponse sanPhamListResponse = SanPhamListResponse
                 .builder()
-                .sanPhamResponseList(dsSanPham)
+                .sanPhamResponseList(sanPhamResponseList)
                 .tongSoTrang(tongSoTrang)
                 .build();
 
-        return ResponseEntity.ok(newSanPhamListResponse);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get products successfully")
+                .status(HttpStatus.OK)
+                .data(sanPhamListResponse)
+                .build());
     }
 
+//    // getAllSanPham old
+//    @GetMapping("")
+//    public ResponseEntity<SanPhamListResponse> getAllSanPham(
+//            @RequestParam(defaultValue = "") String keyword,
+//            @RequestParam(defaultValue = "0", name = "MALOAISANPHAM") int MALOAISANPHAM,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "0") int limit
+//    ) {
+//        // Tạo Pageable từ thông tin trang và giới hạn
+//        PageRequest pageRequest = PageRequest.of(
+//                page, limit,
+//                //Sort.by("NGAYTAO").descending()
+//                Sort.by("MASANPHAM").ascending()
+//        );
+//        Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
+//
+//        // Lấy tổng số trang
+//        int tongSoTrang = sanPhamResponses.getTotalPages();
+//        List<SanPhamResponse> dsSanPham = sanPhamResponses.getContent();
+//
+//        SanPhamListResponse newSanPhamListResponse = SanPhamListResponse
+//                .builder()
+//                .sanPhamResponseList(dsSanPham)
+//                .tongSoTrang(tongSoTrang)
+//                .build();
+//
+//        return ResponseEntity.ok(newSanPhamListResponse);
+//    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSanPham(@PathVariable int id) {
-        try {
-            SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
-            List<HinhAnhResponse> hinhAnhList = hinhAnhService.getAllHinhAnhByMaSanPham(existingSanPham);
-            return ResponseEntity.ok(SanPhamResponse.fromSanPhamForDetail(existingSanPham, hinhAnhList));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> getSanPham(@PathVariable int id) {
+        SanPham existingSanPham = sanPhamService.getSanPhamByMASANPHAM(id);
+        List<HinhAnhResponse> hinhAnhList = hinhAnhService.getAllHinhAnhByMaSanPham(existingSanPham);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get detail product successfully")
+                .status(HttpStatus.OK)
+                .data(SanPhamResponse.fromSanPhamForDetail(existingSanPham, hinhAnhList))
+                .build());
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateSanPham(
+    public ResponseEntity<ResponseObject> updateSanPham(
             @PathVariable int id,
             @Valid @RequestBody SanPhamDTO sanPhamDTO
     ) {
-        try {
-            sanPhamService.updateSanPham(id, sanPhamDTO);
-            return ResponseEntity.ok("Cap nhat san pham " + id + " thanh cong");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        SanPham sanPham = sanPhamService.updateSanPham(id, sanPhamDTO);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Update product successfully")
+                .status(HttpStatus.OK)
+                .data(sanPham)
+                .build());
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSanPham(@PathVariable int id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<ResponseObject> deleteSanPham(@PathVariable int id) {
         sanPhamService.deleteSanPham(id);
-        return ResponseEntity.ok("Xoa san pham " + id + " thanh cong");
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Product with id = " + id + " deleted successfully")
+                .status(HttpStatus.OK)
+                .data(null)
+                .build());
     }
 
     @GetMapping("/by-ids")
-    public ResponseEntity<?> getSanPhamByMASANPHAM(@RequestParam("ids") String ids) {
+    public ResponseEntity<ResponseObject> getSanPhamByMASANPHAM(@RequestParam("ids") String ids) {
         // eg: 1,3,4,5,7,9
-        try {
-            // Tách chuỗi ids thành một mảng các số nguyên
-            List<Integer> maSanPhamList = Arrays.stream(ids.split(","))
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-            List<SanPham> sanPhamList = sanPhamService.findSanPhamByMASANPHAMList(maSanPhamList);
-            return ResponseEntity.ok(sanPhamList);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        // Tách chuỗi ids thành một mảng các số nguyên
+        List<Integer> maSanPhamList = Arrays.stream(ids.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        List<SanPham> sanPhamList = sanPhamService.findSanPhamByMASANPHAMList(maSanPhamList);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get products successfully")
+                .status(HttpStatus.OK)
+                .data(sanPhamList)
+                .build());
+
+    }
+
+    @PostMapping("/like/{productId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> likeProduct(@PathVariable int productId) throws Exception {
+        Account loginUser = securityUtils.getLoggedInUser();
+        SanPham likedProduct = sanPhamService.likeProduct(loginUser.getUSERID(), productId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(SanPhamResponse.fromSanPham(likedProduct))
+                .message("Like product successfully")
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PostMapping("/unlike/{productId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> unlikeProduct(@PathVariable int productId) throws Exception {
+        Account loginUser = securityUtils.getLoggedInUser();
+        SanPham unlikedProduct = sanPhamService.unlikeProduct(loginUser.getUSERID(), productId);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(SanPhamResponse.fromSanPham(unlikedProduct))
+                .message("Unlike product successfully")
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PostMapping("/favorite-products")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> findFavoriteProductsByUserId() throws Exception {
+        Account loginUser = securityUtils.getLoggedInUser();
+        List<SanPhamResponse> favoriteProducts = sanPhamService.findFavoriteProductsByUserId(loginUser.getUSERID());
+        return ResponseEntity.ok(ResponseObject.builder()
+                .data(favoriteProducts)
+                .message("Favorite products retrieved successfully")
+                .status(HttpStatus.OK)
+                .build());
+    }
+
+    @PostMapping("/generateFakeLikes")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ResponseObject> generateFakeLikes() throws Exception {
+        sanPhamService.generateFakeLikes();
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Insert fake likes succcessfully")
+                .data(null)
+                .status(HttpStatus.OK)
+                .build());
     }
 }

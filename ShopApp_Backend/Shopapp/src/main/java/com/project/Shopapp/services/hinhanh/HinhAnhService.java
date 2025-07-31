@@ -44,10 +44,11 @@ public class HinhAnhService implements IHinhAnhService {
     }
 
     @Override
-    public void deleteHinhAnh(int id) throws DataNotFoundException {
+    public HinhAnh deleteHinhAnh(int id) throws DataNotFoundException {
         HinhAnh existingHinhAnh = hinhAnhRepository.findById(id)
                         .orElseThrow(()->new DataNotFoundException("Product image does not exist"));
 
          hinhAnhRepository.deleteById(existingHinhAnh.getID());
+         return existingHinhAnh;
     }
 }

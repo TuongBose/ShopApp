@@ -28,4 +28,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham,Integer> {
 
     @Query("SELECT p FROM SanPham p WHERE p.MASANPHAM IN :MASANPHAM")
     List<SanPham> findSanPhamByMASANPHAMs(@Param("MASANPHAM") List<Integer> MASANPHAM);
+
+    @Query("SELECT p FROM SanPham p JOIN p.favorites f WHERE f.user.USERID = :userId")
+    List<SanPham> findFavoriteProductsByUserId(@Param("userId") int userId);
+
+
 }

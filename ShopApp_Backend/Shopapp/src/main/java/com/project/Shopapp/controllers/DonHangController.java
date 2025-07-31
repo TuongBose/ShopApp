@@ -1,8 +1,11 @@
 package com.project.Shopapp.controllers;
 
 import com.project.Shopapp.components.LocalizationUtils;
+import com.project.Shopapp.components.SecurityUtils;
 import com.project.Shopapp.dtos.DonHangDTO;
+import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.DonHang;
+import com.project.Shopapp.models.OrderStatus;
 import com.project.Shopapp.responses.ResponseObject;
 import com.project.Shopapp.responses.donhang.DonHangListResponse;
 import com.project.Shopapp.responses.donhang.DonHangResponse;
@@ -28,6 +31,7 @@ import java.util.List;
 public class DonHangController {
     private final DonHangService donHangService;
     private final LocalizationUtils localizationUtils;
+    private final SecurityUtils securityUtils;
 
     @PostMapping("")
     public ResponseEntity<ResponseObject> createDonHang(
@@ -41,6 +45,10 @@ public class DonHangController {
                     .status(HttpStatus.BAD_REQUEST)
                     .build());
         }
+        Account loginAccount = securityUtils.getLoggedInUser();
+        if (donHangDTO.getUSERID() <= 0) {
+            donHangDTO.setUSERID(loginAccount.getUSERID());
+        }
         DonHangResponse donHangResponse = donHangService.createDonHang(donHangDTO);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Insert order successfully")
@@ -52,7 +60,9 @@ public class DonHangController {
     @GetMapping("/account/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<ResponseObject> getDonHang_USERID(@Valid @PathVariable int id) throws Exception {
-        List<DonHang> donHangList = donHangService.getDonHangByUSERID(id);
+        Account loginAccount = securityUtils.getLoggedInUser();
+        boolean isUserIdBlank = id <= 0;
+        List<DonHang> donHangList = donHangService.getDonHangByUSERID(isUserIdBlank ? loginAccount.getUSERID() : id);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Get list of orders successfully")
                 .status(HttpStatus.OK)
@@ -61,7 +71,7 @@ public class DonHangController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject> getDonHang_MADONHANG(@Valid @PathVariable int id) throws Exception{
+    public ResponseEntity<ResponseObject> getDonHang_MADONHANG(@Valid @PathVariable int id) throws Exception {
         DonHangResponse existingDonHangResponse = donHangService.getDonHangByMADONHANG(id);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Get list of orders successfully")
@@ -71,22 +81,26 @@ public class DonHangController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateDonHang(@Valid @PathVariable int id, @Valid @RequestBody DonHangDTO donHangDTO) {
-        try {
-            return ResponseEntity.ok(donHangService.updateDonHang(id, donHangDTO));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> updateDonHang(
+            @Valid @PathVariable int id,
+            @Valid @RequestBody DonHangDTO donHangDTO
+    ) throws Exception {
+        DonHang donHang = donHangService.updateDonHang(id, donHangDTO);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Update order successfully")
+                .status(HttpStatus.OK)
+                .data(donHang)
+                .build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteDonHang(@Valid @PathVariable int id) {
-        try {
-            donHangService.deleteDonHang(id);
-            return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_DONHANG_SUCCESSFULLY, id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResponseObject> deleteDonHang(@Valid @PathVariable int id) throws Exception {
+        donHangService.deleteDonHang(id);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_DONHANG_SUCCESSFULLY, id))
+                .status(HttpStatus.OK)
+                .data(null)
+                .build());
     }
 
     @PutMapping("/status/{id}")
@@ -122,6 +136,54 @@ public class DonHangController {
                 .totalPages(totalPages)
                 .build()
         );
+    }
 
+    @PutMapping("/cancel/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ResponseObject> cancelOrder(@Valid @PathVariable int id) throws Exception {
+        DonHangResponse donHangResponse = donHangService.getDonHangByMADONHANG(id);
+
+        // Kiểm tra xem người dùng hiện tại có phải là người đã đặt đơn hàng hay không
+        Account loginAccount = securityUtils.getLoggedInUser();
+        if (loginAccount.getUSERID() != donHangResponse.getUSERID()) {
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message("You do not have permission to cancel this order")
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(null)
+                    .build());
+        }
+
+        if (donHangResponse.getTRANGTHAI().equals(OrderStatus.DELIVERED) ||
+                donHangResponse.getTRANGTHAI().equals(OrderStatus.SHIPPED) ||
+                donHangResponse.getTRANGTHAI().equals(OrderStatus.PROCESSING)) {
+
+            String message = "You cannot cancel an order with status: " + donHangResponse.getTRANGTHAI();
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .message(message)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(null)
+                    .build());
+        }
+
+        DonHangDTO donHangDTO = DonHangDTO.builder()
+                .USERID(donHangResponse.getUSERID())
+                /*
+                .email(order.getEmail())
+                .note(order.getNote())
+                .address(order.getAddress())
+                .fullName(order.getFullName())
+                .totalMoney(order.getTotalMoney())
+                .couponCode(order.getCoupon().getCode())
+                */
+                .status(OrderStatus.CANCELLED)
+                .build();
+
+        DonHang donHang = donHangService.updateDonHang(id, donHangDTO);
+        return ResponseEntity.ok(
+                ResponseObject.builder()
+                        .message("Cancel order successfully")
+                        .status(HttpStatus.OK)
+                        .data(donHang)
+                        .build());
     }
 }

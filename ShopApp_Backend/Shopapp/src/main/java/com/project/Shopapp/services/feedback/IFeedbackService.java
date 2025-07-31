@@ -18,4 +18,5 @@ public interface IFeedbackService {
     List<FeedbackResponse> getFeedbacksByProduct(Integer productId) throws DataNotFoundException;
 
     List<FeedbackResponse> getFeedbacksByAccountAndProduct(Integer accountId, Integer productId) throws DataNotFoundException;
+    void generateFakeFeedbacks() throws Exception;
 }

@@ -21,4 +21,9 @@ public interface ISanPhamService {
     boolean existsByTENSANPHAM(String TENSANPHAM);
     HinhAnh createHinhAnh(HinhAnhDTO hinhAnhDTO);
     List<SanPham> findSanPhamByMASANPHAMList(List<Integer> MASANPHAM);
+
+    SanPham likeProduct(int userId, int productId) throws Exception;
+    SanPham unlikeProduct(int userId, int productId) throws Exception;
+    List<SanPhamResponse> findFavoriteProductsByUserId(int userId) throws Exception;
+    void generateFakeLikes() throws Exception;
 }
