@@ -36,8 +36,13 @@ public class Account extends BaseEntity implements UserDetails, OAuth2User {
 
     private Date NGAYSINH;
     private boolean IS_ACTIVE;
-    private String FACEBOOK_ACCOUNT_ID;
-    private String GOOGLE_ACCOUNT_ID;
+
+    @Column(name = "FACEBOOK_ACCOUNT_ID")
+    private String facebookAccountId;
+
+    @Column(name = "GOOGLE_ACCOUNT_ID")
+    private String googleAccountId;
+
     private String profileImage;
     private boolean ROLENAME;
 

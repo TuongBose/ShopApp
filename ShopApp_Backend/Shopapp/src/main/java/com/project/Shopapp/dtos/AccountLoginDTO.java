@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccountLoginDTO {
+public class AccountLoginDTO extends  SocialAccountDTO{
     @NotBlank(message = "Email khong duoc bo trong")
     private String EMAIL;
 

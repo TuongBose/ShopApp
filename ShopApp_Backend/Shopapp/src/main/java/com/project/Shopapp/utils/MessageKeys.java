@@ -5,6 +5,8 @@ public class MessageKeys {
     public static final String REGISTER_SUCCESSFULLY = "account.register.register_successfully";
     public static final String LOGIN_FAILED = "account.login.login_failed";
     public static final String PASSWORD_NOT_MATCH = "account.register.password_not_match";
+    public static final String ROLE_DOES_NOT_EXISTS = "account.login.role_not_exist";
+    public static final String USER_IS_LOCKED = "account.login.account_is_locked";
 
     public static final String INSERT_LOAISANPHAM_SUCCESSFULLY = "loaisanpham.create_loaisanpham.create_successfully";
     public static final String INSERT_LOAISANPHAM_FAILED = "loaisanpham.create_loaisanpham.create_failed";

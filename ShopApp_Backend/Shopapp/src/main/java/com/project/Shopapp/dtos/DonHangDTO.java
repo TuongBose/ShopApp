@@ -29,5 +29,8 @@ public class DonHangDTO {
     @JsonProperty("status")
     private String status;
 
+    @JsonProperty("coupon_code")
+    private String couponCode;
+
     private List<CartItemDTO> cartitems;
 }

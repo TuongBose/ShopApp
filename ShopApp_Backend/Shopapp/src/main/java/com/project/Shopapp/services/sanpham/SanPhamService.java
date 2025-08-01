@@ -4,9 +4,11 @@ import com.github.javafaker.Faker;
 import com.project.Shopapp.dtos.HinhAnhDTO;
 import com.project.Shopapp.dtos.SanPhamDTO;
 import com.project.Shopapp.exceptions.DataNotFoundException;
+import com.project.Shopapp.exceptions.InvalidParamException;
 import com.project.Shopapp.models.*;
 import com.project.Shopapp.repositories.*;
 import com.project.Shopapp.responses.sanpham.SanPhamResponse;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,14 +34,15 @@ public class SanPhamService implements ISanPhamService {
     private final FavoriteRepository favoriteRepository;
 
     @Override
-    public SanPham createSanPham(SanPhamDTO sanPhamDTO) {
+    @Transactional
+    public SanPham createSanPham(SanPhamDTO sanPhamDTO) throws Exception{
         LoaiSanPham existingLoaiSanPham = loaiSanPhamRepository
                 .findById(sanPhamDTO.getMALOAISANPHAM())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MALOAISANPHAM"));
+                .orElseThrow(() -> new DataNotFoundException("Cannot find MALOAISANPHAM"));
 
         ThuongHieu existingThuongHieu = thuongHieuRepository
                 .findById(sanPhamDTO.getMATHUONGHIEU())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MATHUONGHIEU"));
+                .orElseThrow(() -> new DateTimeException("Cannot find MATHUONGHIEU"));
 
         SanPham newSanPham = SanPham.builder()
                 .TENSANPHAM(sanPhamDTO.getTENSANPHAM())
@@ -54,7 +58,8 @@ public class SanPhamService implements ISanPhamService {
 
     @Override
     public SanPham getSanPhamByMASANPHAM(int id) {
-        return sanPhamRepository.findById(id).orElseThrow(() -> new RuntimeException("Khong tim thay MASANPHAM nay"));
+        return sanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cannot find MASANPHAM"));
     }
 
     @Override
@@ -75,15 +80,15 @@ public class SanPhamService implements ISanPhamService {
     public SanPham updateSanPham(int id, SanPhamDTO sanPhamDTO) {
         SanPham existingSanPham = sanPhamRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MASANPHAM nay"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MASANPHAM"));
 
         LoaiSanPham existingLoaiSanPham = loaiSanPhamRepository
                 .findById(sanPhamDTO.getMALOAISANPHAM())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MALOAISANPHAM nay!!!"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MALOAISANPHAM"));
 
         ThuongHieu existingThuongHieu = thuongHieuRepository
                 .findById(sanPhamDTO.getMATHUONGHIEU())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MATHUONGHIEU"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MATHUONGHIEU"));
 
         if (sanPhamDTO.getTENSANPHAM() != null && !sanPhamDTO.getTENSANPHAM().isEmpty()) {
             existingSanPham.setTENSANPHAM(sanPhamDTO.getTENSANPHAM());
@@ -113,7 +118,8 @@ public class SanPhamService implements ISanPhamService {
 
     @Override
     public void deleteSanPham(int id) {
-        sanPhamRepository.deleteById(id);
+        Optional<SanPham> optionalSanPham = sanPhamRepository.findById(id);
+        optionalSanPham.ifPresent(sanPhamRepository::delete);
     }
 
     @Override
@@ -122,11 +128,12 @@ public class SanPhamService implements ISanPhamService {
     }
 
     @Override
-    public HinhAnh createHinhAnh(HinhAnhDTO hinhAnhDTO) {
+    @Transactional
+    public HinhAnh createHinhAnh(HinhAnhDTO hinhAnhDTO) throws Exception{
         SanPham existingSanPham = getSanPhamByMASANPHAM(hinhAnhDTO.getMASANPHAM());
         LoaiSanPham existingLoaiSanPham = loaiSanPhamRepository
                 .findById(hinhAnhDTO.getMALOAISANPHAM())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MALOAISANPHAM nay!!!"));
+                .orElseThrow(() -> new DataNotFoundException("Cannot find MALOAISANPHAM"));
 
         HinhAnh newHinhAnh = HinhAnh.builder()
                 .TENHINHANH(hinhAnhDTO.getTENHINHANH())
@@ -137,9 +144,14 @@ public class SanPhamService implements ISanPhamService {
         // Không cho thêm quá 5 ảnh cho 1 sản phẩm
         int size = hinhAnhRepository.findByMASANPHAMAndMALOAISANPHAM(existingSanPham, existingLoaiSanPham).size();
         if (size >= HinhAnh.MAXIMUM_IMAGES_PER_PRODUCT)
-            throw new RuntimeException("So luong hinh anh cua san pham <= 5");
+            throw new InvalidParamException("Number of images must be <= "+HinhAnh.MAXIMUM_IMAGES_PER_PRODUCT);
 
-        return hinhAnhRepository.save(newHinhAnh);
+        if(existingSanPham.getTHUMBNAIL()==null){
+            existingSanPham.setTHUMBNAIL(newHinhAnh.getTENHINHANH());
+        }
+        sanPhamRepository.save(existingSanPham);
+        hinhAnhRepository.save(newHinhAnh);
+        return newHinhAnh;
     }
 
     @Override
@@ -150,13 +162,14 @@ public class SanPhamService implements ISanPhamService {
     @Override
     @Transactional
     public SanPham likeProduct(int userId, int productId) throws Exception {
-        // Check if the user and product exist
-        if (!accountRepository.existsById(userId) || !sanPhamRepository.existsById(productId)) {
-            throw new DataNotFoundException("User or product not found");
-        }
+        Account existingAccount=accountRepository.findById(userId)
+                .orElseThrow(()->new DataNotFoundException("Does not exist Account"));
+
+        SanPham existingSanPham = sanPhamRepository.findById(productId)
+                .orElseThrow(()-> new DataNotFoundException("Does not exist SanPham"));
 
         // Check if the user has already liked the product
-        if (favoriteRepository.existsByUserIdAndProductId(userId, productId)) {
+        if (favoriteRepository.existsByUserAndProduct(existingAccount, existingSanPham)) {
             //throw new DataNotFoundException("Product already liked by the user");
         } else {
             // Create a new favorite entry and save it
@@ -173,14 +186,15 @@ public class SanPhamService implements ISanPhamService {
     @Override
     @Transactional
     public SanPham unlikeProduct(int userId, int productId) throws Exception {
-        // Check if the user and product exist
-        if (!accountRepository.existsById(userId) || !sanPhamRepository.existsById(productId)) {
-            throw new DataNotFoundException("User or product not found");
-        }
+        Account existingAccount=accountRepository.findById(userId)
+                .orElseThrow(()->new DataNotFoundException("Does not exist Account"));
+
+        SanPham existingSanPham = sanPhamRepository.findById(productId)
+                .orElseThrow(()-> new DataNotFoundException("Does not exist SanPham"));
 
         // Check if the user has already liked the product
-        if (favoriteRepository.existsByUserIdAndProductId(userId, productId)) {
-            Favorite favorite = favoriteRepository.findByUserIdAndProductId(userId, productId);
+        if (favoriteRepository.existsByUserAndProduct(existingAccount, existingSanPham)) {
+            Favorite favorite = favoriteRepository.findByUserAndProduct(existingAccount, existingSanPham);
             favoriteRepository.delete(favorite);
         }
         return sanPhamRepository.findById(productId).orElse(null);
@@ -219,7 +233,7 @@ public class SanPhamService implements ISanPhamService {
             Account account = accounts.get(random.nextInt(accounts.size()));
             SanPham sanPham = sanPhams.get(random.nextInt(sanPhams.size()));
 
-            if(!favoriteRepository.existsByUserIdAndProductId(account.getUSERID(), sanPham.getMASANPHAM())) {
+            if(!favoriteRepository.existsByUserAndProduct(account, sanPham)) {
                 // Generate a fake favorite
                 Favorite favorite = Favorite.builder()
                         .user(account)

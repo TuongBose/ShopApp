@@ -2,6 +2,7 @@ package com.project.Shopapp.repositories;
 
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.DonHang;
+import com.project.Shopapp.models.SanPham;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

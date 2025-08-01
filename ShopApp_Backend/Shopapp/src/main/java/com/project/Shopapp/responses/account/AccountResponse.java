@@ -40,8 +40,8 @@ public class AccountResponse {
                 .NGAYSINH(account.getNGAYSINH())
                 .EMAIL(account.getEMAIL())
                 .IS_ACTIVE(account.isIS_ACTIVE())
-                .FACEBOOK_ACCOUNT_ID(account.getFACEBOOK_ACCOUNT_ID())
-                .GOOGLE_ACCOUNT_ID(account.getGOOGLE_ACCOUNT_ID())
+                .FACEBOOK_ACCOUNT_ID(account.getFacebookAccountId())
+                .GOOGLE_ACCOUNT_ID(account.getGoogleAccountId())
                 .ROLENAME(account.isROLENAME())
                 .build();
     }

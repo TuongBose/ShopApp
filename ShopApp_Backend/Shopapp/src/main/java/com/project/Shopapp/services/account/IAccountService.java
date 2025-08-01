@@ -22,4 +22,5 @@ public interface IAccountService {
     void blockOrEnable(int userId, boolean active) throws DataNotFoundException;
     void changeProfileImage(int userId, String imageName) throws Exception;
     String loginSocial(AccountLoginDTO accountLoginDTO) throws Exception;
+    Account getAccountByEmail(String email) throws Exception;
 }

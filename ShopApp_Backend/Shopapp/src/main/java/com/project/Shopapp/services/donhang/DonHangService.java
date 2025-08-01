@@ -2,11 +2,9 @@ package com.project.Shopapp.services.donhang;
 
 import com.project.Shopapp.dtos.CartItemDTO;
 import com.project.Shopapp.dtos.DonHangDTO;
+import com.project.Shopapp.exceptions.DataNotFoundException;
 import com.project.Shopapp.models.*;
-import com.project.Shopapp.repositories.AccountRepository;
-import com.project.Shopapp.repositories.CTDHRepository;
-import com.project.Shopapp.repositories.DonHangRepository;
-import com.project.Shopapp.repositories.SanPhamRepository;
+import com.project.Shopapp.repositories.*;
 import com.project.Shopapp.responses.ctdh.CTDHResponse;
 import com.project.Shopapp.responses.donhang.DonHangResponse;
 import org.springframework.data.domain.Page;
@@ -29,9 +27,11 @@ public class DonHangService implements IDonHangService {
     private final AccountRepository accountRepository;
     private final SanPhamRepository sanPhamRepository;
     private final CTDHRepository ctdhRepository;
+    private final CouponRepository couponRepository;
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public DonHangResponse createDonHang(DonHangDTO donHangDTO) throws Exception {
         // Tìm xem Account có tồn tại không
         Account existingAccount = accountRepository
@@ -40,17 +40,17 @@ public class DonHangService implements IDonHangService {
 
         // Convert DonHangDTO => DonHang, dùng thư viện Model Mapper
         // Tạo 1 luồng bảng ánh xạ riêng để kiểm soát việc ánh xạ
-        modelMapper.typeMap(DonHangDTO.class, DonHang.class).addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
+        modelMapper.typeMap(DonHangDTO.class, DonHang.class)
+                .addMappings(mapper -> mapper.skip(DonHang::setMADONHANG));
 
         // Cập nhật các trường của DonHang từ DonHangDTO
         DonHang donHang = new DonHang();
         modelMapper.map(donHangDTO, donHang);
         donHang.setUSERID(existingAccount);
         donHang.setNGAYDATHANG(LocalDate.now());
-        donHang.setTRANGTHAI(OrderStatus.CHUAXULY);
+        donHang.setTRANGTHAI(OrderStatus.PENDING);
         donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
         donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
-        donHangRepository.save(donHang);
 
         List<CTDH> ctdhList = new ArrayList<>();
         for (CartItemDTO cartItemDTO : donHangDTO.getCartitems()) {
@@ -69,19 +69,30 @@ public class DonHangService implements IDonHangService {
 
             ctdhList.add(ctdh);
         }
-        ctdhRepository.saveAll(ctdhList);
-        return modelMapper.map(donHang, DonHangResponse.class);
-    }
+        // Xu ly coupon
+        String couponCode =donHangDTO.getCouponCode();
+        if(!couponCode.isEmpty()){
+            Coupon coupon = couponRepository.findByCode(couponCode)
+                    .orElseThrow(()-> new IllegalArgumentException("Coupon not found"));
 
-    @Override
-    public List<DonHang> getDonHangByMASANPHAM(int id) {
-        return null;
+            if (!coupon.isActive()) {
+                throw new IllegalArgumentException("Coupon is not active");
+            }
+
+            donHang.setCoupon(coupon);
+        }else {
+            donHang.setCoupon(null);
+        }
+
+        ctdhRepository.saveAll(ctdhList);
+        donHangRepository.save(donHang);
+        return modelMapper.map(donHang, DonHangResponse.class);
     }
 
     @Override
     public DonHangResponse getDonHangByMADONHANG(int id) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MADONHANG"));
 
         modelMapper.typeMap(DonHang.class, DonHangResponse.class);
         DonHangResponse donHangResponse = modelMapper.map(existingDonHang, DonHangResponse.class);
@@ -104,7 +115,7 @@ public class DonHangService implements IDonHangService {
     @Override
     public List<DonHang> getDonHangByUSERID(int id) throws Exception {
         Account existingAccount = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay USERID"));
+                .orElseThrow(() -> new RuntimeException("Cannot find USERID"));
         return donHangRepository.findByUSERID(existingAccount);
     }
 
@@ -112,18 +123,36 @@ public class DonHangService implements IDonHangService {
     @Transactional
     public DonHang updateDonHang(int id, DonHangDTO donHangDTO) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MADONHANG"));
         Account existingAccount = accountRepository.findById(donHangDTO.getUSERID())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay USERID"));
+                .orElseThrow(() -> new RuntimeException("Cannot find USERID"));
 
         existingDonHang.setUSERID(existingAccount);
-        existingDonHang.setFULLNAME(donHangDTO.getFULLNAME());
-        existingDonHang.setEMAIL(donHangDTO.getEMAIL());
-        existingDonHang.setSODIENTHOAI(donHangDTO.getSODIENTHOAI());
-        existingDonHang.setDIACHI(donHangDTO.getDIACHI());
-        existingDonHang.setGHICHU(donHangDTO.getGHICHU());
-        existingDonHang.setTONGTIEN(donHangDTO.getTONGTIEN());
-        existingDonHang.setPHUONGTHUCTHANHTOAN(donHangDTO.getPHUONGTHUCTHANHTOAN());
+
+        if(donHangDTO.getFULLNAME()!=null&&!donHangDTO.getFULLNAME().trim().isEmpty()) {
+            existingDonHang.setFULLNAME(donHangDTO.getFULLNAME());
+        }
+        if(donHangDTO.getEMAIL()!=null&&!donHangDTO.getEMAIL().trim().isEmpty()) {
+            existingDonHang.setEMAIL(donHangDTO.getEMAIL().trim());
+        }
+        if(donHangDTO.getSODIENTHOAI()!=null&&!donHangDTO.getSODIENTHOAI().trim().isEmpty()) {
+            existingDonHang.setSODIENTHOAI(donHangDTO.getSODIENTHOAI().trim());
+        }
+        if(donHangDTO.getDIACHI()!=null&&!donHangDTO.getDIACHI().trim().isEmpty()) {
+            existingDonHang.setDIACHI(donHangDTO.getDIACHI());
+        }
+        if(donHangDTO.getGHICHU()!=null&&!donHangDTO.getGHICHU().trim().isEmpty()) {
+            existingDonHang.setGHICHU(donHangDTO.getGHICHU());
+        }
+        if(donHangDTO.getTONGTIEN()!=null) {
+            existingDonHang.setTONGTIEN(donHangDTO.getTONGTIEN());
+        }
+        if(donHangDTO.getPHUONGTHUCTHANHTOAN()!=null&&!donHangDTO.getPHUONGTHUCTHANHTOAN().trim().isEmpty()) {
+            existingDonHang.setPHUONGTHUCTHANHTOAN(donHangDTO.getPHUONGTHUCTHANHTOAN().trim());
+        }
+        if(donHangDTO.getStatus()!=null&&!donHangDTO.getStatus().trim().isEmpty()){
+            existingDonHang.setTRANGTHAI(donHangDTO.getStatus().trim());
+        }
 
         donHangRepository.save(existingDonHang);
         return existingDonHang;
@@ -132,7 +161,8 @@ public class DonHangService implements IDonHangService {
     @Override
     public void deleteDonHang(int id) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MADONHANG"));
+
         if (existingDonHang != null) {
             existingDonHang.setIS_ACTIVE(false);
             donHangRepository.save(existingDonHang);

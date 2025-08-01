@@ -11,7 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 public interface ISanPhamService {
-    public SanPham createSanPham(SanPhamDTO sanPhamDTO);
+    SanPham createSanPham(SanPhamDTO sanPhamDTO) throws Exception;
     SanPham getSanPhamByMASANPHAM(int id);
     Page<SanPhamResponse> getAllSanPham(String keyword,
                                         int MALOAISANPHAM,
@@ -19,7 +19,7 @@ public interface ISanPhamService {
     SanPham updateSanPham(int id, SanPhamDTO sanPhamDTO);
     void deleteSanPham(int id);
     boolean existsByTENSANPHAM(String TENSANPHAM);
-    HinhAnh createHinhAnh(HinhAnhDTO hinhAnhDTO);
+    HinhAnh createHinhAnh(HinhAnhDTO hinhAnhDTO) throws Exception;
     List<SanPham> findSanPhamByMASANPHAMList(List<Integer> MASANPHAM);
 
     SanPham likeProduct(int userId, int productId) throws Exception;

@@ -1,10 +1,11 @@
 package com.project.Shopapp.services.token;
 
 import com.project.Shopapp.components.JwtTokenUtils;
+import com.project.Shopapp.exceptions.DataNotFoundException;
+import com.project.Shopapp.exceptions.ExpiredTokenException;
 import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.TokenRepository;
-import com.project.Shopapp.services.account.IAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TokenService implements ITokenService {
     private final TokenRepository tokenRepository;
-    private final IAccountService accountService;
     private final JwtTokenUtils jwtTokenUtils;
 
     private static final int MAX_TOKENS = 3;
 
     @Value("${jwt.expiration}")
-
     private int expiration;
+
     @Value("${jwt.expiration-refresh-token}")
     private int expirationRefreshToken;
 
@@ -51,8 +51,8 @@ public class TokenService implements ITokenService {
             }
             tokenRepository.delete(tokenToDelete);
         }
-        long expirationInSeconds = expiration;
-        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expirationInSeconds);
+
+        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expiration);
         // Create new token for account
         Token newToken = Token.builder()
                 .USERID(account)
@@ -72,21 +72,24 @@ public class TokenService implements ITokenService {
     @Override
     public Token refreshToken(String refreshToken, Account account) throws Exception {
         Token existingToken = tokenRepository.findByRefreshToken(refreshToken);
-        if(existingToken==null){
-            throw new RuntimeException("Refresh token does not exist");
+        if (existingToken == null) {
+            throw new DataNotFoundException("Refresh token does not exist");
         }
-        else {
-            String token = jwtTokenUtils.generateToken(account); // Return token
-            long expirationInSeconds = expiration;
-            LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expirationInSeconds);
-
-            existingToken.setTOKEN(token);
-            existingToken.setEXPIRATION_DATE(expirationDateTime);
-            existingToken.setRefreshToken(UUID.randomUUID().toString());
-            existingToken.setREFRESH_EXPIRATION_DATE(LocalDateTime.now().plusSeconds(expirationRefreshToken));
-
-            tokenRepository.save(existingToken);
-            return existingToken;
+        if (existingToken.getREFRESH_EXPIRATION_DATE().isBefore(LocalDateTime.now())) {
+            tokenRepository.delete(existingToken);
+            throw new ExpiredTokenException("Refresh token is expired");
         }
+
+        String token = jwtTokenUtils.generateToken(account); // Return token
+        LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expiration);
+
+        existingToken.setTOKEN(token);
+        existingToken.setEXPIRATION_DATE(expirationDateTime);
+        existingToken.setRefreshToken(UUID.randomUUID().toString());
+        existingToken.setREFRESH_EXPIRATION_DATE(LocalDateTime.now().plusSeconds(expirationRefreshToken));
+
+        tokenRepository.save(existingToken);
+        return existingToken;
+
     }
 }

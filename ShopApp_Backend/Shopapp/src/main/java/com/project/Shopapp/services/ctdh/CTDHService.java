@@ -24,10 +24,10 @@ public class CTDHService implements ICTDHService {
     @Override
     public CTDH createCTDH(CTDH_DTO ctdh_dto) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(ctdh_dto.getMADONHANG())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MADONHANG"));
 
         SanPham existingSanPham = sanPhamRepository.findById(ctdh_dto.getMASANPHAM())
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MASANPHAM"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MASANPHAM"));
 
         CTDH newCTDH = CTDH
                 .builder()
@@ -38,26 +38,25 @@ public class CTDHService implements ICTDHService {
                 .TONGTIEN(ctdh_dto.getTONGTIEN())
                 .build();
 
-
         return ctdhRepository.save(newCTDH);
     }
 
     @Override
     public CTDH getCTDHByID(int id) throws Exception {
         return ctdhRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay id = " + id));
+                .orElseThrow(() -> new RuntimeException("Cannot find OrderDetail with id: "+id));
     }
 
     @Override
     public CTDH updateCTDH(int id, CTDH_DTO ctdh_dto) throws DataNotFoundException{
         CTDH existingCTDH = ctdhRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Khong tim thay ID"));
+                .orElseThrow(() -> new DataNotFoundException("Cannot find OrderDetail with id: "+id));
 
         DonHang existingDonHang = donHangRepository.findById(ctdh_dto.getMADONHANG())
-                .orElseThrow(() -> new DataNotFoundException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new DataNotFoundException("Cannot find MADONHANG"));
 
         SanPham existingSanPham = sanPhamRepository.findById(ctdh_dto.getMASANPHAM())
-                .orElseThrow(() -> new DataNotFoundException("Khong tim thay MASANPHAM"));
+                .orElseThrow(() -> new DataNotFoundException("Cannot find MASANPHAM"));
 
         existingCTDH.setMADONHANG(existingDonHang);
         existingCTDH.setMASANPHAM(existingSanPham);
@@ -78,7 +77,7 @@ public class CTDHService implements ICTDHService {
     @Override
     public List<CTDH> getCTDHByMADONHANG(int MADONHANG) throws Exception {
         DonHang existingDonHang = donHangRepository.findById(MADONHANG)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay MADONHANG"));
+                .orElseThrow(() -> new RuntimeException("Cannot find MADONHANG"));
         return ctdhRepository.findByMADONHANG(existingDonHang);
     }
 }

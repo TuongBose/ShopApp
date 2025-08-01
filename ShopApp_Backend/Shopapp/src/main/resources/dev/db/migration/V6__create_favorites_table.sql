@@ -1,5 +1,5 @@
 CREATE TABLE favorites (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     product_id INT,
     FOREIGN KEY (user_id) REFERENCES accounts(USERID),

@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@Configuration
 public class GoogleOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     private final WebClient userInfoClient;
 

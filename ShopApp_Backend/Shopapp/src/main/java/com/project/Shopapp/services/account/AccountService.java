@@ -10,6 +10,7 @@ import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.AccountRepository;
 import com.project.Shopapp.repositories.TokenRepository;
+import com.project.Shopapp.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -51,16 +53,49 @@ public class AccountService implements IAccountService {
                 .EMAIL(accountDTO.getEMAIL())
                 .DIACHI(accountDTO.getDIACHI())
                 .NGAYSINH(accountDTO.getNGAYSINH())
-                .FACEBOOK_ACCOUNT_ID(accountDTO.getFACEBOOKACCOUNTID())
-                .GOOGLE_ACCOUNT_ID(accountDTO.getGOOGLEACCOUNTID())
+                .facebookAccountId(accountDTO.getFACEBOOKACCOUNTID())
+                .googleAccountId(accountDTO.getGOOGLEACCOUNTID())
                 .ROLENAME(false)
                 .IS_ACTIVE(true)
                 .build();
 
         // Kiem tra neu co accountId, khong yeu cau password
-        if (accountDTO.getFACEBOOKACCOUNTID() == 0 && accountDTO.getGOOGLEACCOUNTID() == 0) {
-            String pass = accountDTO.getPASSWORD();
-            String encodedPassword = passwordEncoder.encode(pass);
+        if(!accountDTO.isSocialLogin()){
+            String password = accountDTO.getPASSWORD();
+            String encodedPassword = passwordEncoder.encode(password);
+            newAccount.setPASSWORD(encodedPassword);
+        }
+
+        return accountRepository.save(newAccount);
+    }
+
+    @Override
+    public Account createUserAdmin(AccountDTO accountDTO) throws Exception {
+        // Register Account
+        if (accountDTO.getSODIENTHOAI() != null && accountRepository.existsBySODIENTHOAI(accountDTO.getSODIENTHOAI()))
+            throw new DataIntegrityViolationException("Phone number already exists");
+
+        if (accountDTO.getEMAIL() != null && accountRepository.existsByEMAIL(accountDTO.getEMAIL()))
+            throw new DataIntegrityViolationException("Email already exists");
+
+        // Convert AccountDTO sang Account
+        Account newAccount = Account.builder()
+                .FULLNAME(accountDTO.getFULLNAME())
+                .PASSWORD(accountDTO.getPASSWORD())
+                .SODIENTHOAI(accountDTO.getSODIENTHOAI())
+                .EMAIL(accountDTO.getEMAIL())
+                .DIACHI(accountDTO.getDIACHI())
+                .NGAYSINH(accountDTO.getNGAYSINH())
+                .facebookAccountId(accountDTO.getFACEBOOKACCOUNTID())
+                .googleAccountId(accountDTO.getGOOGLEACCOUNTID())
+                .ROLENAME(true)
+                .IS_ACTIVE(true)
+                .build();
+
+        // Kiem tra neu co accountId, khong yeu cau password
+        if(!accountDTO.isSocialLogin()){
+            String password = accountDTO.getPASSWORD();
+            String encodedPassword = passwordEncoder.encode(password);
             newAccount.setPASSWORD(encodedPassword);
         }
 
@@ -75,7 +110,7 @@ public class AccountService implements IAccountService {
 
         // Check by Google Account ID
         if (accountLoginDTO.getGoogleAccountId() != null && accountLoginDTO.isGoogleAccountIdValid()) {
-            accountOptional = accountRepository.findByGOOGLE_ACCOUNT_ID(accountLoginDTO.getGoogleAccountId());
+            accountOptional = accountRepository.findByGoogleAccountId(accountLoginDTO.getGoogleAccountId());
             subject = "Google:" + accountLoginDTO.getGoogleAccountId();
             // Neu khong tim thay nguoi dung tao ban ghi moi
             if (accountOptional.isEmpty()) {
@@ -84,7 +119,7 @@ public class AccountService implements IAccountService {
                         .EMAIL(accountLoginDTO.getEMAIL() != null ? accountLoginDTO.getEMAIL() : "")
                         .profileImage(accountLoginDTO.getProfileImage() != null ? accountLoginDTO.getProfileImage() : "")
                         .ROLENAME(accountLoginDTO.isRoleid())
-                        .GOOGLE_ACCOUNT_ID(accountLoginDTO.getGoogleAccountId())
+                        .googleAccountId(accountLoginDTO.getGoogleAccountId())
                         .PASSWORD("")
                         .DIACHI("")
                         .SODIENTHOAI(accountLoginDTO.getSODIENTHOAI() != null ? accountLoginDTO.getSODIENTHOAI() : "")
@@ -105,7 +140,7 @@ public class AccountService implements IAccountService {
 
         // Check by Facebook Account ID
         if (accountLoginDTO.isFacebookAccountIdValid()) {
-            accountOptional = accountRepository.findByFACEBOOK_ACCOUNT_ID(accountLoginDTO.getFacebookAccountId());
+            accountOptional = accountRepository.findByFacebookAccountId(accountLoginDTO.getFacebookAccountId());
             subject = "Facebook:" + accountLoginDTO.getFacebookAccountId();
             // Neu khong tim thay nguoi dung tao ban ghi moi
             if (accountOptional.isEmpty()) {
@@ -114,8 +149,7 @@ public class AccountService implements IAccountService {
                         .EMAIL(accountLoginDTO.getEMAIL() != null ? accountLoginDTO.getEMAIL() : "")
                         .profileImage(accountLoginDTO.getProfileImage() != null ? accountLoginDTO.getProfileImage() : "")
                         .ROLENAME(accountLoginDTO.isRoleid())
-                        .GOOGLE_ACCOUNT_ID(null)
-                        .FACEBOOK_ACCOUNT_ID(accountLoginDTO.getFacebookAccountId())
+                        .facebookAccountId(accountLoginDTO.getFacebookAccountId())
                         .PASSWORD("")
                         .DIACHI("")
                         .SODIENTHOAI(accountLoginDTO.getSODIENTHOAI() != null ? accountLoginDTO.getSODIENTHOAI() : "")
@@ -151,7 +185,7 @@ public class AccountService implements IAccountService {
         Account existingAccount = accountOptional.get();
 
         // Check password
-        if (existingAccount.getFACEBOOK_ACCOUNT_ID() == null && existingAccount.getGOOGLE_ACCOUNT_ID() == null) {
+        if (existingAccount.getFacebookAccountId() == null && existingAccount.getGoogleAccountId() == null) {
             if (!passwordEncoder.matches(accountLoginDTO.getPASSWORD(), existingAccount.getPassword())) {
                 throw new BadCredentialsException("Phone number/email or password not found");
             }
@@ -184,14 +218,14 @@ public class AccountService implements IAccountService {
             throw new Exception("Token is expired");
         }
 
-        String phoneNumber = jwtTokenUtils.extractPhoneNumber(token);
-        Optional<Account> account = accountRepository.findBySODIENTHOAI(phoneNumber);
+        String subject = jwtTokenUtils.getSubject(token);
+        Optional<Account> account = accountRepository.findBySODIENTHOAI(subject);
 
-        if (account.isPresent()) {
-            return account.get();
-        } else {
-            throw new Exception("Account not found");
+        if(account.isEmpty()&& ValidationUtils.isValidEmail(subject)){
+            account=accountRepository.findByEMAIL(subject);
         }
+
+        return account.orElseThrow(()->new Exception("User not found"));
     }
 
     @Override
@@ -228,15 +262,18 @@ public class AccountService implements IAccountService {
         if (updateAccountDTO.getEMAIL() != null) {
             existingAccount.setEMAIL(updateAccountDTO.getEMAIL());
         }
-        if (updateAccountDTO.getFACEBOOKACCOUNTID() > 0) {
-            existingAccount.setFACEBOOK_ACCOUNT_ID(updateAccountDTO.getFACEBOOKACCOUNTID());
+        if (updateAccountDTO.getFACEBOOKACCOUNTID()!=null) {
+            existingAccount.setFacebookAccountId(updateAccountDTO.getFACEBOOKACCOUNTID());
         }
-        if (updateAccountDTO.getGOOGLEACCOUNTID() > 0) {
-            existingAccount.setGOOGLE_ACCOUNT_ID(updateAccountDTO.getGOOGLEACCOUNTID());
+        if (updateAccountDTO.getGOOGLEACCOUNTID()!=null) {
+            existingAccount.setGoogleAccountId(updateAccountDTO.getGOOGLEACCOUNTID());
         }
 
         // Update password
         if (updateAccountDTO.getPASSWORD() != null && !updateAccountDTO.getPASSWORD().isEmpty()) {
+            if(!updateAccountDTO.getPASSWORD().equals(updateAccountDTO.getRETYPEPASSWORD())) {
+                throw new DataNotFoundException("Password and retype password not the same");
+            }
             String newPassword = updateAccountDTO.getPASSWORD();
             String encodedPassword = passwordEncoder.encode(newPassword);
             existingAccount.setPASSWORD(encodedPassword);
@@ -274,5 +311,30 @@ public class AccountService implements IAccountService {
                 .orElseThrow(() -> new DataNotFoundException("Account not found"));
         existingAccount.setIS_ACTIVE(active);
         accountRepository.save(existingAccount);
+    }
+
+    @Override
+    public void changeProfileImage(int userId, String imageName) throws Exception {
+        Account existingAccount = accountRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        existingAccount.setProfileImage(imageName);
+        accountRepository.save(existingAccount);
+    }
+
+    @Override
+    public String loginSocial(AccountLoginDTO accountLoginDTO) throws Exception {
+        return "";
+    }
+
+    @Override
+    public Account getAccountByEmail(String email) throws Exception {
+        if (StringUtils.isEmpty(email)) {
+            throw new Exception("Email is empty");
+        }
+        Optional<Account> optionalUser = accountRepository.findByEMAIL(email);
+        if (optionalUser.isEmpty()) {
+            throw new DataNotFoundException("User not found");
+        }
+        return optionalUser.get();
     }
 }

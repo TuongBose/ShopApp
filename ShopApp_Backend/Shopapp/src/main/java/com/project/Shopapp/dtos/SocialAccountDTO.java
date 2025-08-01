@@ -3,12 +3,8 @@ package com.project.Shopapp.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-@Data
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class SocialAccountDTO {
     @JsonProperty("facebook_account_id")
     protected String facebookAccountId;

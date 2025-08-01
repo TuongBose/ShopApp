@@ -20,10 +20,10 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Optional<Account> findByEMAIL(String EMAIL);
     // SELECT * FROM ACCOUNTS WHERE EMAIL = ?
 
-    Optional<Account> findByFACEBOOK_ACCOUNT_ID(String facebookAccountId);
+    Optional<Account> findByFacebookAccountId(String facebookAccountId);
     // SELECT * FROM ACCOUNTS WHERE FACEBOOK_ACCOUNT_ID = ?
 
-    Optional<Account> findByGOOGLE_ACCOUNT_ID(String googleAccountId);
+    Optional<Account> findByGoogleAccountId(String googleAccountId);
     // SELECT * FROM ACCOUNTS WHERE GOOGLE_ACCOUNT_ID = ?
 
     @Query("SELECT o FROM Account o WHERE o.IS_ACTIVE = true AND o.ROLENAME = false AND (:keyword IS NULL OR :keyword = '' OR " +

@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccountDTO {
+public class AccountDTO extends SocialAccountDTO{
     @NotBlank(message = "Password khong duoc bo trong")
     private String PASSWORD;
 
@@ -24,8 +24,8 @@ public class AccountDTO {
     private Date NGAYSINH;
 
     @JsonProperty("FACEBOOK_ACCOUNT_ID")
-    private int FACEBOOKACCOUNTID;
+    private String FACEBOOKACCOUNTID;
 
     @JsonProperty("GOOGLE_ACCOUNT_ID")
-    private int GOOGLEACCOUNTID;
+    private String GOOGLEACCOUNTID;
 }
