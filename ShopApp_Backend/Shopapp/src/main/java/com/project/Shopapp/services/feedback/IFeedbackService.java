@@ -9,7 +9,7 @@ import java.util.List;
 public interface IFeedbackService {
     FeedbackResponse insertFeedback(FeedbackDTO feedbackDTO) throws DataNotFoundException;
 
-    void deleteFeedback(int feedbackId);
+    void deleteFeedback(int feedbackId) throws Exception;
 
     void updateFeedback(FeedbackDTO feedbackDTO, int feedbackId) throws DataNotFoundException;
 

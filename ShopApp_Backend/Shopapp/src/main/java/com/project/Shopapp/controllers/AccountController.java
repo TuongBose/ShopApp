@@ -57,7 +57,6 @@ public class AccountController {
     private final LocalizationUtils localizationUtils;
     private final TokenService tokenService;
     private final SecurityUtils securityUtils;
-    private String facebookClientSecret;
 
     private boolean isMobileDevice(String accountAgent) {
         // Kiem tra User-Agent header de xac dinh thiet bi di dong
@@ -81,6 +80,7 @@ public class AccountController {
                     .data(registerResponse)
                     .build());
         }
+
         if (accountDTO.getEMAIL() == null || accountDTO.getEMAIL().trim().isBlank()) {
             if (accountDTO.getSODIENTHOAI() == null || accountDTO.getSODIENTHOAI().isBlank()) {
                 return ResponseEntity.badRequest().body(ResponseObject.builder()
@@ -179,6 +179,25 @@ public class AccountController {
             @RequestBody AccountLoginDTO accountLoginDTO,
             HttpServletRequest request
     ) throws Exception {
+        if (accountLoginDTO.getEMAIL() == null || accountLoginDTO.getEMAIL().trim().isBlank()) {
+            if (accountLoginDTO.getSODIENTHOAI() == null || accountLoginDTO.getSODIENTHOAI().isBlank()) {
+                return ResponseEntity.badRequest().body(ResponseObject.builder()
+                        .message("At least email or phone number is required")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .data(null)
+                        .build());
+            } else {
+                if (!ValidationUtils.isValidPhoneNumber(accountLoginDTO.getSODIENTHOAI())) {
+                    throw new Exception("Invalid phone number");
+                }
+            }
+        } else {
+            // Email not blank
+            if (!ValidationUtils.isValidEmail(accountLoginDTO.getEMAIL())) {
+                throw new Exception("Invalid email format");
+            }
+        }
+
         // Kiểm tra thông tin đăng nhập và sinh token
         String token = accountService.login(accountLoginDTO);
         String accountAgent = request.getHeader("User-Agent");

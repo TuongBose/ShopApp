@@ -60,6 +60,7 @@ public class SanPhamController {
 
     // Create thông tin sản phẩm
     @PostMapping("")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createSanPham(
             @Valid @RequestBody SanPhamDTO sanphamDTO,
             BindingResult result) {
@@ -81,6 +82,7 @@ public class SanPhamController {
 
     // Upload ảnh
     @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> uploadImages(
             @PathVariable int id,
             @RequestParam("files") List<MultipartFile> files
@@ -184,6 +186,7 @@ public class SanPhamController {
 
     // Fake sản phẩm
     @PostMapping("/generateFakeSanPhams")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> generateFakeSanPhams() {
         Faker faker = new Faker();
         for (int i = 0; i < 200; i++) {
@@ -228,7 +231,7 @@ public class SanPhamController {
 
         List<SanPhamResponse> sanPhamResponseList = sanPhamRedisService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
         if (sanPhamResponseList != null && !sanPhamResponseList.isEmpty()) {
-            tongSoTrang = sanPhamResponseList.get(0).getTotalPages();
+            tongSoTrang = sanPhamResponseList.getFirst().getTotalPages();
         }
         if (sanPhamResponseList == null || sanPhamResponseList.isEmpty()) {
             Page<SanPhamResponse> sanPhamResponses = sanPhamService.getAllSanPham(keyword, MALOAISANPHAM, pageRequest);
@@ -297,6 +300,7 @@ public class SanPhamController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> updateSanPham(
             @PathVariable int id,
             @Valid @RequestBody SanPhamDTO sanPhamDTO

@@ -51,6 +51,7 @@ public class CTDHController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<?> getCTDH(@Valid @PathVariable int id) {
         try {
             CTDH newCTDH = ctdhService.getCTDHByID(id);
@@ -62,6 +63,7 @@ public class CTDHController {
     }
 
     @GetMapping("/donhang/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<ResponseObject> getCTDHs(@Valid @PathVariable int id) throws Exception {
         List<CTDH> ctdhList = ctdhService.getCTDHByMADONHANG(id);
         List<CTDHResponse> ctdhResponseList = ctdhList.stream().map(CTDHResponse::fromCTDH).toList();

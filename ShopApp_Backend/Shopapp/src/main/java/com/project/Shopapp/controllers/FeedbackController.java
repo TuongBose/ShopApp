@@ -86,7 +86,7 @@ public class FeedbackController {
                 .build());
     }
 
-    @PostMapping("/generateFakeComments")
+    @PostMapping("/generateFakeFeedbacks")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> generateFakeFeedbacks() throws Exception {
         feedbackService.generateFakeFeedbacks();
@@ -94,6 +94,17 @@ public class FeedbackController {
                 .message("Insert fake feedbacks succcessfully")
                 .data(null)
                 .status(HttpStatus.OK)
+                .build());
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ResponseObject> deleteFeedback(@PathVariable int id) throws Exception {
+        feedbackService.deleteFeedback(id);
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Delete feedback successfully")
+                .status(HttpStatus.OK)
+                .data(null)
                 .build());
     }
 }

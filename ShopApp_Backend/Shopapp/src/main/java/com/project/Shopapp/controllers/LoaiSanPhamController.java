@@ -36,7 +36,7 @@ public class LoaiSanPhamController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> createLoaiSanPham(
             @Valid @RequestBody LoaiSanPhamDTO loaisanphamDTO,
-            BindingResult result) {
+            BindingResult result) throws Exception{
         if (result.hasErrors()) {
             List<String> errorMessage = result.getFieldErrors()
                     .stream()
@@ -79,12 +79,12 @@ public class LoaiSanPhamController {
     public ResponseEntity<ResponseObject> updateLoaiSanPham(
             @PathVariable int id,
             @Valid @RequestBody LoaiSanPhamDTO loaiSanPhamDTO
-    ) {
-        loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
+    ) throws Exception{
+        LoaiSanPham loaiSanPham = loaiSanPhamService.updateLoaiSanPham(id, loaiSanPhamDTO);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message(localizationUtils.getLocalizedMessage(MessageKeys.UPDATE_LOAISANPHAM_SUCCESSFULLY))
                 .status(HttpStatus.OK)
-                .data(loaiSanPhamService.getLoaiSanPhamByMASANPHAM(id))
+                .data(loaiSanPham)
                 .build());
     }
 
@@ -103,8 +103,8 @@ public class LoaiSanPhamController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> getLoaiSanPhamById(
             @PathVariable int id
-    ) {
-        LoaiSanPham existingLoaiSanPham = loaiSanPhamService.getLoaiSanPhamByMASANPHAM(id);
+    ) throws Exception{
+        LoaiSanPham existingLoaiSanPham = loaiSanPhamService.getLoaiSanPhamByMALOAISANPHAM(id);
         return ResponseEntity.ok(ResponseObject.builder()
                 .data(existingLoaiSanPham)
                 .message("Get Loai San Pham information successfully")

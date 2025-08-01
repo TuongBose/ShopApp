@@ -28,6 +28,9 @@ public class AccountResponse {
     @JsonProperty("google_account_id")
     private String GOOGLE_ACCOUNT_ID;
 
+    @JsonProperty("profile_image")
+    private String profileImage;
+
     private boolean ROLENAME;
 
     public static AccountResponse fromAccount(Account account) {
@@ -39,6 +42,7 @@ public class AccountResponse {
                 .SODIENTHOAI(account.getSODIENTHOAI())
                 .NGAYSINH(account.getNGAYSINH())
                 .EMAIL(account.getEMAIL())
+                .profileImage(account.getProfileImage())
                 .IS_ACTIVE(account.isIS_ACTIVE())
                 .FACEBOOK_ACCOUNT_ID(account.getFacebookAccountId())
                 .GOOGLE_ACCOUNT_ID(account.getGoogleAccountId())

@@ -20,16 +20,21 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
 
     @Override
     @Transactional
-    public LoaiSanPham createLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO) {
-        LoaiSanPham newLoaiSanPham = LoaiSanPham
-                .builder()
-                .TENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM())
-                .build();
-        return loaiSanPhamRepository.save(newLoaiSanPham);
+    public LoaiSanPham createLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO) throws Exception{
+        if(!loaiSanPhamRepository.existsByTENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM())) {
+            LoaiSanPham newLoaiSanPham = LoaiSanPham
+                    .builder()
+                    .TENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM())
+                    .build();
+            return loaiSanPhamRepository.save(newLoaiSanPham);
+        }
+        else {
+            throw new Exception("Category already exist");
+        }
     }
 
     @Override
-    public LoaiSanPham getLoaiSanPhamByMASANPHAM(int id) {
+    public LoaiSanPham getLoaiSanPhamByMALOAISANPHAM(int id) throws Exception{
         return loaiSanPhamRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
     }
@@ -41,11 +46,15 @@ public class LoaiSanPhamService implements ILoaiSanPhamService {
 
     @Override
     @Transactional
-    public LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO) {
-        LoaiSanPham existingLoaiSanPham = getLoaiSanPhamByMASANPHAM(id);
-        existingLoaiSanPham.setTENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM());
-        loaiSanPhamRepository.save(existingLoaiSanPham);
-        return existingLoaiSanPham;
+    public LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO) throws Exception{
+        LoaiSanPham existingLoaiSanPham = getLoaiSanPhamByMALOAISANPHAM(id);
+        if(!loaiSanPhamRepository.existsByTENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM())) {
+            existingLoaiSanPham.setTENLOAISANPHAM(loaiSanPhamDTO.getTENLOAISANPHAM());
+            loaiSanPhamRepository.save(existingLoaiSanPham);
+            return existingLoaiSanPham;
+        }else {
+            throw new Exception("Category already exist");
+        }
     }
 
     @Override

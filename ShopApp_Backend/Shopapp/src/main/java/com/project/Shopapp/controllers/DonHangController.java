@@ -34,6 +34,7 @@ public class DonHangController {
     private final SecurityUtils securityUtils;
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<ResponseObject> createDonHang(
             @RequestBody @Valid DonHangDTO donHangDTO,
             BindingResult result
@@ -46,8 +47,8 @@ public class DonHangController {
                     .build());
         }
         Account loginAccount = securityUtils.getLoggedInUser();
-        if (donHangDTO.getUSERID() <= 0) {
-            donHangDTO.setUSERID(loginAccount.getUSERID());
+        if (donHangDTO.getUSERID() != loginAccount.getUSERID()) {
+            throw new Exception("You can not order as another user");
         }
         DonHangResponse donHangResponse = donHangService.createDonHang(donHangDTO);
         return ResponseEntity.ok(ResponseObject.builder()
@@ -71,6 +72,7 @@ public class DonHangController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<ResponseObject> getDonHang_MADONHANG(@Valid @PathVariable int id) throws Exception {
         DonHangResponse existingDonHangResponse = donHangService.getDonHangByMADONHANG(id);
         return ResponseEntity.ok(ResponseObject.builder()
@@ -81,10 +83,18 @@ public class DonHangController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     public ResponseEntity<ResponseObject> updateDonHang(
             @Valid @PathVariable int id,
             @Valid @RequestBody DonHangDTO donHangDTO
     ) throws Exception {
+        Account loginAccount = securityUtils.getLoggedInUser();
+        if (donHangDTO.getUSERID() != loginAccount.getUSERID()) {
+            if (!loginAccount.isROLENAME()) {
+                throw new Exception("You can not update order as another user");
+            }
+        }
+
         DonHang donHang = donHangService.updateDonHang(id, donHangDTO);
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Update order successfully")
@@ -94,6 +104,7 @@ public class DonHangController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseObject> deleteDonHang(@Valid @PathVariable int id) throws Exception {
         donHangService.deleteDonHang(id);
         return ResponseEntity.ok(ResponseObject.builder()

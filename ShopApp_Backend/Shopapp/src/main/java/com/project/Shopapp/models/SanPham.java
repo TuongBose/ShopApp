@@ -44,4 +44,9 @@ public class SanPham extends BaseEntity {
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     private List<Favorite> favorites = new ArrayList<>();
+
+    @OneToMany(mappedBy = "MASANPHAM",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private List<Feedback> feedbacks = new ArrayList<>();
 }

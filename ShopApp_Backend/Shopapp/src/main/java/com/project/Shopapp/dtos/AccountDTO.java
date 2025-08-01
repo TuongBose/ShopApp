@@ -22,6 +22,7 @@ public class AccountDTO extends SocialAccountDTO{
     private String DIACHI;
     private String SODIENTHOAI;
     private Date NGAYSINH;
+    private String profileImage;
 
     @JsonProperty("FACEBOOK_ACCOUNT_ID")
     private String FACEBOOKACCOUNTID;

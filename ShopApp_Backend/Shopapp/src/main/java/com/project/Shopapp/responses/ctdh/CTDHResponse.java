@@ -2,6 +2,7 @@ package com.project.Shopapp.responses.ctdh;
 
 import com.project.Shopapp.models.CTDH;
 import com.project.Shopapp.models.SanPham;
+import com.project.Shopapp.responses.sanpham.SanPhamResponse;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 @Builder
 public class CTDHResponse {
     private int MADONHANG;
-    private SanPham MASANPHAM;
+    private SanPhamResponse sanPhamResponse;
     private int SOLUONG;
     private BigDecimal GIABAN;
     private BigDecimal TONGTIEN;
@@ -22,7 +23,7 @@ public class CTDHResponse {
     {
         return CTDHResponse.builder()
                 .MADONHANG(ctdh.getMADONHANG().getMADONHANG())
-                .MASANPHAM(ctdh.getMASANPHAM())
+                .sanPhamResponse(SanPhamResponse.fromSanPham(ctdh.getMASANPHAM()))
                 .SOLUONG(ctdh.getSOLUONG())
                 .GIABAN(ctdh.getGIABAN())
                 .TONGTIEN(ctdh.getTONGTIEN())

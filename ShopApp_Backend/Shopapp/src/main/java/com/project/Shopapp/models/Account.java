@@ -43,7 +43,9 @@ public class Account extends BaseEntity implements UserDetails, OAuth2User {
     @Column(name = "GOOGLE_ACCOUNT_ID")
     private String googleAccountId;
 
+    @Column(name = "profile_image")
     private String profileImage;
+
     private boolean ROLENAME;
 
     @Override

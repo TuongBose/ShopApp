@@ -6,9 +6,9 @@ import com.project.Shopapp.models.LoaiSanPham;
 import java.util.List;
 
 public interface ILoaiSanPhamService {
-    LoaiSanPham createLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO);
-    LoaiSanPham getLoaiSanPhamByMASANPHAM(int id);
+    LoaiSanPham createLoaiSanPham(LoaiSanPhamDTO loaiSanPhamDTO) throws Exception;
+    LoaiSanPham getLoaiSanPhamByMALOAISANPHAM(int id) throws Exception;
     List<LoaiSanPham> getAllLoaiSanPham();
-    LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO);
+    LoaiSanPham updateLoaiSanPham(int id, LoaiSanPhamDTO loaiSanPhamDTO) throws Exception;
     LoaiSanPham deleteLoaiSanPham(int id) throws Exception;
 }

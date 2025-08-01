@@ -52,6 +52,23 @@ public class DonHangService implements IDonHangService {
         donHang.setIS_ACTIVE(true); // Đoạn này nên set sẵn trong SQL
         donHang.setTONGTIEN(donHangDTO.getTONGTIEN());
 
+        // Xu ly coupon
+        String couponCode =donHangDTO.getCouponCode();
+        if(couponCode!=null){
+            Coupon coupon = couponRepository.findByCode(couponCode)
+                    .orElseThrow(()-> new IllegalArgumentException("Coupon not found"));
+
+            if (!coupon.isActive()) {
+                throw new IllegalArgumentException("Coupon is not active");
+            }
+
+            donHang.setCoupon(coupon);
+        }else {
+            donHang.setCoupon(null);
+        }
+
+        donHangRepository.save(donHang);
+
         List<CTDH> ctdhList = new ArrayList<>();
         for (CartItemDTO cartItemDTO : donHangDTO.getCartitems()) {
             CTDH ctdh = new CTDH();
@@ -66,27 +83,18 @@ public class DonHangService implements IDonHangService {
             ctdh.setSOLUONG(quantity);
             ctdh.setGIABAN(sanPham.getGIA());
             ctdh.setTONGTIEN(sanPham.getGIA().multiply(BigDecimal.valueOf(quantity)));
+            ctdh.setCoupon(donHang.getCoupon());
 
             ctdhList.add(ctdh);
         }
-        // Xu ly coupon
-        String couponCode =donHangDTO.getCouponCode();
-        if(!couponCode.isEmpty()){
-            Coupon coupon = couponRepository.findByCode(couponCode)
-                    .orElseThrow(()-> new IllegalArgumentException("Coupon not found"));
-
-            if (!coupon.isActive()) {
-                throw new IllegalArgumentException("Coupon is not active");
-            }
-
-            donHang.setCoupon(coupon);
-        }else {
-            donHang.setCoupon(null);
-        }
 
         ctdhRepository.saveAll(ctdhList);
-        donHangRepository.save(donHang);
-        return modelMapper.map(donHang, DonHangResponse.class);
+
+        List<CTDHResponse> ctdhResponseList = ctdhList.stream().map(CTDHResponse::fromCTDH).toList();
+        DonHangResponse donHangResponse = modelMapper.map(donHang, DonHangResponse.class);
+        donHangResponse.setCtdhList(ctdhResponseList);
+
+        return  donHangResponse;
     }
 
     @Override

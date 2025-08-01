@@ -52,8 +52,11 @@ public class FeedbackService implements IFeedbackService {
 
     @Override
     @Transactional
-    public void deleteFeedback(int feedbackId) {
-        feedbackRepository.deleteById(feedbackId);
+    public void deleteFeedback(int feedbackId) throws Exception{
+        Feedback existingFeedback = feedbackRepository
+                .findById(feedbackId)
+                .orElseThrow(()-> new DataNotFoundException("Feedback does not exist"));
+        feedbackRepository.deleteById(existingFeedback.getFEEDBACKID());
     }
 
     @Override
