@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { SanPham } from "../models/sanpham";
 import { insertSanPhamDTO } from "../dtos/insertsanpham.dto";
+import { ApiResponse } from "../responses/api.response";
 
 @Injectable({
     providedIn: 'root'
@@ -13,25 +14,25 @@ export class SanPhamService {
     private apiGetAllSanPham = `${environment.apiBaseUrl}/sanphams`;
     constructor(private http: HttpClient) { }
 
-    getAllSanPham(keyword: string, selectedMALOAISANPHAM: number, page: number, limit: number): Observable<SanPham[]> {
+    getAllSanPham(keyword: string, selectedMALOAISANPHAM: number, page: number, limit: number): Observable<ApiResponse> {
         const params = new HttpParams()
             .set('keyword', keyword.toString())
             .set('MALOAISANPHAM', selectedMALOAISANPHAM.toString())
             .set('page', page.toString())
             .set('limit', limit.toString());
 
-        return this.http.get<SanPham[]>(this.apiGetAllSanPham, { params });
+        return this.http.get<ApiResponse>(this.apiGetAllSanPham, { params });
     }
 
-    getSanPham(masanpham: number) {
-        return this.http.get(`${environment.apiBaseUrl}/sanphams/${masanpham}`);
+    getSanPham(masanpham: number) :Observable<ApiResponse>{
+        return this.http.get<ApiResponse>(`${environment.apiBaseUrl}/sanphams/${masanpham}`);
     }
 
-    getSanPhamByMASANPHAMList(MASANPHAMList: number[]): Observable<SanPham[]> {
+    getSanPhamByMASANPHAMList(MASANPHAMList: number[]): Observable<ApiResponse> {
         // Chuyển danh sách MASANPHAM thành một chuỗi và truyền vào params
         debugger
         const params = new HttpParams().set('ids', MASANPHAMList.join(','));
-        return this.http.get<SanPham[]>(`${this.apiGetAllSanPham}/by-ids`,{params});
+        return this.http.get<ApiResponse>(`${this.apiGetAllSanPham}/by-ids`,{params});
     }
 
     deleteSanPham(masanpham: number): Observable<string>{

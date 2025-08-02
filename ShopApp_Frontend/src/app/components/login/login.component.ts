@@ -15,6 +15,8 @@ import { nextTick } from 'process';
 import { error } from 'console';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { catchError, finalize, of, switchMap, tap } from 'rxjs';
+import { ApiResponse } from '../../responses/api.response';
 
 @Component({
   selector: 'app-login',
@@ -32,22 +34,11 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent extends BaseComponent {
   @ViewChild('loginForm') loginForm!: NgForm;
 
-  phoneNumber: string;
-  password: string;
+  phoneNumber: string = '';
+  password: string = '';
   rememberMe: boolean = false;
   accountResponse?: AccountResponse
   showPassword: boolean = false;
-
-  constructor(
-    private router: Router,
-    private accountService: AccountService,
-    private tokenService: TokenService,
-    private cartService: CartService,
-    private authService: AuthService
-  ) {
-    this.phoneNumber = '0904';
-    this.password = '123';
-  }
 
   createAccount() {
     debugger
@@ -85,49 +76,41 @@ export class LoginComponent extends BaseComponent {
     });
   }
 
-  onPhoneNumberChange() {
-    console.log(`Phone typed: ${this.phoneNumber}`)
-  }
-
   login() {
-    const message = `Phone: ${this.phoneNumber}\n` +
-      `Password: ${this.password}\n` +
-      `Rememberme: ${this.rememberMe}`
-    alert(message)
-
     const loginDTO: LoginDTO = {
-      "password": this.password,
-      "sodienthoai": this.phoneNumber,
+      password: this.password,
+      sodienthoai: this.phoneNumber,
     }
-    this.accountService.login(loginDTO).subscribe({
-      next: (response: LoginResponse) => {
-        debugger
-        const { token } = response;
-        if (this.rememberMe) {
-          this.tokenService.setToken(token, true);
-        }
+    this.accountService.login(loginDTO).pipe(
+      tap((apiResponse: ApiResponse) => {
+        const { token } = apiResponse.data;
         this.tokenService.setToken(token);
-        debugger
-        this.accountService.getAccountDetails(token).subscribe({
-          next: (response: any) => {
-            debugger
-            this.accountResponse = response;
-            this.accountService.saveAccountToLocalStorage(this.accountResponse, this.rememberMe);
-            this.router.navigate(['/']);
-          },
-          complete: () => {
-            this.cartService.refreshCart();
-            debugger
-          },
-          error: (error: any) => {
-            debugger
-            alert(error.error.message);
-          }
-        })
-      },
-      complete: () => { debugger },
-      error: (error: any) => {
-        alert(`Khong the dang nhap, loi: ${error?.error?.message}`);
+      }),
+      switchMap((apiResponse: ApiResponse) => {
+        const { token } = apiResponse.data;
+        return this.accountService.getAccountDetails(token).pipe(
+          tap((apiResponse2: ApiResponse) => {
+            this.accountResponse = {
+              ...apiResponse2.data,
+              ngaysinh: new Date(apiResponse2.data.ngaysinh),
+            };
+
+            if (this.rememberMe) {
+              this.accountService.saveAccountToLocalStorage(this.accountResponse);
+            }
+          }),
+          catchError((error: HttpErrorResponse) => {
+            console.error('Lỗi khi lấy thông tin người dùng:', error?.error?.message ?? '');
+            return of(null); // Tiếp tục chuỗi Observable
+          })
+        );
+      }),
+      finalize(() => {
+        this.cartService.refreshCart();
+      })
+    ).subscribe({
+      error: (error: HttpErrorResponse) => {
+        console.error('Lỗi đăng nhập:', error?.error?.message ?? '');
       }
     });
   }

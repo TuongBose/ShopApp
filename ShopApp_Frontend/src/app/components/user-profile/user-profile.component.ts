@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from "../header/header.component";
 import { FooterComponent } from "../footer/footer.component";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -7,6 +7,9 @@ import { AccountResponse } from '../../responses/account/account.response';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
 import { TokenService } from '../../services/token.service';
+import { BaseComponent } from '../base/base.component';
+import { UpdateUserDTO } from '../../dtos/account/update.user.dto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-profile',
@@ -15,29 +18,20 @@ import { TokenService } from '../../services/token.service';
   styleUrl: './user-profile.component.scss',
   standalone: true
 })
-export class UserProfileComponent implements OnInit {
-  userProfileForm: FormGroup;
+export class UserProfileComponent extends BaseComponent implements OnInit {
   accountResponse?: AccountResponse;
   token: string = '';
-  constructor(
-    private formBuilder: FormBuilder,
-    private activatedRoute: ActivatedRoute,
-    private accountService: AccountService,
-    private router: Router,
-    private tokenService: TokenService
-  ) {
-    this.userProfileForm = this.formBuilder.group({
-      fullname: [''],
-      email: [''],
-      sodienthoai: [''],
-      diachi: [''],
-      ngaysinh: [''],
-      facebook_account_id: [''],
-      google_account_id: [''],
-      ghichu: ['']
-    });
-  }
-
+  formBuilder: FormBuilder = inject(FormBuilder);
+  userProfileForm: FormGroup = this.formBuilder.group({
+    fullname: [''],
+    email: [''],
+    sodienthoai: [''],
+    diachi: [''],
+    ngaysinh: [''],
+    facebook_account_id: [''],
+    google_account_id: [''],
+    ghichu: ['']
+  });
 
   ngOnInit(): void {
     debugger
@@ -76,7 +70,33 @@ export class UserProfileComponent implements OnInit {
     }
   }
 
-  save():void{
+  save(): void {
+    debugger
+    if (this.userProfileForm.valid) {
+      const updateUserDTO: UpdateUserDTO = {
+        fullname: this.userProfileForm.get('fullname')?.value,
+        address: this.userProfileForm.get('address')?.value,
+        password: this.userProfileForm.get('password')?.value,
+        retype_password: this.userProfileForm.get('retype_password')?.value,
+        date_of_birth: this.userProfileForm.get('date_of_birth')?.value
+      };
 
+      this.accountService.updateUserDetail(this.token, updateUserDTO)
+        .subscribe({
+          next: (response: any) => {
+            this.accountService.removeAccountFromLocalStorage();
+            this.tokenService.removeToken();
+            this.router.navigate(['/login']);
+          },
+          error: (error: HttpErrorResponse) => {
+            debugger
+            console.error(error?.error?.message ?? '');
+          }
+        });
+    } else {
+      if (this.userProfileForm.hasError('passwordMismatch')) {
+        console.error('Mật khẩu và mật khẩu gõ lại chưa chính xác')
+      }
+    }
   }
 }

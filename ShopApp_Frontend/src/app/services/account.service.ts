@@ -5,6 +5,8 @@ import { RegisterDTO } from '../dtos/account/register.dto';
 import { LoginDTO } from '../dtos/account/login.dto';
 import { environment } from '../environments/environment';
 import { AccountResponse } from '../responses/account/account.response';
+import { ApiResponse } from '../responses/api.response';
+import { UpdateUserDTO } from '../dtos/account/update.user.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -27,17 +29,17 @@ export class AccountService {
     })
   }
 
-  register(registerDTO: RegisterDTO): Observable<any> {
+  register(registerDTO: RegisterDTO): Observable<ApiResponse> {
     debugger
-    return this.http.post(this.apiRegister, registerDTO, this.apiConfig);
+    return this.http.post<ApiResponse>(this.apiRegister, registerDTO, this.apiConfig);
   }
 
-  login(loginDTO: LoginDTO): Observable<any> {
-    return this.http.post(this.apiLogin, loginDTO, this.apiConfig);
+  login(loginDTO: LoginDTO): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(this.apiLogin, loginDTO, this.apiConfig);
   }
 
-  getAccountDetails(token: string) {
-    return this.http.post(this.apiAccountDetails, {
+  getAccountDetails(token: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(this.apiAccountDetails, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
@@ -90,5 +92,15 @@ export class AccountService {
     } catch (error) {
       console.error('Error revoming account from storage: ', error)
     }
+  }
+
+  updateUserDetail(token: string, updateUserDTO: UpdateUserDTO): Observable<ApiResponse> {
+    let userResponse = this.getAccountFromLocalStorage();
+    return this.http.put<ApiResponse>(`${this.apiAccountDetails}/${userResponse?.userid}`, updateUserDTO, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      })
+    })
   }
 }

@@ -10,13 +10,15 @@ import { FooterComponent } from '../footer/footer.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { BaseComponent } from '../base/base.component';
+import { ApiResponse } from '../../responses/api.response';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports:[
+  imports: [
     HeaderComponent,
     FooterComponent,
     CommonModule,
@@ -24,7 +26,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   ]
 
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent extends BaseComponent implements OnInit {
   sanphams: SanPham[] = [];
   currentPage: number = 0;
   itemsPerPage: number = 12;
@@ -35,24 +37,24 @@ export class HomeComponent implements OnInit {
   selectedMALOAISANPHAM: number = 0;
   loaiSanPhams: LoaiSanPham[] = [];
 
-  constructor(
-    private sanPhamService: SanPhamService,
-    private loaiSanPhamService: LoaiSanPhamService,
-    private router: Router) { }
-    
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
     this.getAllLoaiSanPham(1, 100);
+    this.currentPage = Number(localStorage.getItem('currentProductPage')) || 0;
   }
 
   getAllLoaiSanPham(page: number, limit: number) {
     this.loaiSanPhamService.getAllLoaiSanPham(page, limit).subscribe({
-      next: (loaiSanPhams: LoaiSanPham[]) => {
+      next: (response: ApiResponse) => {
         debugger
-        this.loaiSanPhams = loaiSanPhams;
+        this.loaiSanPhams = response.data;
       },
       complete: () => { debugger },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         debugger;
         console.error('Error fetching loaisanpham: ', error)
       }
@@ -65,8 +67,8 @@ export class HomeComponent implements OnInit {
       next: (apiresponse: ApiResponse) => {
         debugger
         const response = apiresponse.data;
-        response.sanPhamResponseList.forEach((sanPham:SanPham)=>{
-          sanPham.thumbnail_url=`${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
+        response.sanPhamResponseList.forEach((sanPham: SanPham) => {
+          sanPham.thumbnail_url = `${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
         })
         this.sanphams = response.sanPhamResponseList;
         this.totalPages = response.tongSoTrang;
@@ -78,8 +80,8 @@ export class HomeComponent implements OnInit {
       error: (error: HttpErrorResponse) => {
         this.toastService.showToast({
           error: error,
-            defaultMsg:'Lấy dữ liệu sản phẩm không thành công',
-            title:'Lỗi'
+          defaultMsg: 'Lấy dữ liệu sản phẩm không thành công',
+          title: 'Lỗi'
         })
       }
     });
@@ -87,22 +89,9 @@ export class HomeComponent implements OnInit {
 
   onPageChange(page: number) {
     debugger;
-    this.currentPage = page;
+    this.currentPage = page < 0 ? 0 : page;
     this.getAllSanPham(this.keyword, this.selectedMALOAISANPHAM, this.currentPage, this.itemsPerPage);
-  }
-
-  generateVisiblePageArray(currentPage: number, totalPages: number): number[] {
-    const maxVisiblePages = 5;
-    const halfVisiblePages = Math.floor(maxVisiblePages / 2);
-
-    let startPage = Math.max(currentPage - halfVisiblePages, 1);
-    let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(endPage - maxVisiblePages + 1, 1);
-    }
-
-    return new Array(endPage - startPage + 1).fill(0).map((_, index) => startPage + index);
+    localStorage.setItem('currentProductPage',String(this.currentPage));
   }
 
   searchSanPham() {

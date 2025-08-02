@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BaseComponent } from '../base/base.component';
+import { ApiResponse } from '../../responses/api.response';
 
 @Component({
   selector: 'app-detail-product',
@@ -25,21 +27,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgbModule
   ]
 })
-export class DetailProductComponent implements OnInit {
+export class DetailProductComponent extends BaseComponent implements OnInit {
   sanPham?: SanPham;
   maSanPham: number = 0;
   currentImageIndex: number = 0;
   quantity: number = 1;
   account?: AccountResponse | null;
   isPressAddToCart:boolean=false;
-
-  constructor(
-    private sanPhamService: SanPhamService,
-    private cartService: CartService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private accountService: AccountService
-  ) { }
 
   ngOnInit(): void {
     debugger
@@ -48,14 +42,15 @@ export class DetailProductComponent implements OnInit {
       if (idParam !== null) {
         this.maSanPham = +idParam; // Chuyển đổi sang số
       } else {
-        console.error('maSanPham không được tìm thấy trong route');
+        console.error('Cannot find product');
         this.router.navigate(['/']); // Điều hướng về trang chủ nếu không có tham số
         return;
       }
 
       if (!isNaN(this.maSanPham)) {
         this.sanPhamService.getSanPham(this.maSanPham).subscribe({
-          next: (response: any) => {
+          next: (apiResponse: ApiResponse) => {
+            const response = apiResponse.data;
             debugger
             if (response.hinhAnhUrls && response.hinhAnhUrls.length > 0) {
               response.hinhAnhUrls.forEach((product_image: HinhAnh) => {

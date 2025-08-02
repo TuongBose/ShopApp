@@ -5,6 +5,7 @@ import { TokenService } from '../../services/token.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BaseComponent } from '../base/base.component';
 
 @Component({
   selector: 'app-header',
@@ -17,16 +18,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     RouterModule
   ]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent extends BaseComponent implements OnInit {
   account?: AccountResponse | null;
   isPopoverOpen?: boolean;
   activeNavItem: number = 0;
-
-  constructor(
-    private accountService: AccountService,
-    private tokenService: TokenService,
-    private router:Router
-  ) { }
 
   ngOnInit(): void {
     debugger

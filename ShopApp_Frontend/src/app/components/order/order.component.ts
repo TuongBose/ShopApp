@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { SanPham } from '../../models/sanpham';
 import { OrderDTO } from '../../dtos/order.dto';
 import { CartService } from '../../services/cart.service';
@@ -16,6 +16,8 @@ import { PaymentService } from '../../services/payment.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastService } from '../../services/toast.service';
 import { error } from 'console';
+import { BaseComponent } from '../base/base.component';
+import { ApiResponse } from '../../responses/api.response';
 
 @Component({
   selector: 'app-order',
@@ -31,14 +33,17 @@ import { error } from 'console';
     RouterModule
   ]
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent extends BaseComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+
   cart: Map<number, number> = new Map();
   orderForm: FormGroup;
   cartItems: { sanPham: SanPham, quantity: number }[] = [];
-  couponCode: string = '';
+  couponDiscount: number = 0; //số tiền được discount từ coupon
+  couponApplied: boolean = false;
   totalAmount: number = 0;
   orderData: OrderDTO = {
-    userid: 1,
+    userid: 0,
     fullname: '',
     email: '',
     sodienthoai: '',
@@ -49,17 +54,10 @@ export class OrderComponent implements OnInit {
     cartitems: []
   }
 
-  constructor(
-    private cartService: CartService,
-    private sanPhamService: SanPhamService,
-    private donHangService: DonHangService,
-    private fb: FormBuilder,
-    private tokenService: TokenService,
-    private router: Router,
-    private paymentService: PaymentService,
-    private toastService: ToastService
-  ) {
-    this.orderForm = this.fb.group({
+  constructor() {
+    super();
+
+    this.orderForm = this.formBuilder.group({
       fullname: ['tuong', [Validators.required]],
       email: ['tuong@gmail.com', [Validators.email]],
       sodienthoai: ['090009848', [Validators.required, Validators.minLength(6)]],
@@ -72,8 +70,8 @@ export class OrderComponent implements OnInit {
   ngOnInit(): void {
     debugger
     this.orderData.userid = this.tokenService.getUserId();
-    const cart = this.cartService.getCart();
-    const maSanPhamList = Array.from(cart.keys()); // Truyền danh sách MASANPHAM từ Map giỏ hàng
+    this.cart = this.cartService.getCart();
+    const maSanPhamList = Array.from(this.cart.keys()); // Truyền danh sách MASANPHAM từ Map giỏ hàng
 
     // Gọi service để lấy thông tin sản phẩm dựa trên danh sách MASANPHAM
     debugger
@@ -82,7 +80,8 @@ export class OrderComponent implements OnInit {
     }
 
     this.sanPhamService.getSanPhamByMASANPHAMList(maSanPhamList).subscribe({
-      next: (sanPhams: SanPham[]) => {
+      next: (apiResponse: ApiResponse) => {
+        const sanPhams: SanPham[] = apiResponse.data;
         debugger
         this.cartItems = maSanPhamList.map((masanpham) => {
           debugger
@@ -92,7 +91,7 @@ export class OrderComponent implements OnInit {
           }
           return {
             sanPham: sanPham!,
-            quantity: cart.get(masanpham)!
+            quantity: this.cart.get(masanpham)!
           };
         });
       },
@@ -100,16 +99,16 @@ export class OrderComponent implements OnInit {
         debugger
         this.calculateTotal();
       },
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         debugger
-        console.error('Error fetching chi tiet: ', error)
+        console.error(error?.error?.message ?? '')
       }
     })
   }
 
   placeOrder() {
     debugger
-    if (this.orderForm.valid) {
+    if (this.orderForm.errors == null) {
       // Gán giá trị từ form vào đối tuọng orderData
       /*
       this.orderData.fullname = this.orderForm.get('fullname')!.value;
@@ -147,10 +146,7 @@ export class OrderComponent implements OnInit {
               const vnp_TxnRef = new URL(paymentUrl).searchParams.get('vnp_TxnRef') || '';
 
               // Bước 3: gọi palceOrder kèm theo vnp_TxnRef
-              this.donHangService.placeOrder({
-                ...this.orderData,
-                vnp_txn_ref: vnp_TxnRef
-              }).subscribe({
+              this.donHangService.placeOrder({...this.orderData}).subscribe({
                 next: (placeOrderResponse: ApiResponse) => {
                   // Bước 4: Nếu đặt hàng thành công, điều hướng sang trang thanh toán
                   debugger
@@ -167,11 +163,11 @@ export class OrderComponent implements OnInit {
                 }
               })
             },
-            error:(err:HttpErrorResponse)=>{
+            error: (err: HttpErrorResponse) => {
               this.toastService.showToast({
-                error:err,
+                error: err,
                 defaultMsg: 'Lỗi kết nối đến cổng thanh toán',
-                title:'Lỗi thanh toán',
+                title: 'Lỗi thanh toán',
               });
             }
           })
@@ -197,54 +193,66 @@ export class OrderComponent implements OnInit {
       alert('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.');
     }
   }
-}
 
-calculateTotal(): void {
-  this.totalAmount = this.cartItems.reduce(
-    (total, item) => total + item.sanPham.gia * item.quantity,
-    0
-  );
-}
 
-decreaseQuantity(index: number): void {
-  if(this.cartItems[index].quantity > 1) {
-  this.cartItems[index].quantity--;
-  // Cập nhật lại this.cart từ this.cartItems
-  this.updateCartFromCartItems();
-  this.calculateTotal();
-}
+  calculateTotal(): void {
+    this.totalAmount = this.cartItems.reduce(
+      (total, item) => total + item.sanPham.gia * item.quantity,
+      0
+    );
   }
 
-increaseQuantity(index: number): void {
-  this.cartItems[index].quantity++;
-  debugger;
-  // Cập nhật lại this.cart từ this.cartItems
-  this.updateCartFromCartItems();
-  this.calculateTotal();
-}
+  decreaseQuantity(index: number): void {
+    if (this.cartItems[index].quantity > 1) {
+      this.cartItems[index].quantity--;
+      // Cập nhật lại this.cart từ this.cartItems
+      this.updateCartFromCartItems();
+      this.calculateTotal();
+    }
+  }
 
-confirmDelete(index: number): void {
-  if(confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-  // Xoa san pham khoi danh sach cartItems
-  this.cartItems.splice(index, 1);
-  // Cập nhật lại this.cart từ this.cartItems
-  this.updateCartFromCartItems();
-  // Tinh toan lai tong tien
-  this.calculateTotal();
-}
+  increaseQuantity(index: number): void {
+    this.cartItems[index].quantity++;
+    debugger;
+    // Cập nhật lại this.cart từ this.cartItems
+    this.updateCartFromCartItems();
+    this.calculateTotal();
+  }
+
+  confirmDelete(index: number): void {
+    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+      // Xoa san pham khoi danh sach cartItems
+      this.cartItems.splice(index, 1);
+      // Cập nhật lại this.cart từ this.cartItems
+      this.updateCartFromCartItems();
+      // Tinh toan lai tong tien
+      this.calculateTotal();
+    }
 
   }
 
   private updateCartFromCartItems(): void {
-  this.cart.clear();
-  this.cartItems.forEach((item) => {
-    this.cart.set(item.sanPham.masanpham, item.quantity);
-  });
-  this.cartService.setCart(this.cart);
-}
+    this.cart.clear();
+    this.cartItems.forEach((item) => {
+      this.cart.set(item.sanPham.masanpham, item.quantity);
+    });
+    this.cartService.setCart(this.cart);
+  }
 
-applyCoupon(): void {
-  // Xử lý áp dụng mã giảm giá
-  // cập nhật giá trị totalAmount dựa trên mã giảm giá
-}
+  applyCoupon(): void {
+    // Xử lý áp dụng mã giảm giá
+    // cập nhật giá trị totalAmount dựa trên mã giảm giá
+    debugger
+    const couponCode = this.orderForm.get('couponCode')!.value;
+    if (!this.couponApplied && couponCode) {
+      this.calculateTotal();
+      this.couponService.calculateCouponValue(couponCode, this.totalAmount)
+        .subscribe({
+          next: (apiResponse: ApiResponse) => {
+            this.totalAmount = apiResponse.data;
+            this.couponApplied = true;
+          }
+        });
+    }
+  }
 }

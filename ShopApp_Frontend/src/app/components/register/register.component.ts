@@ -6,6 +6,9 @@ import { RegisterDTO } from '../../dtos/account/register.dto';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
+import { ApiResponse } from '../../responses/api.response';
+import { HttpErrorResponse } from '@angular/common/http';
+import { BaseComponent } from '../base/base.component';
 
 @Component({
   selector: 'app-register',
@@ -19,7 +22,7 @@ import { FooterComponent } from '../footer/footer.component';
     FooterComponent
   ]
 })
-export class RegisterComponent {
+export class RegisterComponent extends BaseComponent{
   @ViewChild('registerForm') registerForm!: NgForm;
   phoneNumber: string;
   password: string;
@@ -32,7 +35,9 @@ export class RegisterComponent {
   showPassword: boolean = false;
   showRetypePassword: boolean = false;
 
-  constructor(private router: Router, private accountService: AccountService) {
+  constructor() {
+    super();
+    
     this.phoneNumber = '';
     this.password = '';
     this.retypePassword = '';
@@ -46,22 +51,7 @@ export class RegisterComponent {
     //inject
   }
 
-  onPhoneNumberChange() {
-    console.log(`Phone typed: ${this.phoneNumber}`)
-  }
-
   register() {
-    const message = `Phone: ${this.phoneNumber}\n` +
-      `Password: ${this.password}\n` +
-      `Retype Password: ${this.retypePassword}\n` +
-      `Full Name: ${this.fullName}\n` +
-      `Email: ${this.email}\n` +
-      `Address: ${this.address}\n` +
-      `Is Accepted: ${this.isAccepted}\n` +
-      `Date of Birth: ${this.dateOfBirth}`
-    alert(message)
-
-
     const registerDTO: RegisterDTO = {
       "password": this.password,
       "retypepassword": this.retypePassword,
@@ -75,14 +65,20 @@ export class RegisterComponent {
     }
     debugger
     this.accountService.register(registerDTO).subscribe({
-      next: (response: any) => {
+      next: (apiResponse: ApiResponse) => {
+        const confirmation = window.confirm('Đăng ký thành công, mời bạn đăng nhập. Bấm "OK" để chuyển đến trang đăng nhập.');
         debugger
-        this.router.navigate(['/login']);
+        if (confirmation) {
+          this.router.navigate(['/login']);
+        }
       },
       complete: () => { debugger },
-      error: (error: any) => {
-        debugger
-        alert(`Khong the dang ky, loi: ${error.error}`);
+      error: (error: HttpErrorResponse) => {
+        this.toastService.showToast({
+            error: error,
+            defaultMsg: 'Lỗi không xác định',
+            title: 'Lỗi Đăng Ký'
+          });
       }
     });
   }
