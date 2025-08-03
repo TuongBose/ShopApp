@@ -33,7 +33,7 @@ export class TokenService {
     getUserId(): number {
         debugger
         let accountObject = this.jwtHelperService.decodeToken(this.getToken() ?? '');
-        return 'USERID' in accountObject ? parseInt(accountObject['USERID']) : 0;
+        return 'userId' in accountObject ? parseInt(accountObject['userId']) : 0;
     }
 
     isTokenExpired(): boolean {

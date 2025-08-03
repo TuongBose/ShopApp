@@ -94,10 +94,7 @@ export class LoginComponent extends BaseComponent {
               ...apiResponse2.data,
               ngaysinh: new Date(apiResponse2.data.ngaysinh),
             };
-
-            if (this.rememberMe) {
-              this.accountService.saveAccountToLocalStorage(this.accountResponse);
-            }
+            this.accountService.saveAccountToLocalStorage(this.accountResponse, this.rememberMe);
           }),
           catchError((error: HttpErrorResponse) => {
             console.error('Lỗi khi lấy thông tin người dùng:', error?.error?.message ?? '');
@@ -109,7 +106,20 @@ export class LoginComponent extends BaseComponent {
         this.cartService.refreshCart();
       })
     ).subscribe({
+      next: () => {
+        this.toastService.showToast({
+          defaultMsg: 'Đăng nhập thành công',
+          title: 'Thông báo',
+          delay: 3000
+        });
+        this.router.navigate(['/']);
+      },
       error: (error: HttpErrorResponse) => {
+        this.toastService.showToast({
+          error,
+          defaultMsg: 'Đăng nhập thất bại!',
+          title: 'Lỗi đăng nhập'
+        });
         console.error('Lỗi đăng nhập:', error?.error?.message ?? '');
       }
     });

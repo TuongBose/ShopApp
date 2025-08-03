@@ -8,11 +8,6 @@ import { SanPhamService } from "./sanpham.service";
 export class CartService {
     private cart: Map<number, number> = new Map<number, number>();
 
-    constructor(private sanPhamService: SanPhamService) {
-        // Lấy dữ liệu giỏ hàng từ localStorage khi khởi tạo service
-        this.refreshCart();
-    }
-
     public refreshCart() {
         const storedCart = localStorage.getItem(this.getCartKey());
         if (storedCart) {
@@ -24,8 +19,9 @@ export class CartService {
     }
 
     private getCartKey(): string {
-        const accountResponseJSON = localStorage.getItem('account');
-        
+        debugger
+        const accountResponseJSON = localStorage.getItem('account') || sessionStorage.getItem('account');
+
         if (!accountResponseJSON) {
             console.warn('Chưa đăng nhập, không thể tạo key giỏ hàng.');
             return 'cart:anonymous';

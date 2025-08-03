@@ -334,10 +334,17 @@ public class SanPhamController {
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
         List<SanPham> sanPhamList = sanPhamService.findSanPhamByMASANPHAMList(maSanPhamList);
+        List<SanPhamResponse> sanPhamResponseList = sanPhamList.stream()
+                .map(SanPhamResponse::fromSanPham)
+                .collect(Collectors.toList());
+        SanPhamListResponse sanPhamListResponse = SanPhamListResponse.builder()
+                .sanPhamResponseList(sanPhamResponseList)
+                .tongSoTrang(0)
+                .build();
         return ResponseEntity.ok(ResponseObject.builder()
                 .message("Get products successfully")
                 .status(HttpStatus.OK)
-                .data(sanPhamList)
+                .data(sanPhamListResponse)
                 .build());
 
     }

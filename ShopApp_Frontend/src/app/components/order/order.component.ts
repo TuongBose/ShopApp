@@ -63,6 +63,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
       sodienthoai: ['090009848', [Validators.required, Validators.minLength(6)]],
       diachi: ['123 le trong tan, phuong 5', [Validators.required, Validators.minLength(5)]],
       ghichu: [''],
+      couponCode: [''],
       phuongthucthanhtoan: ['cod']
     });
   }
@@ -81,7 +82,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
 
     this.sanPhamService.getSanPhamByMASANPHAMList(maSanPhamList).subscribe({
       next: (apiResponse: ApiResponse) => {
-        const sanPhams: SanPham[] = apiResponse.data;
+        const sanPhams: SanPham[] = apiResponse.data.sanPhamResponseList;
         debugger
         this.cartItems = maSanPhamList.map((masanpham) => {
           debugger

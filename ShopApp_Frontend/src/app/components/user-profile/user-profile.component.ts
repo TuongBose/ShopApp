@@ -43,7 +43,7 @@ export class UserProfileComponent extends BaseComponent implements OnInit {
     }
 
     // Lấy dữ liệu tài khoản từ localStorage
-    const accountStr = localStorage.getItem('account');
+    const accountStr = localStorage.getItem('account') || sessionStorage.getItem('account');
     if (!accountStr) {
       alert('Không tìm thấy thông tin tài khoản trong localStorage!');
       this.router.navigate(['/login']);
