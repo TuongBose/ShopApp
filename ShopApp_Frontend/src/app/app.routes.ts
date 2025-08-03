@@ -16,7 +16,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'auth/google/callback', component: AuthCallbackComponent },
     { path: 'auth/facebook/callback', component: AuthCallbackComponent },
-    { path: 'payments/payment-callback', component: PaymentCallbackComponent },
+    //{ path: 'payments/payment-callback', component: PaymentCallbackComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'products/:id', component: DetailProductComponent },
     { path: 'orders', component: OrderComponent, canActivate: [AuthGuardFn] },

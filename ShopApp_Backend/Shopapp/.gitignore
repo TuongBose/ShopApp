@@ -22,6 +22,9 @@ target/
 # Don't commit secret config
 application.yml
 
+# Don't commit file log
+/src/main/resources/logs/application.log
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

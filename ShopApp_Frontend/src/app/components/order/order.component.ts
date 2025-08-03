@@ -174,7 +174,8 @@ export class OrderComponent extends BaseComponent implements OnInit {
       }
 
       this.donHangService.placeOrder(this.orderData).subscribe({
-        next: (response: DonHang) => {
+        next: (apiResponse: ApiResponse) => {
+          const response = apiResponse.data;
           debugger
           alert('Đặt hàng thành công');
           this.cartService.clearCart();

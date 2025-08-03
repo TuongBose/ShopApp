@@ -38,7 +38,6 @@ export class BaseComponent {
   authService: AuthService = inject(AuthService);
   paymentService: PaymentService = inject(PaymentService);
   document: Document = inject(DOCUMENT);
-  location: Location = inject(Location);
 
   generateVisiblePageArray(currentPage: number, totalPages: number): number[] {
     const maxVisiblePages = 5;
