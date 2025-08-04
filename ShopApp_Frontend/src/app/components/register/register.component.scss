@@ -1,72 +1,133 @@
 @import '../../styles/shared-styles.scss';
 
-.container{
-    color:white;
-    height: 100%;
+.container {
+  color: $shopapp-text-color;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.register-form{
-    background-color: $shopapp-background-color;
-    border-radius: 10px;
+
+.register-form-wrapper {
+  width: 100%;
+  max-width: 550px; /* Tăng độ rộng một chút so với 500px */
+}
+
+.register-form {
+  background-color: $shopapp-card-bg;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.register-header {
+  color: $shopapp-color;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  background-color: $shopapp-card-bg;
+  border: 1px solid #e2e8f0;
+  color: $shopapp-text-color;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: $shopapp-color;
+  box-shadow: 0 0 10px rgba(127, 68, 255, 0.4);
+  background-color: $shopapp-card-bg;
+}
+
+.form-label {
+  color: $shopapp-text-color;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 60%;
+  right: 15px;
+  transform: translateY(-50%);
+  color: $shopapp-subtext-color;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: $shopapp-color;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.checkbox-text {
+  color: $shopapp-text-color;
+  display: flex;
+  align-items: center;
+}
+
+.form-check-input {
+  margin-right: 8px;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.form-check-input:checked {
+  background-color: $shopapp-color;
+  border-color: $shopapp-color;
+  box-shadow: 0 0 5px rgba(127, 68, 255, 0.3);
+}
+
+.register-link {
+  color: $shopapp-color;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.register-link:hover {
+  color: darken($shopapp-color, 10%);
+  text-decoration: underline;
+}
+
+.register-button {
+  background: linear-gradient(90deg, $shopapp-tint-color, $shopapp-color);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(127, 68, 255, 0.4);
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+  margin: 20px 0;
+}
+
+.divider-nospace {
+  border-top: 1px solid #e2e8f0;
+  margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+  .register-form {
     padding: 20px;
-    max-width: 500px;
-    border: 1px solid rgb(32,34,60);
-    align-items: center;
-    justify-content: center;
-}
-.register-header{
-    text-align: center;
-    color:rgb(217, 217, 248);
-    margin-bottom: 20px;
-}
-.form-control{
-    background-color: transparent;
-    border:none;
-    color: white;
-}
-.form-control:focus{
-    color:white;
-    background-color: transparent;
-    outline:none;
-    border-color:transparent;
-}
-.divider-nospace{
-    border-top: 1px solid white;
-}
-.password-field{
-    position:relative;
-}
-.password-toggle{
-    position: absolute;
-    top:50%;
-    right:10px;
-    transform: translateY(-50%);
-    color: white;
-    cursor:pointer;
-}
-.checkbox-text{
-    color: rgb(217, 217, 248);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-.checkbox-text input[type="checkbox"]:checked{
-    border-color: white;
-    background-color: $shopapp-tint-color;
-}
-.form-check-input{
-    margin-right: 5px;
-}
-.register-link{
-    color: blue;
-    text-decoration: none;
-}
-.register-button{
-    background: linear-gradient(to right, $shopapp-tint-color ,$shopapp-color);
-    color: white;
-    border-radius:30px ;
-    width:100%;
-    padding: 10px 0;
-    margin-top: 20px;
-    border:none;
+  }
+  .register-form-wrapper {
+    max-width: 90%;
+  }
 }

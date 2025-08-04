@@ -1,116 +1,149 @@
 @import '../../styles/shared-styles.scss';
 
+.hero-section {
+  background: linear-gradient(135deg, $shopapp-light-color, $shopapp-background-color);
+  padding: 80px 0;
+  color: $shopapp-text-color;
+}
+
 .intro-section {
-    text-align: center;
-    color: white;
-    padding: 20px;
+  text-align: center;
+  padding: 40px 0;
+  background: linear-gradient(90deg, $shopapp-light-color, transparent);
 }
 
 .search-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
 }
 
-.product-category {
-    width: 200px;
-    background-color: rgb(10, 23, 42);
-    color:white;
-    border-color: rgba(255, 255, 255, 0.5);
+.search-input, .product-category {
+  background-color: $shopapp-card-bg;
+  border: 1px solid #e2e8f0;
+  color: $shopapp-text-color;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus, .product-category:focus {
+  border-color: $shopapp-color;
+  box-shadow: 0 0 5px rgba(127, 68, 255, 0.3);
 }
 
 .product-category option {
-    background-color: rgb(10, 23, 42); 
-    color: white; 
+  background-color: $shopapp-card-bg;
+  color: $shopapp-text-color;
 }
 
 .product-category option:disabled {
-    color: rgba(255, 255, 255, 0.5); 
-}
-
-.search-input {
-    width: 300px;
-    background-color: $shopapp-background-color;
-    margin-right: 10px;
-    color: white;
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.form-control {
-    background-color: transparent;
-    color: white;
-}
-
-.form-control::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-    opacity: 1;
+  color: #94a3b8;
 }
 
 .product-item {
-    background-color: $shopapp-background-color;
-    border: 1px solid rgb(35, 39, 61);
-    border-radius: 20px;
-    margin-bottom: 20px;
-    padding: 20px;
+  background-color: $shopapp-card-bg;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.product-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 .product-image {
-    width: 100%;
-    height: auto;
-    margin-bottom: 10px;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .product-name {
-    color: white;
+  color: $shopapp-text-color;
+  font-size: 1.2rem;
+  margin-top: 10px;
 }
 
 .product-description {
-    color: rgb(173, 178, 203);
-}
-
-.product-warranty {
-    color: $shopapp-tint-color;
+  color: $shopapp-subtext-color;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
 }
 
 .product-price {
-    color: white;
+  color: $shopapp-color;
+  font-weight: 600;
 }
 
 .product-rating {
-    color: yellow;
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .product-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.space-x {
-    margin: 0 5px;
+.btn-primary {
+  background-color: $shopapp-color;
+  border-color: $shopapp-color;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 
-.btn-primary{
-    background-color: $shopapp-color;
-    border-color: $shopapp-color;
+.btn-primary:hover {
+  background-color: darken($shopapp-color, 10%);
 }
 
-.btn.btn-primary{
-    margin-left: 10px;
+.btn-success {
+  background-color: #10b981;
+  border-color: #10b981;
+  padding: 8px 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 
-.page-number{
-    cursor: pointer;
-    padding:5px 10px;
-    border:1px solid white;
-    margin:0 2px;
-    border-radius: 3px;
+.btn-success:hover {
+  background-color: darken(#10b981, 10%);
 }
 
-.page-number.active{
-    background-color: $shopapp-color !important;
-    color:white;
-    border-color: $shopapp-color !important;
+.page-link {
+  color: $shopapp-text-color;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 8px 15px;
+  transition: all 0.3s ease;
+}
+
+.page-link:hover, .page-link.active {
+  background-color: $shopapp-color;
+  color: #ffffff;
+  border-color: $shopapp-color;
+}
+
+.page-item.active .page-link {
+  background-color: $shopapp-color;
+  color: #ffffff;
+  border-color: $shopapp-color;
+}
+
+@media (max-width: 768px) {
+  .search-box {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .search-input, .product-category {
+    width: 100%;
+  }
+  .col {
+    flex: 0 0 100%;
+  }
 }

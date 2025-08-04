@@ -19,8 +19,8 @@ import { ApiResponse } from '../../responses/api.response';
   selector: 'app-detail-product',
   standalone: true,
   templateUrl: './detail-product.component.html',
-  styleUrl: './detail-product.component.css',
-  imports:[
+  styleUrl: './detail-product.component.scss',
+  imports: [
     CommonModule,
     HeaderComponent,
     FooterComponent,
@@ -33,7 +33,7 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
   currentImageIndex: number = 0;
   quantity: number = 1;
   account?: AccountResponse | null;
-  isPressAddToCart:boolean=false;
+  isPressAddToCart: boolean = false;
 
   ngOnInit(): void {
     debugger
@@ -104,7 +104,13 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
 
   addToCart(): void {
     debugger
-    this.isPressAddToCart=true;
+    const token = this.tokenService.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.isPressAddToCart = true;
     if (this.sanPham) {
       this.cartService.addToCart(this.sanPham.masanpham, this.quantity);
     }
@@ -130,7 +136,7 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
       this.router.navigate(['/login']);
     }
     else {
-      if(this.isPressAddToCart==false){
+      if (this.isPressAddToCart == false) {
         this.addToCart();
       }
       this.router.navigate(['/orders']);

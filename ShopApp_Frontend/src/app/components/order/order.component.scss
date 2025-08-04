@@ -1,102 +1,136 @@
 @import '../../styles/shared-styles.scss';
 
 .intro-section {
-    text-align: center;
-    color: white;
-    padding: 20px;
-}
-.product-header{
-    color: $shopapp-tint-color;
-}
-.product-order{
-    color: rgb(255, 255, 255)
-}
-.form-control{
-    background-color: $shopapp-background-color;
-    border:1px solid rgb(29,33,54);
-    color: white;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.form-control:focus{
-    border-color: white;
-    background-color: $shopapp-background-color;
-}
-.form-label{
-    color: white;
+.product-header {
+  color: $shopapp-tint-color;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
 }
 
-table{
-    width: 100% ;
-    border-radius: 10px;
-    border: none;
-    border-collapse: separate;
-    border: 1px solid white;
-    border-spacing: 0;
-    background-color: $shopapp-background-color;
+.product-order {
+  color: $shopapp-text-color;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
 }
 
-th,td{
-    padding: 10px;
-    text-align: center;
+.form-control {
+  background-color: $shopapp-card-bg;
+  border: 1px solid #e2e8f0;
+  color: $shopapp-text-color;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
 }
 
-.product-info{
-    display: flex;
-    align-items: center;
+.form-control:focus {
+  border-color: $shopapp-color;
+  box-shadow: 0 0 5px rgba(127, 68, 255, 0.3);
+  background-color: $shopapp-card-bg;
 }
 
-.product-image{
-    width: 100px;
-    height: 100px;
-    border-radius: 5px;
-    margin-right: 10px;
+.form-label {
+  color: $shopapp-text-color;
+  font-weight: 500;
 }
 
-.product-name{
-    color:white;
-    margin-right:2px;
-}
-.container{
-    color:white;
-}
-
-.btn-gradient{
-    background: linear-gradient(to right, rgb(225,64,180), $shopapp-color);
-    color: white;
-    border-radius: 30px;
-    width: 200px;
+.table {
+  background-color: $shopapp-card-bg;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-
-.border-wrapper {
-    border: 1px solid white;
+th {
+  background-color: $shopapp-light-color;
+  color: $shopapp-text-color;
+  padding: 12px;
+  text-align: center;
 }
 
-.product-quantity {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-top: 10px;
+td {
+  padding: 12px;
+  vertical-align: middle;
 }
 
-.product-quantity button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
+.product-info {
+  display: flex;
+  align-items: center;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.product-name {
+  color: $shopapp-text-color;
+  margin-right: 10px;
+}
+
+.product-quantity .input-group {
+  max-width: 150px;
+}
+
+.product-quantity .btn-outline-secondary {
+  background-color: $shopapp-card-bg;
+  color: $shopapp-text-color;
+  border-color: #e2e8f0;
+  transition: background-color 0.3s ease;
+}
+
+.product-quantity .btn-outline-secondary:hover {
+  background-color: $shopapp-light-color;
 }
 
 .product-quantity input {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 16px;
-    text-align: center;
-    width: 40px;
-    margin: 0 10px;
+  background-color: $shopapp-card-bg;
+  color: $shopapp-text-color;
+  border: none;
+  text-align: center;
 }
 
 .product-quantity input:focus {
-    outline: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background-color: $shopapp-color;
+  border-color: $shopapp-color;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: darken($shopapp-color, 10%);
+}
+
+.btn-danger {
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.header-text {
+  font-size: 1.2rem;
+  color: $shopapp-text-color;
+}
+
+@media (max-width: 768px) {
+  .col-md-4, .col-md-8 {
+    flex: 0 0 100%;
+  }
+  .table {
+    font-size: 0.9rem;
+  }
+  .product-image {
+    width: 60px;
+    height: 60px;
+  }
 }

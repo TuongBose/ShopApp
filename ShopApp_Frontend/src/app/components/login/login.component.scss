@@ -1,78 +1,148 @@
 @import '../../styles/shared-styles.scss';
 
-.container{
-    color:white;
-    height: 100%;
-}
-.login-form{
-    background-color: $shopapp-background-color;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 500px;
-    border: 1px solid rgb(32,34,60);
-    align-items: center;
-    justify-content: center;
-}
-.login-header{
-    text-align: center;
-    color:rgb(217, 217, 248);
-    margin-bottom: 20px;
-}
-.form-control{
-    background-color: transparent;
-    border:none;
-    color: white;
-}
-.form-control:focus{
-    color:white;
-    background-color: transparent;
-    outline:none;
-    border-color:transparent;
-}
-.divider-nospace{
-    border-top: 1px solid white;
-}
-.password-field{
-    position:relative;
-}
-.password-toggle{
-    position: absolute;
-    top:50%;
-    right:10px;
-    transform: translateY(-50%);
-    color: white;
-    cursor:pointer;
-}
-.checkbox-text{
-    color: rgb(217, 217, 248);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-.checkbox-text input[type="checkbox"]:checked{
-    border-color: white;
-    background-color: $shopapp-tint-color;
-}
-.form-check-input{
-    margin-right: 5px;
-}
-.register-link{
-    color: blue;
-    text-decoration: none;
-}
-.login-button{
-    background: linear-gradient(to right, $shopapp-tint-color,$shopapp-color);
-    color: white;
-    border-radius:30px ;
-    width:100%;
-    padding: 10px 0;
-    margin-top: 20px;
-    border:none;
+.container {
+  color: $shopapp-text-color;
+  min-height: 100vh; /* Đảm bảo container chiếm toàn bộ chiều cao màn hình */
+  display: flex;
+  align-items: center; /* Căn giữa dọc */
+  justify-content: center; /* Căn giữa ngang */
 }
 
-.divider{
-    height: 1px;
-    background-color: white;
-    margin:20px;
+.login-form-wrapper {
+  width: 100%;
+  max-width: 600px; /* Tăng độ rộng lên 600px */
+}
+
+.login-form {
+  background-color: $shopapp-card-bg;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.login-header {
+  color: $shopapp-color;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  background-color: $shopapp-card-bg;
+  border: 1px solid #e2e8f0;
+  color: $shopapp-text-color;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: $shopapp-color;
+  box-shadow: 0 0 5px rgba(127, 68, 255, 0.3);
+  background-color: $shopapp-card-bg;
+}
+
+.form-label {
+  color: $shopapp-text-color;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 70%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: $shopapp-subtext-color;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: $shopapp-color;
+}
+
+.checkbox-text {
+  color: $shopapp-text-color;
+  display: flex;
+  align-items: center;
+}
+
+.form-check-input {
+  margin-right: 5px;
+}
+
+.form-check-input:checked {
+  background-color: $shopapp-color;
+  border-color: $shopapp-color;
+}
+
+.register-link {
+  color: $shopapp-color;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: darken($shopapp-color, 10%);
+  text-decoration: underline;
+}
+
+.btn-primary {
+  background-color: $shopapp-color;
+  border-color: $shopapp-color;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: darken($shopapp-color, 10%);
+}
+
+.divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 20px 0;
+}
+
+.social-login-buttons .social-button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.google-button {
+  background-color: #ffffff;
+  color: #757575;
+}
+
+.google-button:hover {
+  background-color: #f1f1f1;
+  color: #000000;
+}
+
+.facebook-button {
+  background-color: #3b5998;
+  color: #ffffff;
+}
+
+.facebook-button:hover {
+  background-color: darken(#3b5998, 10%);
+}
+
+@media (max-width: 768px) {
+  .login-form {
+    padding: 20px;
+  }
+  .social-login-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

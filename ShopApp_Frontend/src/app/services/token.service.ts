@@ -16,7 +16,7 @@ export class TokenService {
         return localStorage.getItem(this.TOKEN_KEY) || sessionStorage.getItem(this.TOKEN_KEY);
     }
 
-    setToken(token: string, rememberMe: boolean=false): void {
+    setToken(token: string, rememberMe: boolean = false): void {
         if (rememberMe) {
             localStorage.setItem(this.TOKEN_KEY, token);
         }
@@ -32,7 +32,12 @@ export class TokenService {
 
     getUserId(): number {
         debugger
+        const token = this.getToken();
+        if (!token) return 0;
+
         let accountObject = this.jwtHelperService.decodeToken(this.getToken() ?? '');
+        if (!accountObject || typeof accountObject !== 'object') return 0;
+
         return 'userId' in accountObject ? parseInt(accountObject['userId']) : 0;
     }
 

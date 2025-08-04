@@ -1,117 +1,118 @@
 <app-header></app-header>
-<div class="container">
-    <div class="intro-section">
-        <h1>Đây là trang Order</h1>
-    </div>
-    <form [formGroup]="orderForm">
-        <div class="row">
-            <div class="col-md-4">
-                <h2 class="product-header">Thông tin người nhận</h2>
-                <div class="mb-3">
-                    <label for="name" class="form-label">Họ và tên</label>
-                    <input type="text" formControlName="fullname" class="form-control" id="name"
-                        [class.is-invalid]="orderForm.get('fullname')!.invalid && orderForm.get('fullname')!.touched">
-                    @if(orderForm.get('fullname')!.invalid&& orderForm.get('fullname')!.touched)
-                    {<div class="invalid-feedback">Họ và tên bắt buộc</div>}
-                </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" formControlName="email" class="form-control" id="email"
-                        [class.is-invalid]="orderForm.get('email')!.invalid && orderForm.get('email')!.touched">
-                    @if(orderForm.get('email')!.invalid&& orderForm.get('email')!.touched)
-                    {<div class="invalid-feedback">Email không hợp lệ</div>}
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Số điện thoại</label>
-                    <input type="text" formControlName="sodienthoai" class="form-control" id="phone"
-                        [class.is-invalid]="orderForm.get('sodienthoai')!.invalid && orderForm.get('sodienthoai')!.touched">
-                    @if(orderForm.get('sodienthoai')!.invalid&& orderForm.get('sodienthoai')!.touched)
-                    {<div class="invalid-feedback">Số điện thoại không hợp lệ</div>}
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Địa chỉ</label>
-                    <input type="text" formControlName="diachi" class="form-control" id="phone"
-                        [class.is-invalid]="orderForm.get('diachi')!.invalid && orderForm.get('diachi')!.touched">
-                    @if(orderForm.get('diachi')!.invalid&& orderForm.get('diachi')!.touched)
-                    {<div class="invalid-feedback">Địa chỉ không hợp lệ</div>}
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Ghi chú</label>
-                    <input type="text" formControlName="ghichu" class="form-control" id="phone"
-                        [class.is-invalid]="orderForm.get('ghichu')!.invalid && orderForm.get('ghichu')!.touched">
-                </div>
-                <div class="form-group">
-                    <label for="phuongthucthanhtoan">Phương thức thanh toán</label>
-                    <select class="form-control" id="phuongthucthanhtoan" formControlName="phuongthucthanhtoan">
-                        <option value="cod">Thanh toán khi nhận hàng (COD)</option>
-                        <option value="other">Thanh toán khác</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <h2 class="product-order">Sản phẩm đã đặt hàng</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col" class="text-start">Sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Tổng giá</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for(item of cartItems; track item.sanPham.masanpham;let i = $index){
-                            <ng-container>
-                            <tr>
-                                <td>
-                                    <div class="product-info">
-                                        <img [src]="item.sanPham.thumbnail" alt="Hinh Anh" class="product-image">
-                                        <span class="product-name">{{item.sanPham.tensanpham}}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="product-quantity">
-                                        <div class="border-wrapper">
-                                            <button (click)="decreaseQuantity(i)">-</button>
-                                            <input type="text" [value]="item.quantity">
-                                            <button (click)="increaseQuantity(i)">+</button>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{item.sanPham.gia|number:'1.2-2'}}</td>
-                                <td>{{item.sanPham.gia*item.quantity|number:'1.2-2'}}</td>
-                                <td class="btn btn-danger" style="margin-top: 35px; margin-right: 15px;"
-                                    (click)="confirmDelete(i)">Xóa</td>
-                            </tr>
-                        </ng-container>
-                        }
-                        
-                    </tbody>
-                </table>
-                <div class="text-start mt-3">
-                    <h4 class="header-text text-end">Tổng giá: {{totalAmount|number:'1.2-2'}}</h4>
-                </div>
-                <div class="mt-3">
-                    <h4 class="product-header">Nhập coupon</h4>
-                    <div class="input-group">
-                        <input formControlName="couponCode" type="text" class="form-control" placeholder="Nhập coupon">
-                        <button class="btn-gradient" type="button" (click)="applyCoupon()">Áp dụng</button>
-                    </div>
-                </div>
-                @if(couponDiscount > 0) {
-                <div class="text-start mt-3">
-                    <h6 class="header-text text-end ">Bạn được discount: {{ couponDiscount | number:'1.2-2'}} đ</h6>
-                </div>
-            }
-                <div class="text-start mt-3">
-                    <button (click)="placeOrder()" class="btn-gradient" type="button">Đặt hàng</button>
-                </div>
-            </div>
+<div class="container py-5">
+  <div class="intro-section text-center mb-5">
+    <h1 class="display-5 fw-bold text-primary">Trang đặt hàng</h1>
+    <p class="text-muted">Hoàn tất đơn hàng của bạn một cách dễ dàng!</p>
+  </div>
+  <form [formGroup]="orderForm">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h2 class="product-header">Thông tin người nhận</h2>
+        <div class="mb-3">
+          <label for="name" class="form-label">Họ và tên</label>
+          <input type="text" formControlName="fullname" class="form-control" id="name"
+            [class.is-invalid]="orderForm.get('fullname')!.invalid && orderForm.get('fullname')!.touched">
+          @if (orderForm.get('fullname')!.invalid && orderForm.get('fullname')!.touched) {
+            <div class="invalid-feedback">Họ và tên bắt buộc</div>
+          }
         </div>
-    </form>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" formControlName="email" class="form-control" id="email"
+            [class.is-invalid]="orderForm.get('email')!.invalid && orderForm.get('email')!.touched">
+          @if (orderForm.get('email')!.invalid && orderForm.get('email')!.touched) {
+            <div class="invalid-feedback">Email không hợp lệ</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Số điện thoại</label>
+          <input type="text" formControlName="sodienthoai" class="form-control" id="phone"
+            [class.is-invalid]="orderForm.get('sodienthoai')!.invalid && orderForm.get('sodienthoai')!.touched">
+          @if (orderForm.get('sodienthoai')!.invalid && orderForm.get('sodienthoai')!.touched) {
+            <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="address" class="form-label">Địa chỉ</label>
+          <input type="text" formControlName="diachi" class="form-control" id="address"
+            [class.is-invalid]="orderForm.get('diachi')!.invalid && orderForm.get('diachi')!.touched">
+          @if (orderForm.get('diachi')!.invalid && orderForm.get('diachi')!.touched) {
+            <div class="invalid-feedback">Địa chỉ không hợp lệ</div>
+          }
+        </div>
+        <div class="mb-3">
+          <label for="note" class="form-label">Ghi chú</label>
+          <input type="text" formControlName="ghichu" class="form-control" id="note">
+        </div>
+        <div class="mb-3">
+          <label for="phuongthucthanhtoan" class="form-label">Phương thức thanh toán</label>
+          <select class="form-control" id="phuongthucthanhtoan" formControlName="phuongthucthanhtoan">
+            <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+            <option value="other">Thanh toán khác</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <h2 class="product-order">Sản phẩm đã đặt hàng</h2>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col" class="text-start">Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Tổng giá</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of cartItems; track item.sanPham.masanpham; let i = $index) {
+                <tr>
+                  <td>
+                    <div class="product-info d-flex align-items-center">
+                      <img [src]="item.sanPham.thumbnail" alt="Hình ảnh" class="product-image me-3">
+                      <span class="product-name">{{ item.sanPham.tensanpham }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="product-quantity">
+                      <div class="input-group border rounded">
+                        <button class="btn btn-outline-secondary" (click)="decreaseQuantity(i)">-</button>
+                        <input type="text" class="form-control text-center" [value]="item.quantity" readonly>
+                        <button class="btn btn-outline-secondary" (click)="increaseQuantity(i)">+</button>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ item.sanPham.gia | number: '1.2-2' }}</td>
+                  <td>{{ item.sanPham.gia * item.quantity | number: '1.2-2' }}</td>
+                  <td>
+                    <button class="btn btn-danger" (click)="confirmDelete(i)">Xóa</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="text-end mt-3">
+          <h4 class="header-text">Tổng giá: <span class="text-primary">{{ totalAmount | number: '1.2-2' }}</span></h4>
+        </div>
+        <div class="mt-3">
+          <h4 class="product-header">Nhập coupon</h4>
+          <div class="input-group">
+            <input formControlName="couponCode" type="text" class="form-control" placeholder="Nhập coupon">
+            <button class="btn btn-primary" type="button" (click)="applyCoupon()">Áp dụng</button>
+          </div>
+        </div>
+        @if (couponDiscount > 0) {
+          <div class="text-end mt-3">
+            <h6 class="header-text">Bạn được giảm: <span class="text-success">{{ couponDiscount | number: '1.2-2' }}</span> đ</h6>
+          </div>
+        }
+        <div class="text-end mt-3">
+          <button (click)="placeOrder()" class="btn btn-primary btn-lg" type="button">Đặt hàng</button>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>
 <app-footer></app-footer>

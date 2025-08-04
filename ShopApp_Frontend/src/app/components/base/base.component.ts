@@ -37,7 +37,6 @@ export class BaseComponent {
   donHangService: DonHangService = inject(DonHangService);
   authService: AuthService = inject(AuthService);
   paymentService: PaymentService = inject(PaymentService);
-  document: Document = inject(DOCUMENT);
 
   generateVisiblePageArray(currentPage: number, totalPages: number): number[] {
     const maxVisiblePages = 5;

@@ -1,62 +1,55 @@
 <app-header></app-header>
-<div class="container">
-    <div class="intro-section">
-        <h1>Day la trang chi tiet san pham</h1>
-        <p>Su dung bootstrap</p>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    @for(image of sanPham?.hinhAnhUrls; track image.image_url;let i = $index){
-                        <div [ngClass]="{'active':i===currentImageIndex}" class="carousel-item">
-                        <div class="square-image">
-                            <img [src]="image.image_url" class="product-item" alt="HinhAnh">
-                        </div>
-                    </div>
-                    }
-                    
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="prev" (click)="previousImage()">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="next" (click)="nextImage()">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+<div class="container py-5">
+  <div class="intro-section text-center mb-5">
+    <h1 class="display-5 fw-bold">Chi tiết sản phẩm</h1>
+    <p class="text-muted">Khám phá thông tin chi tiết về sản phẩm!</p>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          @for (image of sanPham?.hinhAnhUrls; track image.image_url; let i = $index) {
+            <div [ngClass]="{'active': i === currentImageIndex}" class="carousel-item">
+              <img [src]="image.image_url" class="d-block w-100 product-image" alt="Hình ảnh">
             </div>
-            <div class="row">
-                <div class="thumbnail-container">
-                    @for(image of sanPham?.hinhAnhUrls; track image.image_url; let i = $index){
-                        <div class="thumbnail-item" [ngClass]="{'active':i===currentImageIndex}" (click)="thumbnailClick(i)">
-                        <img [src]="image.image_url" class="thumbnail-image">
-                    </div>
-                    }
-                </div>
-            </div>
+          }
         </div>
-        <div class="col-md-6">
-            <div class="product-details">
-                <h2>{{sanPham?.tensanpham}}</h2>
-                <p>{{sanPham?.mota}}</p>
-                <p>Gia: ${{sanPham?.gia}}</p>
-                <p>Tổng tiền: ${{getTotalPrice() | number: '1.2-2'}}</p>
-                <div class="product-actions">
-                    <button class="btn btn-primary" (click)="addToCart()">Thêm vào giỏ hàng</button>
-                    <button class="btn btn-success" (click)="buyNow()">Mua ngay</button>
-                </div>
-                <div class="product-quantity">
-                    <div class="border-wrapper">
-                        <button (click)="decreaseQuantity()">-</button>
-                        <input type="text" [value]="quantity">
-                        <button (click)="increaseQuantity()">+</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev" (click)="previousImage()">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next" (click)="nextImage()">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      <div class="thumbnail-container d-flex justify-content-start mt-3">
+        @for (image of sanPham?.hinhAnhUrls; track image.image_url; let i = $index) {
+          <div class="thumbnail-item me-2" [ngClass]="{'active': i === currentImageIndex}" (click)="thumbnailClick(i)">
+            <img [src]="image.image_url" class="thumbnail-image" alt="Thumbnail">
+          </div>
+        }
+      </div>
     </div>
+    <div class="col-md-6">
+      <div class="product-details p-4 bg-white rounded shadow-sm">
+        <h2 class="product-name">{{ sanPham?.tensanpham }}</h2>
+        <p class="product-description text-muted">{{ sanPham?.mota }}</p>
+        <p class="product-price fw-bold">Giá: <span class="text-primary">${{ sanPham?.gia }}</span></p>
+        <p class="product-total fw-bold">Tổng tiền: <span class="text-success">${{ getTotalPrice() | number: '1.2-2' }}</span></p>
+        <div class="product-actions mt-4">
+          <button class="btn btn-primary me-2" (click)="addToCart()">Thêm vào giỏ hàng</button>
+          <button class="btn btn-success" (click)="buyNow()">Mua ngay</button>
+        </div>
+        <div class="product-quantity mt-3">
+          <div class="input-group border rounded">
+            <button class="btn btn-outline-secondary" (click)="decreaseQuantity()">-</button>
+            <input type="text" class="form-control text-center" [value]="quantity" readonly>
+            <button class="btn btn-outline-secondary" (click)="increaseQuantity()">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <app-footer></app-footer>

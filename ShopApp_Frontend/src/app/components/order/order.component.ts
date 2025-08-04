@@ -71,6 +71,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     debugger
     this.orderData.userid = this.tokenService.getUserId();
+
     this.cart = this.cartService.getCart();
     const maSanPhamList = Array.from(this.cart.keys()); // Truyền danh sách MASANPHAM từ Map giỏ hàng
 
