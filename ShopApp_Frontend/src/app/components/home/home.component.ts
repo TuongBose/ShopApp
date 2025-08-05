@@ -36,6 +36,7 @@ export class HomeComponent extends BaseComponent implements OnInit {
   keyword: string = "";
   selectedMALOAISANPHAM: number = 0;
   loaiSanPhams: LoaiSanPham[] = [];
+  isPressAddToCart: boolean = false;
 
   constructor() {
     super();
@@ -104,5 +105,39 @@ export class HomeComponent extends BaseComponent implements OnInit {
   onProductClick(maSanPham: number) {
     debugger
     this.router.navigate(['/products', maSanPham]);
+  }
+
+  addToCart(event:Event, masanpham: number): void {
+    event.stopPropagation();
+    debugger
+    const token = this.tokenService.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.isPressAddToCart = true;
+    if (masanpham) {
+      this.cartService.addToCart(masanpham, 1);
+    }
+    else {
+      console.error("Không thể thêm sản phẩm vào giỏ hàng vì San Phẩm là Null.");
+    }
+  }
+
+  buyNow(event: Event, masanpham: number): void {
+    event.stopPropagation(); // Ngăn sự kiện click lan ra div cha
+    const token = this.tokenService.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (masanpham) {
+      this.cartService.addToCart(masanpham, 1);
+      this.router.navigate(['/order']); // Chuyển ngay đến trang order
+    } else {
+      console.error("Không thể mua ngay vì San Phẩm là Null.");
+    }
   }
 }

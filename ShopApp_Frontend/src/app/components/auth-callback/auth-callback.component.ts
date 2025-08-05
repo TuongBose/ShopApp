@@ -71,7 +71,7 @@ export class AuthCallbackComponent extends BaseComponent implements OnInit {
           },
           complete: () => {
             // Thực hiện các tác vụ khác nếu cần
-            this.cartService.refreshCart();
+            //this.cartService.refreshCart();
           }
         });
       } else {

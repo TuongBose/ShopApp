@@ -1,102 +1,85 @@
 @import '../../styles/shared-styles.scss';
 
-.intro-section {
-    text-align: center;
-    color: white;
+.container {
+  color: $shopapp-text-color;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.profile-form-wrapper {
+  width: 100%;
+  max-width: 600px; // Giữ kích thước vừa phải
+}
+
+.profile-form {
+  background-color: $shopapp-card-bg;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  margin: 0 auto;
+}
+
+.profile-header {
+  color: $shopapp-tint-color;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  background-color: $shopapp-card-bg;
+  border: 1px solid #e2e8f0;
+  color: $shopapp-text-color;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: $shopapp-color;
+  box-shadow: 0 0 10px rgba(127, 68, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.form-label {
+  color: $shopapp-text-color;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.btn-gradient {
+  background: linear-gradient(to right, rgb(225, 64, 180), $shopapp-color);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(127, 68, 255, 0.4);
+}
+
+.divider-nospace {
+  border-top: 1px solid #e2e8f0;
+  margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+  .profile-form {
     padding: 20px;
-}
-.product-header{
-    color: $shopapp-tint-color;
-}
-.product-order{
-    color: rgb(255, 255, 255)
-}
-.form-control{
-    background-color: $shopapp-background-color;
-    border:1px solid rgb(29,33,54);
-    color: white;
-}
-
-.form-control:focus{
-    border-color: white;
-    background-color: $shopapp-background-color;
-}
-.form-label{
-    color: white;
-}
-
-table{
-    width: 100% ;
-    border-radius: 10px;
-    border: none;
-    border-collapse: separate;
-    border: 1px solid white;
-    border-spacing: 0;
-    background-color: $shopapp-background-color;
-}
-
-th,td{
-    padding: 10px;
-    text-align: center;
-}
-
-.product-info{
-    display: flex;
-    align-items: center;
-}
-
-.product-image{
-    width: 100px;
-    height: 100px;
-    border-radius: 5px;
-    margin-right: 10px;
-}
-
-.product-name{
-    color:white;
-    margin-right:2px;
-}
-.container{
-    color:white;
-}
-
-.btn-gradient{
-    background: linear-gradient(to right, rgb(225,64,180), $shopapp-color);
-    color: white;
-    border-radius: 30px;
-    width: 200px;
-}
-
-
-.border-wrapper {
-    border: 1px solid white;
-}
-
-.product-quantity {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-top: 10px;
-}
-
-.product-quantity button {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.product-quantity input {
-    background-color: transparent;
-    border: none;
-    color: white;
-    font-size: 16px;
-    text-align: center;
-    width: 40px;
-    margin: 0 10px;
-}
-
-.product-quantity input:focus {
-    outline: none;
+  }
+  .profile-form-wrapper {
+    max-width: 90%;
+  }
 }

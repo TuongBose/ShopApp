@@ -1,45 +1,115 @@
 @import '../../styles/shared-styles.scss';
 
 header {
-    background-color: rgba(0, 0, 0, 0);
-    color: rgb(173, 178, 203);
+  background-color: transparent;
+  color: rgb(173, 178, 203);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.3s ease-in-out;
+}
+
+header.scrolled {
+  background-color: rgba(0, 0, 0, 0.85);
 }
 
 .navbar {
-    background-color: rgba(0, 0, 0, 0) !important;
+  background-color: transparent !important;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .navbar .container {
-    background-color: rgba(0, 0, 0, 0) !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.navbar .container .navbar-brand {
-    color: rgb(173, 178, 203);
+.navbar-brand {
+  color: rgb(173, 178, 203);
+  transition: transform 0.3s ease-in-out;
 }
 
-.navbar .container .navbar-nav .nav-link {
-    color: rgb(173, 178, 203);
-    border-radius: 18px;
-    padding: 8px 16px;
+.navbar-brand:hover {
+  transform: scale(1.1);
 }
 
-.navbar .container .navbar-nav .nav-link.active {
-    background-color: $shopapp-color !important;
-    color: white !important;
+.navbar-nav .nav-link {
+  color: rgb(173, 178, 203);
+  border-radius: 18px;
+  padding: 8px 16px;
+  margin: 0 4px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.popover-list{
-    padding:10px;
+.navbar-nav .nav-link:hover {
+  color: white;
+  background-color: rgba(127, 68, 255, 0.15);
 }
 
-.popover-item{
-    display: block;
-    margin-bottom: 5px;
-    text-decoration: none;
-    color:#333
+.navbar-nav .nav-link.active {
+  background-color: $shopapp-color !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(127, 68, 255, 0.4);
 }
 
-.popover-item:hover{
-    background-color: rgb(210, 210, 210);
-    color:red;
+.cart-badge {
+  position: absolute;
+  top: 0;
+  right: -10px;
+  background: linear-gradient(135deg, #ff4444, #ff6b6b);
+  color: white;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+.cart-badge:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.popover-list {
+  padding: 10px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.popover-item {
+  display: block;
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+.popover-item:hover {
+  background-color: rgba(127, 68, 255, 0.1);
+  color: $shopapp-color;
+}
+
+@media (max-width: 768px) {
+  .navbar-nav {
+    margin-top: 10px;
+  }
+
+  .nav-link {
+    padding: 10px;
+  }
+
+  .cart-badge {
+    top: -2px;
+    right: -8px;
+  }
 }

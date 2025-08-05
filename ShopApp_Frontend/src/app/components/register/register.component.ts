@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AccountService } from '../../services/account.service';
 import { RegisterDTO } from '../../dtos/account/register.dto';
 import { CommonModule } from '@angular/common';
@@ -19,7 +19,8 @@ import { BaseComponent } from '../base/base.component';
     CommonModule,
     FormsModule,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    RouterModule
   ]
 })
 export class RegisterComponent extends BaseComponent{
@@ -109,5 +110,10 @@ export class RegisterComponent extends BaseComponent{
         this.registerForm.form.controls['dateOfBirth'].setErrors(null);
       }
     }
+  }
+
+  login(){
+    debugger
+    this.router.navigate(['/login']);
   }
 }

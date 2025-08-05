@@ -36,7 +36,7 @@
                     @if (retypePassword.length < 3 && registerForm.form.touched) { <p class="text-danger">Nhập lại mật
                         khẩu phải có ít nhất 3 ký tự</p>
                         }
-                        @if (registerForm.form.controls['retypePassword']?.hasError('passwordMismatch') &&
+                        @if (registerForm.form.controls['retypePassword'].hasError('passwordMismatch') &&
                         registerForm.form.touched) {
                         <p class="text-danger">Mật khẩu không khớp</p>
                         }
@@ -57,7 +57,7 @@
                     <input type="date" class="form-control" id="date-of-birth" [(ngModel)]="dateOfBirth"
                         (input)="registerForm.form.markAsTouched(); checkAge();" name="dateOfBirth" required>
                     <div class="divider-nospace"></div>
-                    @if (registerForm.form.controls['dateOfBirth']?.hasError('invalidAge') && registerForm.form.touched) {
+                    @if (registerForm.form.controls['dateOfBirth'].hasError('invalidAge') && registerForm.form.touched) {
   <p class="text-danger">Bạn chưa đủ 18 tuổi</p>
 }
 
@@ -77,7 +77,7 @@
                 <button type="button" (click)="register()" class="register-button w-100">Đăng ký</button>
                 <div class="divider my-4"></div>
                 <p class="text-center mt-3">
-                    Bạn đã có tài khoản? <a class="register-link text-primary" routerLink="login" routerLinkActive="active">Đăng nhập</a>
+                    Bạn đã có tài khoản? <a class="register-link text-primary" (click)="login()">Đăng nhập</a>
                 </p>
             </form>
         </div>

@@ -22,10 +22,11 @@ export class AuthService {
     }
 
     exchangeCodeForToken(code: string, loginType: 'facebook' | 'google'): Observable<any> {
+        debugger
         const params = new HttpParams()
             .set('code', code)
-            .set('login-type', loginType);
+            .set('login_type', loginType);
 
-        return this.http.get<any>(`${this.apiBaseUrl}/account/auth/social/callback`, { params });
+        return this.http.get<any>(`${this.apiBaseUrl}/accounts/auth/social/callback`, { params });
     }
 }

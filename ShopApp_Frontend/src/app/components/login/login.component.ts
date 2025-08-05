@@ -110,7 +110,8 @@ export class LoginComponent extends BaseComponent {
         this.toastService.showToast({
           defaultMsg: 'Đăng nhập thành công',
           title: 'Thông báo',
-          delay: 3000
+          delay: 3000,
+          type:'success'
         });
         this.router.navigate(['/']);
       },
@@ -118,7 +119,9 @@ export class LoginComponent extends BaseComponent {
         this.toastService.showToast({
           error,
           defaultMsg: 'Đăng nhập thất bại!',
-          title: 'Lỗi đăng nhập'
+          title: 'Lỗi đăng nhập',
+          delay:3000,
+          type:'danger'
         });
         console.error('Lỗi đăng nhập:', error?.error?.message ?? '');
       }

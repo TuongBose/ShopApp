@@ -1,5 +1,6 @@
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { SanPhamService } from "./sanpham.service";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -7,6 +8,16 @@ import { SanPhamService } from "./sanpham.service";
 
 export class CartService {
     private cart: Map<number, number> = new Map<number, number>();
+    private cartSubject = new BehaviorSubject<Map<number, number>>(new Map());
+    private cartItemCountSubject = new BehaviorSubject<number>(0);
+    public cartChanged = new EventEmitter<void>();
+
+    public cart$ = this.cartSubject.asObservable();
+    public cartItemCount$ = this.cartItemCountSubject.asObservable();
+
+    constructor() {
+        this.refreshCart();
+    }
 
     public refreshCart() {
         const storedCart = localStorage.getItem(this.getCartKey());
@@ -16,6 +27,7 @@ export class CartService {
         else {
             this.cart = new Map<number, number>();
         }
+        this.updateCartItemCount();
     }
 
     private getCartKey(): string {
@@ -43,6 +55,10 @@ export class CartService {
 
     addToCart(masanpham: number, quantity: number = 1): void {
         debugger
+        if (quantity <= 0) {
+            console.warn('Số lượng phải lớn hơn 0.');
+            return;
+        }
         if (this.cart.has(masanpham)) {
             // Nếu sản phẩm đã có trong giỏ hàng thì tăng số lượng
             this.cart.set(masanpham, this.cart.get(masanpham)! + quantity);
@@ -52,6 +68,8 @@ export class CartService {
         }
         // Sau khi thay đổi giỏ hàng, lưu giỏ hàng lại
         this.saveCartToLocalStorage();
+        this.updateCartItemCount();
+        this.cartChanged.emit();
     }
 
     getCart(): Map<number, number> {
@@ -66,12 +84,34 @@ export class CartService {
     setCart(cart: Map<number, number>) {
         this.cart = cart ?? new Map<number, number>();
         this.saveCartToLocalStorage();
+        this.cartChanged.emit();
     }
 
     clearCart(): void {
         this.cart.clear();
         this.saveCartToLocalStorage();
+        this.updateCartItemCount();
+        this.cartChanged.emit();
     }
 
+    getCartItemCount(): number {
+        return Array.from(this.cart.values()).reduce((total, qty) => total + qty, 0);
+    }
 
+    removeItem(masanpham: number): void {
+        this.cart.delete(masanpham);
+        this.saveCartToLocalStorage();
+        this.cartChanged.emit();
+    }
+
+    private updateCartItemCount(): void {
+        this.cartSubject.next(new Map(this.cart));
+        const count = this.getCartItemCount();
+        this.cartItemCountSubject.next(count);
+    }
+
+    public forceRefreshCart(): void {
+    this.refreshCart();
+    this.cartChanged.emit();
+  }
 }

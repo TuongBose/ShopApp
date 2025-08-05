@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { SanPham } from '../../models/sanpham';
 import { OrderDTO } from '../../dtos/order.dto';
 import { CartService } from '../../services/cart.service';
@@ -35,6 +35,7 @@ import { ApiResponse } from '../../responses/api.response';
 })
 export class OrderComponent extends BaseComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
+  private cdr = inject(ChangeDetectorRef);
 
   cart: Map<number, number> = new Map();
   orderForm: FormGroup;
@@ -66,13 +67,22 @@ export class OrderComponent extends BaseComponent implements OnInit {
       couponCode: [''],
       phuongthucthanhtoan: ['cod']
     });
+
+    this.cartService.cartChanged.subscribe(() => {
+      this.cart = this.cartService.getCart();
+      this.updateCartItems();
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnInit(): void {
     debugger
     this.orderData.userid = this.tokenService.getUserId();
-
+    this.cartService.forceRefreshCart();
     this.cart = this.cartService.getCart();
+    this.updateCartItems();
+
+
     const maSanPhamList = Array.from(this.cart.keys()); // Truyền danh sách MASANPHAM từ Map giỏ hàng
 
     // Gọi service để lấy thông tin sản phẩm dựa trên danh sách MASANPHAM
@@ -148,7 +158,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
               const vnp_TxnRef = new URL(paymentUrl).searchParams.get('vnp_TxnRef') || '';
 
               // Bước 3: gọi palceOrder kèm theo vnp_TxnRef
-              this.donHangService.placeOrder({...this.orderData}).subscribe({
+              this.donHangService.placeOrder({ ...this.orderData }).subscribe({
                 next: (placeOrderResponse: ApiResponse) => {
                   // Bước 4: Nếu đặt hàng thành công, điều hướng sang trang thanh toán
                   debugger
@@ -211,6 +221,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
       // Cập nhật lại this.cart từ this.cartItems
       this.updateCartFromCartItems();
       this.calculateTotal();
+      this.cdr.detectChanges();
     }
   }
 
@@ -220,6 +231,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
     // Cập nhật lại this.cart từ this.cartItems
     this.updateCartFromCartItems();
     this.calculateTotal();
+    this.cdr.detectChanges();
   }
 
   confirmDelete(index: number): void {
@@ -230,6 +242,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
       this.updateCartFromCartItems();
       // Tinh toan lai tong tien
       this.calculateTotal();
+      this.cdr.detectChanges();
     }
 
   }
@@ -257,5 +270,35 @@ export class OrderComponent extends BaseComponent implements OnInit {
           }
         });
     }
+  }
+
+  private updateCartItems(): void {
+    const maSanPhamList = Array.from(this.cart.keys());
+    if (maSanPhamList.length === 0) {
+      this.cartItems = [];
+      this.calculateTotal();
+      return;
+    }
+
+    this.sanPhamService.getSanPhamByMASANPHAMList(maSanPhamList).subscribe({
+      next: (apiResponse: ApiResponse) => {
+        const sanPhams: SanPham[] = apiResponse.data.sanPhamResponseList;
+        this.cartItems = maSanPhamList.map((masanpham) => {
+          const sanPham = sanPhams.find((p) => p.masanpham === masanpham);
+          if (sanPham) {
+            sanPham.thumbnail = `${environment.apiBaseUrl}/sanphams/images/${sanPham.thumbnail}`;
+          }
+          return {
+            sanPham: sanPham!,
+            quantity: this.cart.get(masanpham)!
+          };
+        });
+        this.calculateTotal();
+        this.cdr.detectChanges(); // Cập nhật giao diện
+      },
+      error: (error: HttpErrorResponse) => {
+        console.error(error?.error?.message ?? '');
+      }
+    });
   }
 }

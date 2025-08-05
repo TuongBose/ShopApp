@@ -7,12 +7,13 @@ import { Injectable } from "@angular/core";
 export class ToastService {
     constructor() { }
 
-    showToast({ error, defaultMsg: defaultMessage, title = '', delay = 5000 }: {
-        error?: any,
-        defaultMsg: string,
-        title?: string,
-        delay?: number
-    }) {
+    showToast({ error, defaultMsg: defaultMessage, title = '', delay = 5000, type = 'danger' }: {
+    error?: any,
+    defaultMsg: string,
+    title?: string,
+    delay?: number,
+    type?: 'success' | 'danger' | 'info' | 'warning'
+}) {
         // Determine the message based on the error object or use the default message
         let message = defaultMessage;
         if (error && error.error && error.error.message) {
@@ -37,7 +38,7 @@ export class ToastService {
 
         // Tạo toast element
         const toast = document.createElement('div');
-        toast.classList.add('toast', 'show', 'bg-danger', 'text-white');
+        toast.classList.add('toast', 'show', `bg-${type}`, 'text-white');
         toast.setAttribute('role', 'alert');
         toast.setAttribute('aria-live', 'assertive');
         toast.setAttribute('aria-atomic', 'true');
