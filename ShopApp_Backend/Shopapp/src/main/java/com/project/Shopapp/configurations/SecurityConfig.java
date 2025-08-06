@@ -39,6 +39,16 @@ public class SecurityConfig {
                 return accountByEmail.get(); // Return UserDetails if found
             }
 
+            Optional<Account> accountByGoogle = accountRepository.findByGoogleAccountId(subject);
+            if (accountByGoogle.isPresent()) {
+                return accountByGoogle.get(); // Return UserDetails if found
+            }
+
+            Optional<Account> accountByFacebook = accountRepository.findByFacebookAccountId(subject);
+            if (accountByFacebook.isPresent()) {
+                return accountByFacebook.get(); // Return UserDetails if found
+            }
+
             // If user not found by either phone number or email, throw UsernameNotFoundException
             throw new UsernameNotFoundException("User not found with subject: " + subject);
         };

@@ -235,6 +235,12 @@ public class AccountService implements IAccountService {
         if (account.isEmpty() && ValidationUtils.isValidEmail(subject)) {
             account = accountRepository.findByEMAIL(subject);
         }
+        if (account.isEmpty()) {
+            account = accountRepository.findByGoogleAccountId(subject);
+        }
+        if (account.isEmpty()) {
+            account = accountRepository.findByFacebookAccountId(subject);
+        }
 
         return account.orElseThrow(() -> new Exception("User not found"));
     }

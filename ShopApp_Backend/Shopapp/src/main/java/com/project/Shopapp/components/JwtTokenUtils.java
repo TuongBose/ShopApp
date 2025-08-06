@@ -93,7 +93,11 @@ public class JwtTokenUtils {
             if (existingToken == null || existingToken.isREVOKED() || !userDetails.isIS_ACTIVE()) {
                 return false;
             }
-            return (subject.equals(userDetails.getUsername())) && !isTokenExpired(token);
+            return (subject.equals(userDetails.getUsername()) ||
+                    subject.equals(userDetails.getEMAIL()) ||
+                    subject.equals(userDetails.getGoogleAccountId()) ||
+                    subject.equals(userDetails.getFacebookAccountId()))
+                    && !isTokenExpired(token);
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
@@ -107,14 +111,31 @@ public class JwtTokenUtils {
         return false;
     }
 
+//    private static String getSubject(Account account) {
+//        // Determine subject identifier (phone number or email)
+//        String subject = account.getSODIENTHOAI();
+//        if (subject == null || subject.isBlank()) {
+//            // If phone number is null or blank, use email as subject
+//            subject = account.getEMAIL();
+//        }
+//        return subject;
+//    }
+
     private static String getSubject(Account account) {
         // Determine subject identifier (phone number or email)
-        String subject = account.getSODIENTHOAI();
-        if (subject == null || subject.isBlank()) {
-            // If phone number is null or blank, use email as subject
-            subject = account.getEMAIL();
+        if (account.getSODIENTHOAI() != null && !account.getSODIENTHOAI().isBlank()) {
+            return account.getSODIENTHOAI();
         }
-        return subject;
+        if (account.getEMAIL() != null && !account.getEMAIL().isBlank()) {
+            return account.getEMAIL();
+        }
+        if (account.getGoogleAccountId() != null && !account.getGoogleAccountId().isBlank()) {
+            return account.getGoogleAccountId();
+        }
+        if (account.getFacebookAccountId() != null && !account.getFacebookAccountId().isBlank()) {
+            return account.getFacebookAccountId();
+        }
+        return null;
     }
 
     private String generateSecretKey() {

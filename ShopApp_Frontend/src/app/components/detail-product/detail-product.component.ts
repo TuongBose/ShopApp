@@ -14,6 +14,9 @@ import { FooterComponent } from '../footer/footer.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BaseComponent } from '../base/base.component';
 import { ApiResponse } from '../../responses/api.response';
+import { FeedbackResponse } from '../../responses/feedback.response';
+import { FeedbackDTO } from '../../dtos/feedback.dto';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-detail-product',
@@ -24,7 +27,8 @@ import { ApiResponse } from '../../responses/api.response';
     CommonModule,
     HeaderComponent,
     FooterComponent,
-    NgbModule
+    NgbModule,
+    FormsModule
   ]
 })
 export class DetailProductComponent extends BaseComponent implements OnInit {
@@ -34,6 +38,16 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
   quantity: number = 1;
   account?: AccountResponse | null;
   isPressAddToCart: boolean = false;
+  feedbackResponse: FeedbackResponse[] = [];
+  isAddingFeedback: boolean = false;
+  feedbackError: string | null = null;
+  hoveredStar: number = 0;
+  newFeedback: FeedbackDTO = {
+    user_id: 0,
+    content: '',
+    sosao: 0,
+    product_id: 0
+  };
 
   ngOnInit(): void {
     debugger
@@ -66,6 +80,8 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
             console.error('Error fetching detail: ', error);
           }
         });
+
+        this.loadFeedbacks();
       }
       else {
         console.error('Invalid masanpham: ', idParam)
@@ -148,5 +164,86 @@ export class DetailProductComponent extends BaseComponent implements OnInit {
       return this.sanPham.gia * this.quantity;
     }
     return 0;
+  }
+
+  submitFeedback(): void {
+    this.account = this.accountService.getAccountFromLocalStorage();
+    if (this.account == null) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const token = this.tokenService.getToken();
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const feedbackDTO: FeedbackDTO = {
+      user_id: this.account?.userid,
+      product_id: this.maSanPham,
+      sosao:this.newFeedback.sosao,
+      content:this.newFeedback.content
+    }
+
+    this.isAddingFeedback = true;
+    this.feedbackError = null;
+
+    this.feedbackService.insertFeedback(feedbackDTO).subscribe({
+      next: () => {
+        this.newFeedback = {
+          user_id: 0,
+          content: '',
+          sosao: 0,
+          product_id: 0
+        }; // Reset form
+        this.loadFeedbacks(); // Cập nhật danh sách feedback
+        this.hoveredStar = 0;
+      },
+      error: (error) => {
+        this.feedbackError = 'Failed to submit feedback. Please try again.';
+        this.toastService.showToast({
+          defaultMsg: 'Đánh giá thất bại',
+          title: 'Thông báo',
+          delay: 3000,
+          type: 'danger'
+        });
+      },
+      complete: () => {
+        this.isAddingFeedback = false;
+        this.toastService.showToast({
+          defaultMsg: 'Đánh giá thành công',
+          title: 'Thông báo',
+          delay: 3000,
+          type: 'success'
+        });
+      }
+    });
+  }
+
+  loadFeedbacks(): void {
+    this.feedbackService.getFeedbacksByProduct(this.maSanPham).subscribe({
+      next: (apiResponse: ApiResponse) => {
+        debugger
+        this.feedbackResponse = apiResponse.data as FeedbackResponse[];
+      },
+      error: (error: any) => {
+        console.error('Error fetching feedbacks: ', error);
+      }
+    });
+  }
+
+  onStarHover(value: number): void {
+    this.hoveredStar = value;
+  }
+
+  onStarLeave(): void { this.hoveredStar = 0; }
+
+  onStarClick(value: number): void {
+    this.newFeedback.sosao = value;
+  }
+
+  getStarArray(sosao: number): number[] {
+    return Array(sosao).fill(0).map((_, index) => index + 1);
   }
 }

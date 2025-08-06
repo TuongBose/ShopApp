@@ -9,10 +9,11 @@
           <input type="text" class="form-control" id="phoneNumber" [(ngModel)]="phoneNumber" name="phoneNumber" required
             [class.is-invalid]="loginForm.form.get('phoneNumber')?.invalid && loginForm.form.get('phoneNumber')?.touched"
             (focus)="loginForm.form.markAsTouched()">
-          <div class="invalid-feedback"
-            *ngIf="loginForm.form.get('phoneNumber')?.invalid && loginForm.form.get('phoneNumber')?.touched">
+          @if(loginForm.form.get('phoneNumber')?.invalid && loginForm.form.get('phoneNumber')?.touched){
+          <div class="invalid-feedback">
             Số điện thoại bắt buộc
           </div>
+          }
         </div>
         <div class="form-group mb-4 position-relative">
           <label for="password" class="form-label">Mật khẩu</label>
@@ -20,10 +21,11 @@
             placeholder="Ít nhất 3 ký tự" class="form-control" id="password" name="password">
           <i class="password-toggle fas" [ngClass]="{'fa-eye': showPassword, 'fa-eye-slash': !showPassword}"
             (click)="showPassword = !showPassword"></i>
-          <div class="invalid-feedback"
-            *ngIf="loginForm.form.get('password')?.invalid && loginForm.form.get('password')?.touched">
+          @if(loginForm.form.get('password')?.invalid && loginForm.form.get('password')?.touched){
+          <div class="invalid-feedback">
             Mật khẩu bắt buộc
           </div>
+          }
         </div>
         <div class="form-group mb-4 d-flex justify-content-between align-items-center">
           <div class="form-check checkbox-text">
@@ -35,8 +37,10 @@
         <button type="button" (click)="login()" class="btn btn-primary w-100 mb-4">Đăng nhập</button>
         <div class="divider my-4"></div>
         <div class="social-login-buttons d-flex gap-3 justify-content-center">
-          <button type="button" (click)="loginWithGoogle()" class="social-button google-button"><i class="fab fa-google me-2"></i>Google</button>
-          <button type="button" (click)="loginWithFacebook()" class="social-button facebook-button"><i class="fab fa-facebook-f me-2"></i>Facebook</button>
+          <button type="button" (click)="loginWithGoogle()" class="social-button google-button"><i
+              class="fab fa-google me-2"></i>Google</button>
+          <button type="button" (click)="loginWithFacebook()" class="social-button facebook-button"><i
+              class="fab fa-facebook-f me-2"></i>Facebook</button>
         </div>
         <p class="text-center mt-4">
           Bạn chưa có tài khoản? <a (click)="createAccount()" class="register-link text-primary">Tạo tài khoản</a>

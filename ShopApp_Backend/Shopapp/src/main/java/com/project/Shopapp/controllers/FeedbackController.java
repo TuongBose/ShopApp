@@ -24,21 +24,22 @@ public class FeedbackController {
     private final IFeedbackService feedbackService;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllFeedbacks(
+    public ResponseEntity<ResponseObject> getAllFeedbacks(
             @RequestParam(value = "user_id", required = false) Integer userId,
             @RequestParam(value = "product_id") Integer productId
-    ) {
-        try {
-            List<FeedbackResponse> feedbackResponses;
-            if (userId == null) {
-                feedbackResponses = feedbackService.getFeedbacksByProduct(productId);
-            } else {
-                feedbackResponses = feedbackService.getFeedbacksByAccountAndProduct(userId, productId);
-            }
-            return ResponseEntity.ok(feedbackResponses);
-        } catch (DataNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    ) throws Exception {
+        List<FeedbackResponse> feedbackResponses;
+        if (userId == null) {
+            feedbackResponses = feedbackService.getFeedbacksByProduct(productId);
+        } else {
+            feedbackResponses = feedbackService.getFeedbacksByAccountAndProduct(userId, productId);
         }
+
+        return ResponseEntity.ok(ResponseObject.builder()
+                .message("Get all feedbacks successfully")
+                .status(HttpStatus.OK)
+                .data(feedbackResponses)
+                .build());
     }
 
     @PutMapping("/{id}")

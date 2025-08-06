@@ -34,8 +34,6 @@ import { ApiResponse } from '../../responses/api.response';
 export class LoginComponent extends BaseComponent {
   @ViewChild('loginForm') loginForm!: NgForm;
 
-  constructor(private authService: AuthService) { super() }
-
   phoneNumber: string = '';
   password: string = '';
   rememberMe: boolean = false;

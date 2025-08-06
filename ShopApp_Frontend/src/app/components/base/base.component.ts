@@ -12,6 +12,8 @@ import { CartService } from "../../services/cart.service";
 import { CouponService } from "../../services/coupon.service";
 import { DonHangService } from "../../services/donhang.service";
 import { PaymentService } from "../../services/payment.service";
+import { AuthService } from "../../services/auth.service";
+import { FeedbackService } from "../../services/feedback.service";
 
 @Component({
   selector: 'app-base',
@@ -35,6 +37,8 @@ export class BaseComponent {
   couponService: CouponService = inject(CouponService);
   donHangService: DonHangService = inject(DonHangService);
   paymentService: PaymentService = inject(PaymentService);
+  authService:AuthService=inject(AuthService);
+  feedbackService:FeedbackService=inject(FeedbackService);
 
   generateVisiblePageArray(currentPage: number, totalPages: number): number[] {
     const maxVisiblePages = 5;

@@ -131,3 +131,38 @@
     margin-top: 20px;
   }
 }
+
+/* Feedback Styles */
+.feedback-section {
+  padding: 20px;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+#starRating {
+  font-size: 24px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+#starRating .star:hover,
+#starRating .star.selected {
+  color: #f5c518;
+}
+
+.feedback-item {
+  border-left: 4px solid $shopapp-color;
+}
+
+.feedback-form .form-control {
+  border-color: #e2e8f0;
+  transition: border-color 0.3s ease;
+}
+
+.feedback-form .form-control:focus {
+  border-color: $shopapp-color;
+  box-shadow: 0 0 5px rgba($shopapp-color, 0.5);
+}
