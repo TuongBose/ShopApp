@@ -11,7 +11,6 @@ import { AccountService } from "../../services/account.service";
 import { CartService } from "../../services/cart.service";
 import { CouponService } from "../../services/coupon.service";
 import { DonHangService } from "../../services/donhang.service";
-import { AuthService } from "../../services/auth.service";
 import { PaymentService } from "../../services/payment.service";
 
 @Component({
@@ -35,7 +34,6 @@ export class BaseComponent {
   cartService: CartService = inject(CartService);
   couponService: CouponService = inject(CouponService);
   donHangService: DonHangService = inject(DonHangService);
-  authService: AuthService = inject(AuthService);
   paymentService: PaymentService = inject(PaymentService);
 
   generateVisiblePageArray(currentPage: number, totalPages: number): number[] {

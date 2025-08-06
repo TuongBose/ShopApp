@@ -35,10 +35,12 @@ export class AccountService {
   }
 
   login(loginDTO: LoginDTO): Observable<ApiResponse> {
+    debugger
     return this.http.post<ApiResponse>(this.apiLogin, loginDTO, this.apiConfig);
   }
 
   getAccountDetails(token: string): Observable<ApiResponse> {
+    debugger
     return this.http.post<ApiResponse>(this.apiAccountDetails, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -68,8 +70,8 @@ export class AccountService {
   }
 
   getAccountFromLocalStorage(): AccountResponse | null {
+    debugger
     try {
-      debugger
       // Retrieve the JSON string from local storage using the key
       const accountResponseJSON = localStorage.getItem('account') || sessionStorage.getItem('account');
       if (accountResponseJSON == null || accountResponseJSON == undefined) { return null; }
@@ -85,6 +87,7 @@ export class AccountService {
   }
 
   removeAccountFromLocalStorage(): void {
+    debugger
     try {
       localStorage.removeItem('account');
       sessionStorage.removeItem('account');

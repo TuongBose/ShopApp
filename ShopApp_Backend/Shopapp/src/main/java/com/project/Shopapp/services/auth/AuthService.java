@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -72,6 +73,7 @@ public class AuthService implements IAuthService {
                     .queryParam("client_id", facebookClientId)
                     .queryParam("redirect_uri", facebookRedirectUri)
                     .queryParam("scope", "email,public_profile")
+                    .queryParam("scope", "public_profile")
                     .queryParam("response_type", "code")
                     .build()
                     .toUriString();
@@ -93,8 +95,7 @@ public class AuthService implements IAuthService {
                         googleClientSecret,
                         code,
                         googleRedirectUri
-                ).execute().getAccessToken();
-
+                ).setScopes(Collections.singletonList("profile email")).execute().getAccessToken();
                 // Configure RestTemplate to include the access token in the Authorization header
                 restTemplate.getInterceptors().add((req, body, executionContext) -> {
                     req.getHeaders().set("Authorization", "Bearer " + accessToken);
@@ -124,7 +125,7 @@ public class AuthService implements IAuthService {
 
                 // Set the URL for the Facebook API to fetch user info
                 // Lay thong tin nguoi dung
-                String userInfoUri = facebookUserInfoUri + "&access token=" + accessToken;
+                String userInfoUri = facebookUserInfoUri + "&access_token=" + accessToken;
                 return mapper.readValue(
                         restTemplate.getForEntity(userInfoUri, String.class).getBody(),
                         new TypeReference<>() {

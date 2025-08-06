@@ -394,10 +394,10 @@ public class AccountController {
         Account loginUser = securityUtils.getLoggedInUser();
         if (file == null || file.isEmpty()) {
             return ResponseEntity.badRequest().body(ResponseObject.builder()
-                            .message("Image file is required.")
-                            .status(HttpStatus.NOT_FOUND)
-                            .data(null)
-                            .build()
+                    .message("Image file is required.")
+                    .status(HttpStatus.NOT_FOUND)
+                    .data(null)
+                    .build()
             );
         }
 
@@ -460,7 +460,7 @@ public class AccountController {
 
     // Angular, bam dang nhap google, redirect den trang dang nhap google, dang nhap xong co "code"
     // Tu "code" => google token => lay ra cac thong tin khac
-    @GetMapping("/auth/social-login")
+    @GetMapping("/oauth2/social-login")
     public ResponseEntity<String> socialAuth(
             @RequestParam("login_type") String loginType,
             HttpServletRequest request
@@ -471,7 +471,7 @@ public class AccountController {
         return ResponseEntity.ok(url);
     }
 
-    @GetMapping("/auth/social/callback")
+    @GetMapping("/oauth2/social/callback")
     public ResponseEntity<ResponseObject> callback(
             @RequestParam("code") String code,
             @RequestParam("login_type") String loginType,
@@ -530,7 +530,7 @@ public class AccountController {
         if (loginType.trim().equals("google")) {
             accountLoginDTO.setGoogleAccountId(accountId);
         } else if (loginType.trim().equals("facebook")) {
-            accountLoginDTO.setGoogleAccountId("");
+            accountLoginDTO.setFacebookAccountId(accountId);
         }
 
         return this.loginSocial(accountLoginDTO, request);

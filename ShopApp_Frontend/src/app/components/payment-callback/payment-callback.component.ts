@@ -1,17 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { AccountResponse } from "../../responses/account/account.response";
-import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { subscribe } from "diagnostics_channel";
-import { BaseComponent } from "../base/base.component";
-import { AuthService } from "../../services/auth.service";
-import { response } from "express";
-import { TokenService } from "../../services/token.service";
-import { switchMap } from "rxjs";
-import { AccountService } from "../../services/account.service";
-import { title } from "process";
-import { error } from "console";
-import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: 'app-auth-callback',
@@ -23,7 +11,7 @@ import { HttpErrorResponse } from "@angular/common/http";
   ]
 })
 
-export class PaymentCallbackComponent extends BaseComponent{
+export class PaymentCallbackComponent{
     // loading:boolean=true;
     // paymentSuccess:boolean=false;
 

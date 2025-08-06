@@ -1,6 +1,7 @@
 package com.project.Shopapp.services.account;
 
 import com.project.Shopapp.components.JwtTokenUtils;
+import com.project.Shopapp.components.LocalizationUtils;
 import com.project.Shopapp.dtos.AccountDTO;
 import com.project.Shopapp.dtos.AccountLoginDTO;
 import com.project.Shopapp.dtos.UpdateAccountDTO;
@@ -10,6 +11,7 @@ import com.project.Shopapp.models.Account;
 import com.project.Shopapp.models.Token;
 import com.project.Shopapp.repositories.AccountRepository;
 import com.project.Shopapp.repositories.TokenRepository;
+import com.project.Shopapp.utils.MessageKeys;
 import com.project.Shopapp.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,6 +36,7 @@ public class AccountService implements IAccountService {
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
+    private final LocalizationUtils localizationUtils;
 
     @Override
     @Transactional
@@ -207,7 +210,7 @@ public class AccountService implements IAccountService {
 
         // check account is active
         if (!existingAccount.isIS_ACTIVE()) {
-            throw new Exception("Account is locked");
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -331,7 +334,62 @@ public class AccountService implements IAccountService {
 
     @Override
     public String loginSocial(AccountLoginDTO accountLoginDTO) throws Exception {
-        return "";
+        Optional<Account> optionalUser = Optional.empty();
+
+        // Kiểm tra Google Account ID
+        if (accountLoginDTO.isGoogleAccountIdValid()) {
+            optionalUser = accountRepository.findByGoogleAccountId(accountLoginDTO.getGoogleAccountId());
+
+            // Tạo người dùng mới nếu không tìm thấy
+            if (optionalUser.isEmpty()) {
+                Account newUser = Account.builder()
+                        .FULLNAME(Optional.ofNullable(accountLoginDTO.getFullName()).orElse(""))
+                        .EMAIL(Optional.ofNullable(accountLoginDTO.getEMAIL()).orElse(""))
+                        .profileImage(Optional.ofNullable(accountLoginDTO.getProfileImage()).orElse(""))
+                        .ROLENAME(accountLoginDTO.isRoleid())
+                        .googleAccountId(accountLoginDTO.getGoogleAccountId())
+                        .PASSWORD("") // Mật khẩu trống cho đăng nhập mạng xã hội
+                        .IS_ACTIVE(true)
+                        .build();
+
+                // Lưu người dùng mới
+                newUser = accountRepository.save(newUser);
+                optionalUser = Optional.of(newUser);
+            }
+        }
+        // Kiểm tra Facebook Account ID
+        else if (accountLoginDTO.isFacebookAccountIdValid()) {
+            optionalUser = accountRepository.findByFacebookAccountId(accountLoginDTO.getFacebookAccountId());
+
+            // Tạo người dùng mới nếu không tìm thấy
+            if (optionalUser.isEmpty()) {
+                Account newUser = Account.builder()
+                        .FULLNAME(Optional.ofNullable(accountLoginDTO.getFullName()).orElse(""))
+                        .EMAIL(Optional.ofNullable(accountLoginDTO.getEMAIL()).orElse(""))
+                        .profileImage(Optional.ofNullable(accountLoginDTO.getProfileImage()).orElse(""))
+                        .ROLENAME(accountLoginDTO.isRoleid())
+                        .facebookAccountId(accountLoginDTO.getFacebookAccountId())
+                        .PASSWORD("") // Mật khẩu trống cho đăng nhập mạng xã hội
+                        .IS_ACTIVE(true)
+                        .build();
+
+                // Lưu người dùng mới
+                newUser = accountRepository.save(newUser);
+                optionalUser = Optional.of(newUser);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid social account information.");
+        }
+
+        Account user = optionalUser.get();
+
+        // Kiểm tra nếu tài khoản bị khóa
+        if (!user.isIS_ACTIVE()) {
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
+        }
+
+        // Tạo JWT token cho người dùng
+        return jwtTokenUtils.generateToken(user);
     }
 
     @Override

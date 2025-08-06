@@ -34,6 +34,8 @@ import { ApiResponse } from '../../responses/api.response';
 export class LoginComponent extends BaseComponent {
   @ViewChild('loginForm') loginForm!: NgForm;
 
+  constructor(private authService: AuthService) { super() }
+
   phoneNumber: string = '';
   password: string = '';
   rememberMe: boolean = false;
@@ -111,7 +113,7 @@ export class LoginComponent extends BaseComponent {
           defaultMsg: 'Đăng nhập thành công',
           title: 'Thông báo',
           delay: 3000,
-          type:'success'
+          type: 'success'
         });
         this.router.navigate(['/']);
       },
@@ -120,8 +122,8 @@ export class LoginComponent extends BaseComponent {
           error,
           defaultMsg: 'Đăng nhập thất bại!',
           title: 'Lỗi đăng nhập',
-          delay:3000,
-          type:'danger'
+          delay: 3000,
+          type: 'danger'
         });
         console.error('Lỗi đăng nhập:', error?.error?.message ?? '');
       }

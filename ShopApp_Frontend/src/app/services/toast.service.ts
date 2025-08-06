@@ -8,12 +8,17 @@ export class ToastService {
     constructor() { }
 
     showToast({ error, defaultMsg: defaultMessage, title = '', delay = 5000, type = 'danger' }: {
-    error?: any,
-    defaultMsg: string,
-    title?: string,
-    delay?: number,
-    type?: 'success' | 'danger' | 'info' | 'warning'
-}) {
+        error?: any,
+        defaultMsg: string,
+        title?: string,
+        delay?: number,
+        type?: 'success' | 'danger' | 'info' | 'warning'
+    }) {
+        if (typeof document === 'undefined') {
+            // SSR không hỗ trợ document, bỏ qua
+            return;
+        }
+
         // Determine the message based on the error object or use the default message
         let message = defaultMessage;
         if (error && error.error && error.error.message) {
