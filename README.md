@@ -1,31 +1,43 @@
-# WebBanDienThoai (Phone Shop E-commerce)
+# ShopApp E-commerce Project
+
+## ⚠️ Important Notice
+
+**DO NOT USE THIS CODE IN ANY FORM WITHOUT PERMISSION**
+This project is proprietary and protected by copyright. Any unauthorized use, reproduction, or distribution is strictly prohibited.
+
+## 📱 Overview
 
 A full-stack e-commerce application for selling phones and accessories, built with Spring Boot backend and Angular frontend. The application consists of a customer-facing e-commerce platform and an admin dashboard for managing the store.
 
 ## Technology Stack
 
 ### Backend
-- Java 23
-- Spring Boot 3.4.3
+- Java 17
+- Spring Boot
 - Spring Security with JWT
 - Spring Data JPA/Hibernate
-- MySQL 8.2
+- MySQL 8.2.0
 - Redis 7.2.3 (for caching)
-- Maven
+- Apache Kafka (Message Broker)
+- OAuth2 Social Login
+- Maven 3.9.x
 
 ### Frontend (Customer & Admin)
-- Angular 20
+- Angular 16+
+- TypeScript 5.x
 - Bootstrap 5.3
-- NgBootstrap 19
-- Font Awesome
+- Angular Material
+- RxJS
 - JWT Authentication
-- Express.js (for SSR)
+- OAuth2 Integration
 
-### DevOps & Tools
+### DevOps & Infrastructure
 - Docker & Docker Compose
 - PHPMyAdmin
-- Redis Commander
-- Git
+- Redis
+- Apache Kafka
+- Nginx (Production)
+- GitHub CI/CD
 
 ## Project Structure
 
@@ -107,11 +119,15 @@ ShopApp/
 ## Development Setup
 
 ### Prerequisites
-- Java 23
-- Node.js (Latest LTS version)
+- Java 17 or higher
+- Node.js 16 or higher
 - Docker & Docker Compose
-- Maven
+- Maven 3.9.x
 - Angular CLI
+- MySQL 8.2.0
+- Redis 7.2.3
+- Apache Kafka
+- Git
 
 ### Using Docker (Recommended)
 1. Clone the repository:
@@ -188,10 +204,6 @@ ShopApp/
    docker-compose up -d --build
    ```
 
-## Development Guidelines
-
-For detailed information about code style, git workflow, testing guidelines, and best practices, please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
-
 ### Key Principles
 - Follow coding standards for both Java and TypeScript
 - Write clean, maintainable, and well-documented code
@@ -199,13 +211,27 @@ For detailed information about code style, git workflow, testing guidelines, and
 - Follow security best practices
 - Use proper error handling and logging
 
-## License
+## 🚫 Usage Restrictions
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This software is protected under copyright law. The following actions are strictly prohibited:
+- Commercial use
+- Distribution
+- Modification
+- Patent use
+- Private use without permission
+- Warranty claims
+- Liability claims
 
-## Support
+## ⚖️ Legal Notice
 
-For support, please open an issue in the GitHub repository or contact the development team.
+Copyright © 2025 TuongBose. All rights reserved.
+
+Unauthorized copying, modification, distribution, or any use of this software, via any medium, is strictly prohibited.
+
+## 📞 Support
+
+For authorized support inquiries only, please contact the development team directly.
+Do not create public issues or fork this repository without explicit permission.
    ```bash
    npm install
    ```
