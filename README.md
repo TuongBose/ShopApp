@@ -98,16 +98,17 @@ ShopApp/
 ```
 
 ### 2. Customer Frontend (ShopApp_Frontend)
-- **Technology Stack**: Angular 19
+- **Technology Stack**: Angular 16+
 - **Key Features**:
   - Responsive design
   - Product browsing and searching
   - Shopping cart functionality
-  - User authentication
+  - User authentication & OAuth2
   - Order management
+  - Real-time updates
 
 ### 3. Admin Dashboard (webadmin)
-- **Technology Stack**: Angular 19
+- **Technology Stack**: Angular 16+
 - **Key Features**:
   - Product management
   - Order management
@@ -204,40 +205,39 @@ ShopApp/
    docker-compose up -d --build
    ```
 
-### Key Principles
+## 💻 Development Guidelines
+
+### Code Principles
 - Follow coding standards for both Java and TypeScript
 - Write clean, maintainable, and well-documented code
 - Include appropriate tests for new features
 - Follow security best practices
 - Use proper error handling and logging
 
+### Version Control
+- Create feature branches from main
+- Use meaningful commit messages
+- Review code before merging
+- Keep commits focused and atomic
+
+### Security Guidelines
+- Never commit sensitive data
+- Use environment variables for configurations
+- Implement proper authentication
+- Follow OWASP security practices
+
 ## 🚫 Usage Restrictions
 
-This software is protected under copyright law. The following actions are strictly prohibited:
+This software is protected under copyright law. Please refer to the COPYRIGHT file in the root directory for complete terms and conditions.
+
+For quick reference, the following actions are strictly prohibited:
 - Commercial use
 - Distribution
 - Modification
 - Patent use
 - Private use without permission
-- Warranty claims
-- Liability claims
-
-## ⚖️ Legal Notice
-
-Copyright © 2025 TuongBose. All rights reserved.
-
-Unauthorized copying, modification, distribution, or any use of this software, via any medium, is strictly prohibited.
 
 ## 📞 Support
 
 For authorized support inquiries only, please contact the development team directly.
 Do not create public issues or fork this repository without explicit permission.
-   ```bash
-   npm install
-   ```
-
-3. Run the development server:
-   ```bash
-   ng serve --port 4300
-   ```
-   Access the admin dashboard at http://localhost:4300
